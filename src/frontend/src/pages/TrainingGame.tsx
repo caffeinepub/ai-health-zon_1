@@ -25,7 +25,7 @@ import {
   Zap,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -1460,9 +1460,14 @@ function FinalResults({
 interface CreatureTooltipProps {
   text: string;
   visible: boolean;
+  angry?: boolean;
 }
 
-function CreatureTooltip({ text, visible }: CreatureTooltipProps) {
+function CreatureTooltip({
+  text,
+  visible,
+  angry = false,
+}: CreatureTooltipProps) {
   return (
     <AnimatePresence>
       {visible && (
@@ -1471,48 +1476,120 @@ function CreatureTooltip({ text, visible }: CreatureTooltipProps) {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 4, scale: 0.9 }}
           transition={{ duration: 0.18 }}
-          className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 rounded-xl bg-gray-900/90 text-white text-[11px] font-medium whitespace-nowrap shadow-xl border border-white/10 backdrop-blur-sm pointer-events-none"
-          style={{ maxWidth: 220, whiteSpace: "normal", textAlign: "center" }}
+          className={`absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 rounded-xl text-white text-[11px] font-medium shadow-xl border backdrop-blur-sm pointer-events-none ${
+            angry
+              ? "bg-red-700/95 border-red-400/40"
+              : "bg-gray-900/90 border-white/10"
+          }`}
+          style={{ maxWidth: 240, whiteSpace: "normal", textAlign: "center" }}
         >
           {text}
           {/* Arrow */}
-          <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-900/90" />
+          <div
+            className={`absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent ${angry ? "border-t-red-700/95" : "border-t-gray-900/90"}`}
+          />
         </motion.div>
       )}
     </AnimatePresence>
   );
 }
 
-// Doctor Owl — bobs up and down, shows tip on hover
+// ─── Shared hook for angry creature state ─────────────────────────────────────
+function useAngryCreature() {
+  const [isAngry, setIsAngry] = useState(false);
+  const [tooltipVisible, setTooltipVisible] = useState(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function handlePointerDown(e: React.PointerEvent) {
+    e.stopPropagation();
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setIsAngry(true);
+    setTooltipVisible(true);
+    timeoutRef.current = setTimeout(() => {
+      setIsAngry(false);
+      setTooltipVisible(false);
+    }, 3000);
+  }
+
+  function handleMouseEnter() {
+    if (!isAngry) setTooltipVisible(true);
+  }
+
+  function handleMouseLeave() {
+    if (!isAngry) setTooltipVisible(false);
+  }
+
+  return {
+    isAngry,
+    tooltipVisible,
+    handlePointerDown,
+    handleMouseEnter,
+    handleMouseLeave,
+  };
+}
+
+// Doctor Owl — bobs up and down, becomes angry on touch
 function DoctorOwl({ show }: { show: boolean }) {
-  const [hovered, setHovered] = useState(false);
+  const {
+    isAngry,
+    tooltipVisible,
+    handlePointerDown,
+    handleMouseEnter,
+    handleMouseLeave,
+  } = useAngryCreature();
   if (!show) return null;
   return (
     <motion.div
-      className="absolute top-2 left-2 z-20 hidden md:flex flex-col items-center cursor-pointer select-none"
+      drag
+      dragElastic={0.2}
+      dragConstraints={{ left: -300, right: 300, top: -200, bottom: 200 }}
+      className="absolute top-2 left-2 z-20 hidden md:flex flex-col items-center cursor-grab active:cursor-grabbing select-none touch-none"
       style={{ pointerEvents: "auto" }}
-      animate={{ y: [0, -8, 0] }}
-      transition={{
-        duration: 2.8,
-        repeat: Number.POSITIVE_INFINITY,
-        ease: "easeInOut",
-      }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      animate={
+        isAngry
+          ? {
+              rotate: [-15, 15, -15, 15, 0],
+              scale: [1.3, 1.2, 1.3, 1.2, 1.0],
+              y: 0,
+            }
+          : { y: [0, -8, 0] }
+      }
+      transition={
+        isAngry
+          ? { duration: 0.5, times: [0, 0.25, 0.5, 0.75, 1] }
+          : {
+              duration: 2.8,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+            }
+      }
+      onPointerDown={handlePointerDown}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <div className="relative">
         <CreatureTooltip
-          text="🦉 Complete all tasks to unlock submission!"
-          visible={hovered}
+          text={
+            isAngry
+              ? "😤 Don't disturb me while I'm advising!"
+              : "🦉 Complete all tasks to unlock submission!"
+          }
+          visible={tooltipVisible}
+          angry={isAngry}
         />
         <motion.span
           className="text-3xl drop-shadow-md"
-          whileHover={{ scale: 1.25, rotate: -10 }}
-          transition={{ type: "spring", stiffness: 400 }}
+          style={
+            isAngry
+              ? { filter: "drop-shadow(0 0 12px rgba(220,38,38,0.8))" }
+              : undefined
+          }
         >
-          🦉
+          {isAngry ? "😡" : "🦉"}
         </motion.span>
-        <div className="text-[9px] font-bold text-center mt-0.5 text-teal-700 bg-white/80 rounded px-1">
+        <div
+          className={`text-[9px] font-bold text-center mt-0.5 bg-white/80 rounded px-1 ${isAngry ? "text-red-700" : "text-teal-700"}`}
+        >
           Dr. Owl
         </div>
       </div>
@@ -1520,42 +1597,77 @@ function DoctorOwl({ show }: { show: boolean }) {
   );
 }
 
-// Running Rabbit Nurse — dashes left to right across hero bottom
+// Running Rabbit Nurse — dashes left to right, becomes angry on touch
 function RunningRabbit({ show }: { show: boolean }) {
-  const [hovered, setHovered] = useState(false);
+  const {
+    isAngry,
+    tooltipVisible,
+    handlePointerDown,
+    handleMouseEnter,
+    handleMouseLeave,
+  } = useAngryCreature();
   if (!show) return null;
   return (
     <motion.div
-      className="absolute bottom-3 z-20 flex flex-col items-center cursor-pointer select-none"
+      drag
+      dragElastic={0.2}
+      dragConstraints={{ left: -300, right: 300, top: -200, bottom: 200 }}
+      className="absolute bottom-3 z-20 flex flex-col items-center cursor-grab active:cursor-grabbing select-none touch-none"
       style={{ pointerEvents: "auto" }}
-      initial={{ x: "-8vw" }}
-      animate={{ x: ["−8vw", "105vw"] }}
-      transition={{
-        duration: 5.5,
-        repeat: Number.POSITIVE_INFINITY,
-        repeatDelay: 1.2,
-        ease: "linear",
-      }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      animate={
+        isAngry
+          ? { rotate: [-15, 15, -15, 15, 0], scale: [1.3, 1.2, 1.3, 1.2, 1.0] }
+          : { x: ["-8vw", "105vw"] }
+      }
+      transition={
+        isAngry
+          ? { duration: 0.5, times: [0, 0.25, 0.5, 0.75, 1] }
+          : {
+              duration: 5.5,
+              repeat: Number.POSITIVE_INFINITY,
+              repeatDelay: 1.2,
+              ease: "linear",
+            }
+      }
+      onPointerDown={handlePointerDown}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <div className="relative">
         <CreatureTooltip
-          text="🐇 Hurry! Submit before time runs out!"
-          visible={hovered}
+          text={
+            isAngry
+              ? "💢 I'm in a hurry! Stop that!"
+              : "🐇 Hurry! Submit before time runs out!"
+          }
+          visible={tooltipVisible}
+          angry={isAngry}
         />
         <motion.span
           className="text-2xl drop-shadow-md"
-          animate={{ scaleX: [1, 1.15, 1], y: [0, -4, 0] }}
-          transition={{
-            duration: 0.4,
-            repeat: Number.POSITIVE_INFINITY,
-            ease: "linear",
-          }}
+          style={
+            isAngry
+              ? { filter: "drop-shadow(0 0 12px rgba(220,38,38,0.8))" }
+              : undefined
+          }
+          animate={
+            isAngry ? undefined : { scaleX: [1, 1.15, 1], y: [0, -4, 0] }
+          }
+          transition={
+            isAngry
+              ? undefined
+              : {
+                  duration: 0.4,
+                  repeat: Number.POSITIVE_INFINITY,
+                  ease: "linear",
+                }
+          }
         >
-          🐇
+          {isAngry ? "😠🐇" : "🐇"}
         </motion.span>
-        <div className="text-[9px] font-bold text-center mt-0.5 text-pink-700 bg-white/80 rounded px-1">
+        <div
+          className={`text-[9px] font-bold text-center mt-0.5 bg-white/80 rounded px-1 ${isAngry ? "text-red-700" : "text-pink-700"}`}
+        >
           Nurse
         </div>
       </div>
@@ -1563,42 +1675,79 @@ function RunningRabbit({ show }: { show: boolean }) {
   );
 }
 
-// Wise Turtle — crawls very slowly left to right on the stage navigator area
+// Wise Turtle — crawls slowly, becomes angry on touch
 function WiseTurtle({ show }: { show: boolean }) {
-  const [hovered, setHovered] = useState(false);
+  const {
+    isAngry,
+    tooltipVisible,
+    handlePointerDown,
+    handleMouseEnter,
+    handleMouseLeave,
+  } = useAngryCreature();
   if (!show) return null;
   return (
     <motion.div
-      className="absolute -bottom-6 left-0 z-20 flex flex-col items-center cursor-pointer select-none hidden md:flex"
+      drag
+      dragElastic={0.2}
+      dragConstraints={{ left: -300, right: 300, top: -200, bottom: 200 }}
+      className="absolute -bottom-6 left-0 z-20 flex flex-col items-center cursor-grab active:cursor-grabbing select-none hidden md:flex touch-none"
       style={{ pointerEvents: "auto" }}
-      initial={{ x: 0 }}
-      animate={{ x: [0, 600, 0] }}
-      transition={{
-        duration: 28,
-        repeat: Number.POSITIVE_INFINITY,
-        ease: "linear",
-        repeatType: "mirror",
-      }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      animate={
+        isAngry
+          ? {
+              rotate: [-15, 15, -15, 15, 0],
+              scale: [1.3, 1.2, 1.3, 1.2, 1.0],
+              x: 0,
+            }
+          : { x: [0, 600, 0] }
+      }
+      transition={
+        isAngry
+          ? { duration: 0.5, times: [0, 0.25, 0.5, 0.75, 1] }
+          : {
+              duration: 28,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "linear",
+              repeatType: "mirror",
+            }
+      }
+      onPointerDown={handlePointerDown}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <div className="relative">
         <CreatureTooltip
-          text="🐢 Accuracy beats speed every time."
-          visible={hovered}
+          text={
+            isAngry
+              ? "😤 I'm slow but I bite!"
+              : "🐢 Accuracy beats speed every time."
+          }
+          visible={tooltipVisible}
+          angry={isAngry}
         />
         <motion.span
           className="text-2xl drop-shadow-md"
-          animate={{ y: [0, -2, 0] }}
-          transition={{
-            duration: 1.5,
-            repeat: Number.POSITIVE_INFINITY,
-            ease: "easeInOut",
-          }}
+          style={
+            isAngry
+              ? { filter: "drop-shadow(0 0 12px rgba(220,38,38,0.8))" }
+              : undefined
+          }
+          animate={isAngry ? undefined : { y: [0, -2, 0] }}
+          transition={
+            isAngry
+              ? undefined
+              : {
+                  duration: 1.5,
+                  repeat: Number.POSITIVE_INFINITY,
+                  ease: "easeInOut",
+                }
+          }
         >
-          🐢
+          {isAngry ? "😤" : "🐢"}
         </motion.span>
-        <div className="text-[9px] font-bold text-center mt-0.5 text-green-700 bg-white/80 rounded px-1">
+        <div
+          className={`text-[9px] font-bold text-center mt-0.5 bg-white/80 rounded px-1 ${isAngry ? "text-red-700" : "text-green-700"}`}
+        >
           Sensei
         </div>
       </div>
@@ -1606,36 +1755,68 @@ function WiseTurtle({ show }: { show: boolean }) {
   );
 }
 
-// Cheerful Bear Doctor — bounces in the Score Panel sidebar area
+// Cheerful Bear Doctor — bounces, becomes angry on touch
 function CheerfulBear({ show }: { show: boolean }) {
-  const [hovered, setHovered] = useState(false);
+  const {
+    isAngry,
+    tooltipVisible,
+    handlePointerDown,
+    handleMouseEnter,
+    handleMouseLeave,
+  } = useAngryCreature();
   if (!show) return null;
   return (
     <motion.div
-      className="flex flex-col items-center cursor-pointer select-none mx-auto mb-2 w-fit hidden md:flex"
+      drag
+      dragElastic={0.2}
+      dragConstraints={{ left: -300, right: 300, top: -200, bottom: 200 }}
+      className="flex flex-col items-center cursor-grab active:cursor-grabbing select-none mx-auto mb-2 w-fit hidden md:flex touch-none"
       style={{ pointerEvents: "auto" }}
-      animate={{ y: [0, -10, 0] }}
-      transition={{
-        duration: 1.6,
-        repeat: Number.POSITIVE_INFINITY,
-        ease: "easeInOut",
-      }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      animate={
+        isAngry
+          ? {
+              rotate: [-15, 15, -15, 15, 0],
+              scale: [1.3, 1.2, 1.3, 1.2, 1.0],
+              y: 0,
+            }
+          : { y: [0, -10, 0] }
+      }
+      transition={
+        isAngry
+          ? { duration: 0.5, times: [0, 0.25, 0.5, 0.75, 1] }
+          : {
+              duration: 1.6,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+            }
+      }
+      onPointerDown={handlePointerDown}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <div className="relative">
         <CreatureTooltip
-          text="🐻 Keep going! You're doing great!"
-          visible={hovered}
+          text={
+            isAngry
+              ? "🤬 Step back or face my claws!"
+              : "🐻 Keep going! You're doing great!"
+          }
+          visible={tooltipVisible}
+          angry={isAngry}
         />
         <motion.span
           className="text-3xl drop-shadow-md"
-          whileHover={{ rotate: 15, scale: 1.3 }}
-          transition={{ type: "spring", stiffness: 300 }}
+          style={
+            isAngry
+              ? { filter: "drop-shadow(0 0 12px rgba(220,38,38,0.8))" }
+              : undefined
+          }
         >
-          🐻
+          {isAngry ? "🤬" : "🐻"}
         </motion.span>
-        <div className="text-[9px] font-bold text-center mt-0.5 text-amber-700 bg-white/80 rounded px-1">
+        <div
+          className={`text-[9px] font-bold text-center mt-0.5 bg-white/80 rounded px-1 ${isAngry ? "text-red-700" : "text-amber-700"}`}
+        >
           Dr. Bear
         </div>
       </div>
@@ -1643,7 +1824,7 @@ function CheerfulBear({ show }: { show: boolean }) {
   );
 }
 
-// Mischievous Fox — blinks/flashes near Challenge Twist alert
+// Mischievous Fox — blinks/flashes near Challenge Twist, becomes angry on touch
 function MischievousFox({
   show,
   stageNum,
@@ -1651,36 +1832,74 @@ function MischievousFox({
   show: boolean;
   stageNum: number;
 }) {
-  const [hovered, setHovered] = useState(false);
+  const {
+    isAngry,
+    tooltipVisible,
+    handlePointerDown,
+    handleMouseEnter,
+    handleMouseLeave,
+  } = useAngryCreature();
   if (!show) return null;
   return (
     <motion.div
       key={stageNum}
-      className="absolute -right-2 -top-3 z-20 flex flex-col items-center cursor-pointer select-none hidden md:flex"
+      drag
+      dragElastic={0.2}
+      dragConstraints={{ left: 0, right: 200, top: 0, bottom: 100 }}
+      className="absolute -right-2 -top-3 z-20 flex flex-col items-center cursor-grab active:cursor-grabbing select-none hidden md:flex touch-none"
       style={{ pointerEvents: "auto" }}
       initial={{ opacity: 0, scale: 0 }}
-      animate={{ opacity: [0, 1, 0.6, 1], scale: [0.8, 1.1, 1] }}
-      transition={{ duration: 0.6, delay: 0.3 }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      animate={
+        isAngry
+          ? {
+              rotate: [-15, 15, -15, 15, 0],
+              scale: [1.3, 1.2, 1.3, 1.2, 1.0],
+              opacity: 1,
+            }
+          : { opacity: [0, 1, 0.6, 1], scale: [0.8, 1.1, 1] }
+      }
+      transition={
+        isAngry
+          ? { duration: 0.5, times: [0, 0.25, 0.5, 0.75, 1] }
+          : { duration: 0.6, delay: 0.3 }
+      }
+      onPointerDown={handlePointerDown}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <div className="relative">
         <CreatureTooltip
-          text="🦊 I caused this challenge... 😈"
-          visible={hovered}
+          text={
+            isAngry
+              ? "🔥 You've unleashed the fox!"
+              : "🦊 I caused this challenge... 😈"
+          }
+          visible={tooltipVisible}
+          angry={isAngry}
         />
         <motion.span
           className="text-2xl drop-shadow-md"
-          animate={{ rotate: [0, -8, 8, -8, 0], scale: [1, 1.1, 1] }}
-          transition={{
-            duration: 2.5,
-            repeat: Number.POSITIVE_INFINITY,
-            delay: 1,
-          }}
+          style={
+            isAngry
+              ? { filter: "drop-shadow(0 0 12px rgba(220,38,38,0.8))" }
+              : undefined
+          }
+          animate={
+            isAngry
+              ? undefined
+              : { rotate: [0, -8, 8, -8, 0], scale: [1, 1.1, 1] }
+          }
+          transition={
+            isAngry
+              ? undefined
+              : { duration: 2.5, repeat: Number.POSITIVE_INFINITY, delay: 1 }
+          }
         >
-          🦊
+          {isAngry ? "😡" : "🦊"}
         </motion.span>
-        <div className="text-[9px] font-bold text-center mt-0.5 text-orange-700 bg-white/80 rounded px-1">
+        <div
+          className={`text-[9px] font-bold text-center mt-0.5 bg-white/80 rounded px-1 ${isAngry ? "text-red-700" : "text-orange-700"}`}
+        >
           Fox
         </div>
       </div>
@@ -1690,42 +1909,81 @@ function MischievousFox({
 
 // ─── Big Animals ──────────────────────────────────────────────────────────────
 
-// Wise Elephant — stomps slowly right, shakes screen a little
+// Wise Elephant — stomps slowly, becomes angry on touch
 function WiseElephant({ show }: { show: boolean }) {
-  const [hovered, setHovered] = useState(false);
+  const {
+    isAngry,
+    tooltipVisible,
+    handlePointerDown,
+    handleMouseEnter,
+    handleMouseLeave,
+  } = useAngryCreature();
   if (!show) return null;
   return (
     <motion.div
-      className="absolute bottom-4 right-4 z-20 flex flex-col items-center cursor-pointer select-none hidden md:flex"
+      drag
+      dragElastic={0.2}
+      dragConstraints={{ left: -300, right: 300, top: -200, bottom: 200 }}
+      className="absolute bottom-4 right-4 z-20 flex flex-col items-center cursor-grab active:cursor-grabbing select-none hidden md:flex touch-none"
       style={{ pointerEvents: "auto" }}
-      animate={{ x: [0, -120, 0] }}
-      transition={{
-        duration: 18,
-        repeat: Number.POSITIVE_INFINITY,
-        ease: "easeInOut",
-        repeatType: "mirror",
-      }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      animate={
+        isAngry
+          ? {
+              rotate: [-15, 15, -15, 15, 0],
+              scale: [1.3, 1.2, 1.3, 1.2, 1.0],
+              x: 0,
+            }
+          : { x: [0, -120, 0] }
+      }
+      transition={
+        isAngry
+          ? { duration: 0.5, times: [0, 0.25, 0.5, 0.75, 1] }
+          : {
+              duration: 18,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+              repeatType: "mirror",
+            }
+      }
+      onPointerDown={handlePointerDown}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <div className="relative">
         <CreatureTooltip
-          text="🐘 Every step matters — don't miss a document!"
-          visible={hovered}
+          text={
+            isAngry
+              ? "💢 Never anger an elder elephant!"
+              : "🐘 Every step matters — don't miss a document!"
+          }
+          visible={tooltipVisible}
+          angry={isAngry}
         />
         <motion.span
           className="text-5xl drop-shadow-xl"
-          animate={{ y: [0, -6, 0], rotate: [0, -3, 3, 0] }}
-          transition={{
-            duration: 3,
-            repeat: Number.POSITIVE_INFINITY,
-            ease: "easeInOut",
-          }}
-          whileHover={{ scale: 1.3 }}
+          style={
+            isAngry
+              ? { filter: "drop-shadow(0 0 12px rgba(220,38,38,0.8))" }
+              : undefined
+          }
+          animate={
+            isAngry ? undefined : { y: [0, -6, 0], rotate: [0, -3, 3, 0] }
+          }
+          transition={
+            isAngry
+              ? undefined
+              : {
+                  duration: 3,
+                  repeat: Number.POSITIVE_INFINITY,
+                  ease: "easeInOut",
+                }
+          }
         >
-          🐘
+          {isAngry ? "😡" : "🐘"}
         </motion.span>
-        <div className="text-[10px] font-bold text-center mt-0.5 text-gray-700 bg-white/80 rounded px-1">
+        <div
+          className={`text-[10px] font-bold text-center mt-0.5 bg-white/80 rounded px-1 ${isAngry ? "text-red-700" : "text-gray-700"}`}
+        >
           Elder Elephant
         </div>
       </div>
@@ -1733,84 +1991,156 @@ function WiseElephant({ show }: { show: boolean }) {
   );
 }
 
-// Roaring Lion — paces back and forth, roars on hover
+// Roaring Lion — paces back and forth, becomes angry on touch
 function RoaringLion({ show }: { show: boolean }) {
-  const [hovered, setHovered] = useState(false);
+  const {
+    isAngry,
+    tooltipVisible,
+    handlePointerDown,
+    handleMouseEnter,
+    handleMouseLeave,
+  } = useAngryCreature();
   if (!show) return null;
   return (
     <motion.div
-      className="absolute top-4 right-4 z-20 flex flex-col items-center cursor-pointer select-none hidden md:flex"
+      drag
+      dragElastic={0.2}
+      dragConstraints={{ left: -300, right: 300, top: -200, bottom: 200 }}
+      className="absolute top-4 right-4 z-20 flex flex-col items-center cursor-grab active:cursor-grabbing select-none hidden md:flex touch-none"
       style={{ pointerEvents: "auto" }}
-      animate={{ x: [0, -200, 0] }}
-      transition={{
-        duration: 12,
-        repeat: Number.POSITIVE_INFINITY,
-        ease: "easeInOut",
-        repeatType: "mirror",
-      }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      animate={
+        isAngry
+          ? {
+              rotate: [-15, 15, -15, 15, 0],
+              scale: [1.3, 1.2, 1.3, 1.2, 1.0],
+              x: 0,
+            }
+          : { x: [0, -200, 0] }
+      }
+      transition={
+        isAngry
+          ? { duration: 0.5, times: [0, 0.25, 0.5, 0.75, 1] }
+          : {
+              duration: 12,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+              repeatType: "mirror",
+            }
+      }
+      onPointerDown={handlePointerDown}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <div className="relative">
         <CreatureTooltip
-          text="🦁 Lead like a lion — own your role!"
-          visible={hovered}
+          text={
+            isAngry
+              ? "🦁 ROAAARRR! You dare touch the King?!"
+              : "🦁 Lead like a lion — own your role!"
+          }
+          visible={tooltipVisible}
+          angry={isAngry}
         />
         <motion.span
           className="text-5xl drop-shadow-xl"
-          animate={{ scale: [1, 1.08, 1], rotate: [0, 5, -5, 0] }}
-          transition={{
-            duration: 2.2,
-            repeat: Number.POSITIVE_INFINITY,
-            ease: "easeInOut",
-          }}
-          whileHover={{ scale: 1.4, rotate: 15 }}
+          style={
+            isAngry
+              ? { filter: "drop-shadow(0 0 12px rgba(220,38,38,0.8))" }
+              : undefined
+          }
+          animate={
+            isAngry ? undefined : { scale: [1, 1.08, 1], rotate: [0, 5, -5, 0] }
+          }
+          transition={
+            isAngry
+              ? undefined
+              : {
+                  duration: 2.2,
+                  repeat: Number.POSITIVE_INFINITY,
+                  ease: "easeInOut",
+                }
+          }
         >
-          🦁
+          {isAngry ? "😾" : "🦁"}
         </motion.span>
-        <div className="text-[10px] font-bold text-center mt-0.5 text-yellow-700 bg-white/80 rounded px-1">
-          King Lion
+        <div
+          className={`text-[10px] font-bold text-center mt-0.5 bg-white/80 rounded px-1 ${isAngry ? "text-red-700" : "text-yellow-700"}`}
+        >
+          {isAngry ? "ROAR!" : "King Lion"}
         </div>
       </div>
     </motion.div>
   );
 }
 
-// Mighty Gorilla — beats chest periodically at the left side
+// Mighty Gorilla — beats chest, becomes angry on touch
 function MightyGorilla({ show }: { show: boolean }) {
-  const [hovered, setHovered] = useState(false);
+  const {
+    isAngry,
+    tooltipVisible,
+    handlePointerDown,
+    handleMouseEnter,
+    handleMouseLeave,
+  } = useAngryCreature();
   if (!show) return null;
   return (
     <motion.div
-      className="absolute bottom-4 left-4 z-20 flex flex-col items-center cursor-pointer select-none hidden md:flex"
+      drag
+      dragElastic={0.2}
+      dragConstraints={{ left: -300, right: 300, top: -200, bottom: 200 }}
+      className="absolute bottom-4 left-4 z-20 flex flex-col items-center cursor-grab active:cursor-grabbing select-none hidden md:flex touch-none"
       style={{ pointerEvents: "auto" }}
-      animate={{ y: [0, -12, 0, -8, 0] }}
-      transition={{
-        duration: 4,
-        repeat: Number.POSITIVE_INFINITY,
-        ease: "easeInOut",
-      }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      animate={
+        isAngry
+          ? {
+              rotate: [-15, 15, -15, 15, 0],
+              scale: [1.3, 1.2, 1.3, 1.2, 1.0],
+              y: 0,
+            }
+          : { y: [0, -12, 0, -8, 0] }
+      }
+      transition={
+        isAngry
+          ? { duration: 0.5, times: [0, 0.25, 0.5, 0.75, 1] }
+          : { duration: 4, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }
+      }
+      onPointerDown={handlePointerDown}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <div className="relative">
         <CreatureTooltip
-          text="🦍 Strength is in the details — check every field!"
-          visible={hovered}
+          text={
+            isAngry
+              ? "🦍 AARRGH! Don't poke the gorilla!"
+              : "🦍 Strength is in the details — check every field!"
+          }
+          visible={tooltipVisible}
+          angry={isAngry}
         />
         <motion.span
           className="text-5xl drop-shadow-xl"
-          animate={{ scale: [1, 1.15, 1, 1.1, 1] }}
-          transition={{
-            duration: 2.8,
-            repeat: Number.POSITIVE_INFINITY,
-            ease: "easeInOut",
-          }}
-          whileHover={{ scale: 1.4, rotate: -10 }}
+          style={
+            isAngry
+              ? { filter: "drop-shadow(0 0 12px rgba(220,38,38,0.8))" }
+              : undefined
+          }
+          animate={isAngry ? undefined : { scale: [1, 1.15, 1, 1.1, 1] }}
+          transition={
+            isAngry
+              ? undefined
+              : {
+                  duration: 2.8,
+                  repeat: Number.POSITIVE_INFINITY,
+                  ease: "easeInOut",
+                }
+          }
         >
-          🦍
+          {isAngry ? "🤬" : "🦍"}
         </motion.span>
-        <div className="text-[10px] font-bold text-center mt-0.5 text-gray-800 bg-white/80 rounded px-1">
+        <div
+          className={`text-[10px] font-bold text-center mt-0.5 bg-white/80 rounded px-1 ${isAngry ? "text-red-700" : "text-gray-800"}`}
+        >
           Chief Gorilla
         </div>
       </div>
@@ -1818,42 +2148,80 @@ function MightyGorilla({ show }: { show: boolean }) {
   );
 }
 
-// Tall Giraffe — sways gracefully at the top
+// Tall Giraffe — sways gracefully, becomes angry on touch
 function TallGiraffe({ show }: { show: boolean }) {
-  const [hovered, setHovered] = useState(false);
+  const {
+    isAngry,
+    tooltipVisible,
+    handlePointerDown,
+    handleMouseEnter,
+    handleMouseLeave,
+  } = useAngryCreature();
   if (!show) return null;
   return (
     <motion.div
-      className="absolute top-1 left-1/2 z-20 flex flex-col items-center cursor-pointer select-none hidden md:flex"
+      drag
+      dragElastic={0.2}
+      dragConstraints={{ left: -300, right: 300, top: -200, bottom: 200 }}
+      className="absolute top-1 left-1/2 z-20 flex flex-col items-center cursor-grab active:cursor-grabbing select-none hidden md:flex touch-none"
       style={{ pointerEvents: "auto", marginLeft: 80 }}
-      animate={{ x: [0, 60, 0], y: [0, -4, 0] }}
-      transition={{
-        duration: 9,
-        repeat: Number.POSITIVE_INFINITY,
-        ease: "easeInOut",
-        repeatType: "mirror",
-      }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      animate={
+        isAngry
+          ? {
+              rotate: [-15, 15, -15, 15, 0],
+              scale: [1.3, 1.2, 1.3, 1.2, 1.0],
+              x: 0,
+              y: 0,
+            }
+          : { x: [0, 60, 0], y: [0, -4, 0] }
+      }
+      transition={
+        isAngry
+          ? { duration: 0.5, times: [0, 0.25, 0.5, 0.75, 1] }
+          : {
+              duration: 9,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+              repeatType: "mirror",
+            }
+      }
+      onPointerDown={handlePointerDown}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <div className="relative">
         <CreatureTooltip
-          text="🦒 Keep your head high — spot issues early!"
-          visible={hovered}
+          text={
+            isAngry
+              ? "🦒 I'll neck-slap you! That hurt!"
+              : "🦒 Keep your head high — spot issues early!"
+          }
+          visible={tooltipVisible}
+          angry={isAngry}
         />
         <motion.span
           className="text-5xl drop-shadow-xl"
-          animate={{ rotate: [0, 4, -4, 0] }}
-          transition={{
-            duration: 5,
-            repeat: Number.POSITIVE_INFINITY,
-            ease: "easeInOut",
-          }}
-          whileHover={{ scale: 1.35, rotate: 10 }}
+          style={
+            isAngry
+              ? { filter: "drop-shadow(0 0 12px rgba(220,38,38,0.8))" }
+              : undefined
+          }
+          animate={isAngry ? undefined : { rotate: [0, 4, -4, 0] }}
+          transition={
+            isAngry
+              ? undefined
+              : {
+                  duration: 5,
+                  repeat: Number.POSITIVE_INFINITY,
+                  ease: "easeInOut",
+                }
+          }
         >
-          🦒
+          {isAngry ? "😤" : "🦒"}
         </motion.span>
-        <div className="text-[10px] font-bold text-center mt-0.5 text-orange-700 bg-white/80 rounded px-1">
+        <div
+          className={`text-[10px] font-bold text-center mt-0.5 bg-white/80 rounded px-1 ${isAngry ? "text-red-700" : "text-orange-700"}`}
+        >
           Giraffe Scout
         </div>
       </div>

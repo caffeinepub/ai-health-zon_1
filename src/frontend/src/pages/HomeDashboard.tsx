@@ -35,6 +35,288 @@ import {
 import { motion, useInView } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
+// ─── Floating Particle Shapes ────────────────────────────────────────────────
+const heroParticles = [
+  {
+    x: "8%",
+    y: "12%",
+    size: 18,
+    shape: "hex",
+    delay: 0,
+    dur: 12,
+    opacity: 0.07,
+  },
+  {
+    x: "92%",
+    y: "8%",
+    size: 12,
+    shape: "dot",
+    delay: 1.5,
+    dur: 9,
+    opacity: 0.1,
+  },
+  {
+    x: "18%",
+    y: "78%",
+    size: 22,
+    shape: "hex",
+    delay: 2,
+    dur: 14,
+    opacity: 0.06,
+  },
+  {
+    x: "85%",
+    y: "65%",
+    size: 16,
+    shape: "dot",
+    delay: 0.5,
+    dur: 10,
+    opacity: 0.09,
+  },
+  {
+    x: "45%",
+    y: "88%",
+    size: 10,
+    shape: "dot",
+    delay: 3,
+    dur: 8,
+    opacity: 0.08,
+  },
+  {
+    x: "72%",
+    y: "22%",
+    size: 20,
+    shape: "hex",
+    delay: 1,
+    dur: 16,
+    opacity: 0.06,
+  },
+  {
+    x: "30%",
+    y: "15%",
+    size: 8,
+    shape: "dot",
+    delay: 2.5,
+    dur: 11,
+    opacity: 0.1,
+  },
+  {
+    x: "58%",
+    y: "40%",
+    size: 14,
+    shape: "hex",
+    delay: 4,
+    dur: 13,
+    opacity: 0.05,
+  },
+  {
+    x: "5%",
+    y: "50%",
+    size: 10,
+    shape: "dot",
+    delay: 0.8,
+    dur: 10,
+    opacity: 0.08,
+  },
+  {
+    x: "96%",
+    y: "42%",
+    size: 18,
+    shape: "hex",
+    delay: 3.5,
+    dur: 15,
+    opacity: 0.06,
+  },
+  {
+    x: "22%",
+    y: "38%",
+    size: 6,
+    shape: "dot",
+    delay: 1.2,
+    dur: 9,
+    opacity: 0.12,
+  },
+  {
+    x: "65%",
+    y: "80%",
+    size: 16,
+    shape: "hex",
+    delay: 2.8,
+    dur: 17,
+    opacity: 0.05,
+  },
+  {
+    x: "40%",
+    y: "5%",
+    size: 12,
+    shape: "dot",
+    delay: 0.3,
+    dur: 12,
+    opacity: 0.09,
+  },
+  {
+    x: "78%",
+    y: "90%",
+    size: 8,
+    shape: "dot",
+    delay: 4.5,
+    dur: 8,
+    opacity: 0.08,
+  },
+  {
+    x: "12%",
+    y: "92%",
+    size: 20,
+    shape: "hex",
+    delay: 1.8,
+    dur: 14,
+    opacity: 0.06,
+  },
+  {
+    x: "50%",
+    y: "58%",
+    size: 10,
+    shape: "dot",
+    delay: 3.2,
+    dur: 10,
+    opacity: 0.07,
+  },
+  {
+    x: "88%",
+    y: "55%",
+    size: 14,
+    shape: "hex",
+    delay: 0.6,
+    dur: 18,
+    opacity: 0.05,
+  },
+  {
+    x: "35%",
+    y: "60%",
+    size: 8,
+    shape: "dot",
+    delay: 2.2,
+    dur: 11,
+    opacity: 0.1,
+  },
+  {
+    x: "62%",
+    y: "10%",
+    size: 18,
+    shape: "hex",
+    delay: 4.2,
+    dur: 13,
+    opacity: 0.06,
+  },
+  {
+    x: "2%",
+    y: "25%",
+    size: 12,
+    shape: "dot",
+    delay: 1.6,
+    dur: 9,
+    opacity: 0.09,
+  },
+];
+
+const floatAnims = ["float1", "float2", "float3", "float4", "float5"];
+
+function HexShape({ size, opacity }: { size: number; opacity: number }) {
+  const s = size;
+  const h = (s * Math.sqrt(3)) / 2;
+  const pts = [
+    `${s / 2},0`,
+    `${s},${h / 2}`,
+    `${s},${(3 * h) / 2}`,
+    `${s / 2},${2 * h}`,
+    `0,${(3 * h) / 2}`,
+    `0,${h / 2}`,
+  ].join(" ");
+  return (
+    <svg
+      width={s}
+      height={2 * h}
+      viewBox={`0 0 ${s} ${2 * h}`}
+      style={{ opacity }}
+      aria-hidden="true"
+    >
+      <polygon
+        points={pts}
+        fill="none"
+        stroke="oklch(0.65 0.18 200)"
+        strokeWidth="1.5"
+      />
+    </svg>
+  );
+}
+
+function ParticleField() {
+  return (
+    <div
+      className="absolute inset-0 overflow-hidden pointer-events-none"
+      aria-hidden="true"
+    >
+      {heroParticles.map((p, i) => (
+        <div
+          key={`particle-${p.x}-${p.y}`}
+          className="absolute"
+          style={{
+            left: p.x,
+            top: p.y,
+            animationName: floatAnims[i % floatAnims.length],
+            animationDuration: `${p.dur}s`,
+            animationDelay: `${p.delay}s`,
+            animationTimingFunction: "ease-in-out",
+            animationIterationCount: "infinite",
+          }}
+        >
+          {p.shape === "hex" ? (
+            <HexShape size={p.size} opacity={p.opacity} />
+          ) : (
+            <div
+              style={{
+                width: p.size,
+                height: p.size,
+                borderRadius: "50%",
+                background: "oklch(0.65 0.18 200)",
+                opacity: p.opacity,
+              }}
+            />
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ─── Animated KPI Counter ─────────────────────────────────────────────────────
+function AnimatedCounter({
+  target,
+  duration = 1600,
+}: {
+  target: number;
+  duration?: number;
+}) {
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true });
+
+  useEffect(() => {
+    if (!inView) return;
+    let startTime: number | null = null;
+    const step = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      const eased = 1 - (1 - progress) ** 4;
+      setCount(Math.floor(eased * target));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, [inView, target, duration]);
+
+  return <div ref={ref}>{count.toLocaleString()}</div>;
+}
+
 // ─── Clean Claim Gauge SVG ────────────────────────────────────────────────────
 function CleanClaimGauge({ pct }: { pct: number }) {
   const r = 52;
@@ -46,7 +328,7 @@ function CleanClaimGauge({ pct }: { pct: number }) {
     <svg
       viewBox="0 0 140 80"
       className="w-full max-w-[180px]"
-      aria-label="Clean claim gauge"
+      aria-label={`Clean claim gauge ${pct}%`}
     >
       <title>Clean Claim Gauge {pct}%</title>
       <path
@@ -88,66 +370,70 @@ function CleanClaimGauge({ pct }: { pct: number }) {
   );
 }
 
-// ─── Section Heading ──────────────────────────────────────────────────────────
+// ─── Section Heading with accent underline ────────────────────────────────────
 function SectionHeading({
   badge,
   title,
+  accentWord,
   subtitle,
   center,
+  light,
 }: {
   badge?: string;
   title: string;
+  accentWord?: string;
   subtitle?: string;
   center?: boolean;
+  light?: boolean;
 }) {
+  const titleParts = accentWord ? title.split(accentWord) : [title];
+
   return (
     <div className={`mb-10 ${center ? "text-center" : ""}`}>
       {badge && (
-        <span className="inline-block px-3 py-1 bg-health-blue-light text-health-blue text-xs font-semibold rounded-full mb-3 uppercase tracking-wider border border-health-blue/20">
+        <span
+          className="inline-block px-3 py-1 text-xs font-semibold rounded-full mb-3 uppercase tracking-wider border"
+          style={{
+            background: "oklch(0.92 0.05 188)",
+            color: "oklch(0.30 0.14 188)",
+            borderColor: "oklch(0.78 0.10 188)",
+          }}
+        >
           {badge}
         </span>
       )}
-      <h2 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground leading-tight">
-        {title}
+      <h2
+        className={`font-heading text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight ${light ? "text-white" : "text-foreground"}`}
+      >
+        {accentWord ? (
+          <>
+            {titleParts[0]}
+            <span
+              className="relative inline-block"
+              style={{ color: "oklch(0.55 0.18 200)" }}
+            >
+              {accentWord}
+              <span
+                className="absolute -bottom-1 left-0 right-0 h-1 rounded-full"
+                style={{ background: "oklch(0.55 0.18 200)" }}
+                aria-hidden="true"
+              />
+            </span>
+            {titleParts[1]}
+          </>
+        ) : (
+          title
+        )}
       </h2>
       {subtitle && (
         <p
-          className={`text-muted-foreground mt-3 text-base leading-relaxed ${center ? "max-w-2xl mx-auto" : "max-w-2xl"}`}
+          className={`mt-3 text-base leading-relaxed ${center ? "max-w-2xl mx-auto" : "max-w-2xl"} ${light ? "text-white/65" : "text-muted-foreground"}`}
         >
           {subtitle}
         </p>
       )}
     </div>
   );
-}
-
-// ─── Animated KPI Counter ─────────────────────────────────────────────────────
-function AnimatedCounter({
-  target,
-  duration = 1500,
-}: {
-  target: number;
-  duration?: number;
-}) {
-  const [count, setCount] = useState(0);
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true });
-
-  useEffect(() => {
-    if (!inView) return;
-    let startTime: number | null = null;
-    const step = (timestamp: number) => {
-      if (!startTime) startTime = timestamp;
-      const progress = Math.min((timestamp - startTime) / duration, 1);
-      // easeOutQuart
-      const eased = 1 - (1 - progress) ** 4;
-      setCount(Math.floor(eased * target));
-      if (progress < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  }, [inView, target, duration]);
-
-  return <div ref={ref}>{count.toLocaleString()}</div>;
 }
 
 // ─── Ecosystem Diagram ────────────────────────────────────────────────────────
@@ -319,10 +605,8 @@ function EcosystemDiagram() {
           ))}
         </defs>
 
-        {/* Background glow at center */}
         <circle cx={cx} cy={cy} r="90" fill="url(#centerGlow)" />
 
-        {/* Orbit ring */}
         <circle
           cx={cx}
           cy={cy}
@@ -343,7 +627,6 @@ function EcosystemDiagram() {
           />
         </circle>
 
-        {/* Connecting lines */}
         {ecosystemNodes.map((node) => {
           const rad = (node.angle - 90) * (Math.PI / 180);
           const nx = cx + radius * Math.cos(rad);
@@ -375,7 +658,6 @@ function EcosystemDiagram() {
           );
         })}
 
-        {/* Satellite nodes */}
         {ecosystemNodes.map((node) => {
           const rad = (node.angle - 90) * (Math.PI / 180);
           const nx = cx + radius * Math.cos(rad);
@@ -428,7 +710,6 @@ function EcosystemDiagram() {
           );
         })}
 
-        {/* Center node */}
         <circle
           cx={cx}
           cy={cy}
@@ -476,7 +757,6 @@ function EcosystemDiagram() {
           Ecosystem Hub
         </text>
 
-        {/* Tooltip box */}
         {hovered &&
           (() => {
             const node = ecosystemNodes.find((n) => n.id === hovered);
@@ -522,90 +802,160 @@ function EcosystemDiagram() {
   );
 }
 
+// ─── Mock Dashboard Card (reusable) ──────────────────────────────────────────
+function MockDashboardCard({ className = "" }: { className?: string }) {
+  return (
+    <div
+      className={`rounded-2xl border border-white/10 overflow-hidden shadow-2xl shadow-black/40 ${className}`}
+      style={{
+        background:
+          "linear-gradient(145deg, oklch(0.18 0.06 188) 0%, oklch(0.14 0.04 200) 100%)",
+      }}
+    >
+      <div
+        className="px-5 py-3 border-b border-white/10 flex items-center gap-2"
+        style={{ background: "oklch(0.12 0.05 188)" }}
+      >
+        <div className="w-3 h-3 rounded-full bg-red-500/80" />
+        <div className="w-3 h-3 rounded-full bg-amber-500/80" />
+        <div className="w-3 h-3 rounded-full bg-green-500/80" />
+        <span className="ml-3 text-white/40 text-xs font-mono">
+          AI Health Zon — Command Centre
+        </span>
+      </div>
+      <div className="p-5">
+        <div className="grid grid-cols-4 gap-3 mb-5">
+          {[
+            { label: "Total Claims", value: "1,234" },
+            { label: "Clean Claim Rate", value: "95%" },
+            { label: "Revenue Recovered", value: "₹2.4Cr" },
+            { label: "Approvals Today", value: "187" },
+          ].map((m) => (
+            <div
+              key={m.label}
+              className="rounded-lg p-3 border border-white/[0.08]"
+              style={{ background: "oklch(0.16 0.05 188)" }}
+            >
+              <div className="text-white/50 text-xs mb-1 truncate">
+                {m.label}
+              </div>
+              <div
+                className="font-heading font-bold text-base"
+                style={{ color: "oklch(0.72 0.18 200)" }}
+              >
+                {m.value}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div
+          className="rounded-xl p-4 border border-white/[0.08] mb-4"
+          style={{ background: "oklch(0.16 0.05 188)" }}
+        >
+          <div className="text-white/60 text-xs mb-3 font-medium">
+            Claim Status Distribution
+          </div>
+          <div className="space-y-2.5">
+            {[
+              { label: "Approved", pct: 80, color: "oklch(0.52 0.16 145)" },
+              { label: "Pending", pct: 14, color: "oklch(0.68 0.17 60)" },
+              { label: "Denied", pct: 6, color: "oklch(0.55 0.2 25)" },
+            ].map((b) => (
+              <div key={b.label}>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="text-white/50">{b.label}</span>
+                  <span className="text-white/70 font-semibold">{b.pct}%</span>
+                </div>
+                <div
+                  className="h-1.5 rounded-full overflow-hidden"
+                  style={{ background: "oklch(0.22 0.06 188)" }}
+                >
+                  <div
+                    className="h-full rounded-full"
+                    style={{ width: `${b.pct}%`, background: b.color }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="flex gap-2 flex-wrap">
+          {[
+            { dept: "Cardiology", risk: "Low", dot: "bg-green-500" },
+            { dept: "Orthopedics", risk: "Low", dot: "bg-green-500" },
+            { dept: "Emergency", risk: "Med", dot: "bg-amber-400" },
+            { dept: "Gen. Med", risk: "High", dot: "bg-red-500" },
+          ].map((d) => (
+            <div
+              key={d.dept}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-white/10 text-xs"
+              style={{ background: "oklch(0.16 0.05 188)" }}
+            >
+              <div className={`w-1.5 h-1.5 rounded-full ${d.dot}`} />
+              <span className="text-white/60">{d.dept}</span>
+              <span className="text-white/40">{d.risk}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Data ─────────────────────────────────────────────────────────────────────
 const painPoints = [
   {
+    num: "01",
     icon: XCircle,
     title: "Claim Denials",
     impact: "Lost Revenue",
     description:
       "30–40% of initial claims are denied, costing hospitals millions in lost reimbursements annually.",
-    color: "text-red-600",
-    bg: "bg-red-50",
-    border: "border-red-100",
-    impactColor: "text-red-600 bg-red-50 border-red-200",
+    accentColor: "oklch(0.55 0.2 25)",
+    borderColor: "border-l-red-400",
   },
   {
+    num: "02",
     icon: FileX,
     title: "Manual Billing",
     impact: "Slow Processing",
     description:
       "Manual processes introduce errors and delays, stretching payment cycles from days to months.",
-    color: "text-orange-600",
-    bg: "bg-orange-50",
-    border: "border-orange-100",
-    impactColor: "text-orange-600 bg-orange-50 border-orange-200",
+    accentColor: "oklch(0.65 0.18 55)",
+    borderColor: "border-l-orange-400",
   },
   {
+    num: "03",
     icon: Database,
     title: "Data Silos",
     impact: "Poor Decision Making",
     description:
       "Disconnected systems prevent real-time insights, leaving executives flying blind on revenue.",
-    color: "text-amber-600",
-    bg: "bg-amber-50",
-    border: "border-amber-100",
-    impactColor: "text-amber-600 bg-amber-50 border-amber-200",
+    accentColor: "oklch(0.68 0.17 60)",
+    borderColor: "border-l-amber-400",
   },
   {
+    num: "04",
     icon: Clock,
     title: "Delayed Approvals",
     impact: "Cash Flow Issues",
     description:
       "Insurance pre-auth delays extend patient stays and create downstream billing complications.",
-    color: "text-purple-600",
-    bg: "bg-purple-50",
-    border: "border-purple-100",
-    impactColor: "text-purple-600 bg-purple-50 border-purple-200",
-  },
-];
-
-const pillars = [
-  {
-    emoji: "🏥",
-    title: "Revenue Cycle Intelligence",
-    description:
-      "Automated claims submission, billing optimization, and intelligent denial management — all in one workflow.",
-    topBorder: "border-t-health-blue",
-    textColor: "text-health-blue",
-  },
-  {
-    emoji: "🧠",
-    title: "AI Command Centre",
-    description:
-      "Real-time monitoring of hospital financial performance with risk alerts and executive-level insights.",
-    topBorder: "border-t-sky-500",
-    textColor: "text-sky-600",
-  },
-  {
-    emoji: "🤝",
-    title: "Patient Support System",
-    description:
-      "Insurance guidance, billing assistance, and engagement tools that improve patient financial experience.",
-    topBorder: "border-t-green-500",
-    textColor: "text-green-600",
+    accentColor: "oklch(0.45 0.18 295)",
+    borderColor: "border-l-purple-400",
   },
 ];
 
 const coreModules = [
   {
+    num: "01",
     icon: Activity,
     title: "Hospital Revenue Management",
     description:
       "End-to-end revenue cycle automation from registration to payment reconciliation.",
     href: "/hospitals",
-    color: "text-health-blue",
-    bg: "bg-health-blue-light",
+    borderColor: "border-l-sky-500",
+    accentColor: "oklch(0.55 0.18 200)",
     features: [
       "Claim submission automation",
       "Insurance eligibility verification",
@@ -615,13 +965,14 @@ const coreModules = [
     ],
   },
   {
+    num: "02",
     icon: Monitor,
     title: "AI Command Centre",
     description:
       "Live operational dashboard giving complete visibility into claims and revenue.",
     href: "/command-centre",
-    color: "text-sky-600",
-    bg: "bg-sky-50",
+    borderColor: "border-l-indigo-500",
+    accentColor: "oklch(0.50 0.20 265)",
     features: [
       "Real-time operational dashboard",
       "Claims tracking & analytics",
@@ -631,13 +982,14 @@ const coreModules = [
     ],
   },
   {
+    num: "03",
     icon: Heart,
     title: "Patient Financial Support",
     description:
       "AI-powered assistance for patients navigating insurance and billing.",
     href: "/patient-support",
-    color: "text-rose-600",
-    bg: "bg-rose-50",
+    borderColor: "border-l-rose-500",
+    accentColor: "oklch(0.55 0.22 15)",
     features: [
       "AI chatbot for billing queries",
       "Flexible payment plans",
@@ -647,13 +999,14 @@ const coreModules = [
     ],
   },
   {
+    num: "04",
     icon: BarChart3,
     title: "Analytics & Insights",
     description:
       "Predictive analytics and financial forecasting for smarter hospital decisions.",
     href: "/insights",
-    color: "text-purple-600",
-    bg: "bg-purple-50",
+    borderColor: "border-l-emerald-500",
+    accentColor: "oklch(0.50 0.18 155)",
     features: [
       "Claim approval rate analytics",
       "Revenue trends & forecasting",
@@ -669,32 +1022,32 @@ const kpiData = [
     label: "Total Claims",
     target: 1234,
     icon: FileCheck,
-    color: "text-health-blue",
-    bg: "bg-health-blue-light",
-    border: "border-l-4 border-l-health-blue",
+    color: "oklch(0.38 0.14 188)",
+    iconBg: "bg-sky-50",
+    border: "border-l-4 border-l-sky-500",
   },
   {
     label: "Approved",
     target: 987,
     icon: CheckCircle2,
-    color: "text-green-600",
-    bg: "bg-green-50",
+    color: "oklch(0.50 0.16 145)",
+    iconBg: "bg-green-50",
     border: "border-l-4 border-l-green-500",
   },
   {
     label: "Pending",
     target: 167,
     icon: Clock,
-    color: "text-amber-600",
-    bg: "bg-amber-50",
+    color: "oklch(0.60 0.17 60)",
+    iconBg: "bg-amber-50",
     border: "border-l-4 border-l-amber-500",
   },
   {
     label: "Denied",
     target: 80,
     icon: XCircle,
-    color: "text-red-600",
-    bg: "bg-red-50",
+    color: "oklch(0.55 0.20 25)",
+    iconBg: "bg-red-50",
     border: "border-l-4 border-l-red-500",
   },
 ];
@@ -756,43 +1109,47 @@ const beneficiaries = [
     title: "Hospitals",
     description:
       "Improve revenue cycle efficiency, reduce denials, and achieve 95%+ clean claim rates with our integrated RCM platform.",
-    color: "text-health-blue",
-    bg: "bg-health-blue-light",
+    gradient: "from-sky-500/10 to-sky-500/0",
+    accent: "text-sky-600",
+    iconBg: "bg-sky-50",
   },
   {
     icon: Activity,
     title: "Clinics",
     description:
       "Automate billing workflows, eliminate paperwork, and accelerate reimbursements for multi-specialty clinics.",
-    color: "text-sky-600",
-    bg: "bg-sky-50",
+    gradient: "from-indigo-500/10 to-indigo-500/0",
+    accent: "text-indigo-600",
+    iconBg: "bg-indigo-50",
   },
   {
     icon: HeartHandshake,
     title: "Insurance Partners",
     description:
       "Streamline claim processing with structured data, reducing adjudication time and administrative overhead.",
-    color: "text-green-600",
-    bg: "bg-green-50",
+    gradient: "from-emerald-500/10 to-emerald-500/0",
+    accent: "text-emerald-600",
+    iconBg: "bg-emerald-50",
   },
   {
     icon: Brain,
     title: "Healthcare Administrators",
     description:
       "Gain complete operational visibility with executive dashboards and AI-powered risk intelligence.",
-    color: "text-purple-600",
-    bg: "bg-purple-50",
+    gradient: "from-purple-500/10 to-purple-500/0",
+    accent: "text-purple-600",
+    iconBg: "bg-purple-50",
   },
 ];
 
-const securityBadges = [
+const securityCards = [
   {
     icon: Shield,
     title: "Data Security",
     description:
       "Enterprise-grade data protection with multi-layer access controls and audit trails.",
-    color: "text-health-blue",
-    bg: "bg-health-blue-light",
+    color: "text-sky-600",
+    bg: "bg-sky-50",
   },
   {
     icon: CheckCircle2,
@@ -807,18 +1164,24 @@ const securityBadges = [
     title: "Cloud Infrastructure",
     description:
       "Resilient cloud infrastructure with 99.9% uptime SLA and disaster recovery.",
-    color: "text-sky-600",
-    bg: "bg-sky-50",
+    color: "text-indigo-600",
+    bg: "bg-indigo-50",
   },
   {
     icon: Lock,
-    title: "Encryption",
+    title: "AES-256 Encryption",
     description:
       "AES-256 encryption at rest and TLS 1.3 in transit for all healthcare data.",
     color: "text-purple-600",
     bg: "bg-purple-50",
   },
 ];
+
+const marqueeText =
+  "✦ Faster Claims  ·  Better Revenue  ·  500+ Hospitals  ·  95% Clean Claims  ·  18 Day Settlement  ·  ABDM Compliant  ·  NABH Ready  ·  Real-Time Insights  ·  Zero Revenue Leakage  ·  ";
+
+const complianceTicker =
+  "✦ HIPAA Ready  ·  NABH Aligned  ·  ABDM / FHIR R4  ·  DPDP Act 2023  ·  ISO 27001  ·  TLS 1.3 Encrypted  ·  AES-256 Encryption  ·  ";
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export function HomeDashboard() {
@@ -827,120 +1190,117 @@ export function HomeDashboard() {
   return (
     <Layout section="home">
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* 1. HERO SECTION                                           */}
+      {/* 1. HERO — Full dark, GenLab-style                         */}
       {/* ══════════════════════════════════════════════════════════ */}
       <section
-        className="relative min-h-[90vh] flex flex-col justify-center px-4 md:px-8 lg:px-16 pt-24 pb-16 overflow-hidden"
+        className="relative min-h-screen flex flex-col justify-center px-4 md:px-8 lg:px-16 pt-24 pb-0 overflow-hidden"
         style={{
           background:
-            "linear-gradient(135deg, oklch(0.12 0.06 188) 0%, oklch(0.18 0.08 200) 40%, oklch(0.14 0.05 210) 100%)",
+            "linear-gradient(135deg, oklch(0.10 0.06 188) 0%, oklch(0.15 0.07 195) 50%, oklch(0.12 0.05 205) 100%)",
+          clipPath: "polygon(0 0, 100% 0, 100% 94%, 0 100%)",
         }}
       >
-        {/* Background grid */}
+        {/* Subtle dot grid */}
         <div
-          className="absolute inset-0 opacity-5"
+          className="absolute inset-0 opacity-[0.04]"
           style={{
             backgroundImage:
-              "linear-gradient(oklch(0.9 0.05 188) 1px, transparent 1px), linear-gradient(90deg, oklch(0.9 0.05 188) 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
+              "radial-gradient(circle, oklch(0.9 0.05 188) 1px, transparent 1px)",
+            backgroundSize: "32px 32px",
           }}
+          aria-hidden="true"
         />
 
-        {/* Hero command centre image overlay (right side, lg+) */}
-        <div className="absolute inset-0 hidden lg:block overflow-hidden">
-          <img
-            src="/assets/generated/hero-command-centre.dim_1200x600.jpg"
-            alt=""
-            aria-hidden="true"
-            className="absolute right-0 top-0 h-full w-1/2 object-cover opacity-10"
-            style={{
-              maskImage: "linear-gradient(to right, transparent 0%, black 40%)",
-            }}
-          />
-        </div>
-
-        {/* Animated glow blobs */}
+        {/* Animated gradient glow blobs */}
         <motion.div
-          className="absolute top-1/4 right-1/4 w-96 h-96 rounded-full blur-3xl pointer-events-none"
+          className="absolute top-1/4 right-1/3 w-[500px] h-[500px] rounded-full blur-[120px] pointer-events-none"
           style={{ background: "oklch(0.55 0.16 200)" }}
-          animate={{ scale: [1, 1.15, 1], opacity: [0.08, 0.15, 0.08] }}
+          animate={{ scale: [1, 1.2, 1], opacity: [0.06, 0.14, 0.06] }}
           transition={{
             repeat: Number.POSITIVE_INFINITY,
             duration: 8,
             ease: "easeInOut",
           }}
+          aria-hidden="true"
         />
         <motion.div
-          className="absolute bottom-0 left-0 w-72 h-72 rounded-full blur-3xl pointer-events-none"
-          style={{ background: "oklch(0.52 0.16 145)" }}
-          animate={{ scale: [1, 1.2, 1], opacity: [0.06, 0.12, 0.06] }}
-          transition={{
-            repeat: Number.POSITIVE_INFINITY,
-            duration: 10,
-            ease: "easeInOut",
-            delay: 2,
-          }}
-        />
-        <motion.div
-          className="absolute top-1/2 left-1/3 w-56 h-56 rounded-full blur-3xl pointer-events-none"
-          style={{ background: "oklch(0.60 0.18 220)" }}
-          animate={{ scale: [1, 1.1, 1], opacity: [0.05, 0.1, 0.05] }}
+          className="absolute -bottom-20 -left-20 w-[400px] h-[400px] rounded-full blur-[100px] pointer-events-none"
+          style={{ background: "oklch(0.48 0.16 155)" }}
+          animate={{ scale: [1, 1.3, 1], opacity: [0.05, 0.1, 0.05] }}
           transition={{
             repeat: Number.POSITIVE_INFINITY,
             duration: 12,
             ease: "easeInOut",
-            delay: 4,
+            delay: 3,
           }}
-        />
-        <motion.div
-          className="absolute bottom-1/4 right-1/3 w-40 h-40 rounded-full blur-2xl pointer-events-none"
-          style={{ background: "oklch(0.65 0.20 170)" }}
-          animate={{ scale: [1, 1.25, 1], opacity: [0.04, 0.09, 0.04] }}
-          transition={{
-            repeat: Number.POSITIVE_INFINITY,
-            duration: 7,
-            ease: "easeInOut",
-            delay: 1,
-          }}
+          aria-hidden="true"
         />
 
-        <div className="max-w-7xl mx-auto w-full relative z-10">
+        {/* Floating particles */}
+        <ParticleField />
+
+        <div className="max-w-7xl mx-auto w-full relative z-10 pb-24">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Left: Text content */}
+            {/* Left: text */}
             <div>
               <motion.div
-                initial={{ opacity: 0, y: -12 }}
+                initial={{ opacity: 0, y: -14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                <span className="inline-flex items-center gap-2 px-4 py-1.5 border border-white/20 text-white/80 text-xs font-semibold rounded-full mb-6 backdrop-blur-sm bg-white/5">
-                  <Zap className="w-3.5 h-3.5 text-sky-400" />
-                  AI-Powered Healthcare Revenue Platform
+                <span
+                  className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold mb-6 border"
+                  style={{
+                    background: "oklch(0.20 0.06 188)",
+                    borderColor: "oklch(0.35 0.10 188)",
+                    color: "oklch(0.72 0.18 200)",
+                  }}
+                >
+                  <span
+                    className="w-1.5 h-1.5 rounded-full"
+                    style={{ background: "oklch(0.65 0.18 200)" }}
+                  />
+                  AI-Powered
+                  <span className="text-white/40">·</span>
+                  Healthcare
+                  <span className="text-white/40">·</span>
+                  Revenue Intelligence
                 </span>
               </motion.div>
 
               <motion.h1
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-                className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight"
+                transition={{ duration: 0.7, delay: 0.1 }}
+                className="font-heading text-5xl sm:text-6xl lg:text-7xl font-black text-white mb-6 leading-[1.05]"
               >
                 AI Health Zon
                 <br />
                 <span
-                  style={{ color: "oklch(0.72 0.18 200)" }}
-                  className="block mt-1"
+                  className="relative inline-block"
+                  style={{ color: "oklch(0.65 0.18 200)" }}
                 >
                   Revenue Intelligence
+                  <motion.span
+                    className="absolute -bottom-2 left-0 h-1 rounded-full"
+                    style={{ background: "oklch(0.65 0.18 200)" }}
+                    initial={{ width: 0 }}
+                    animate={{ width: "100%" }}
+                    transition={{ duration: 0.8, delay: 0.9 }}
+                    aria-hidden="true"
+                  />
                 </span>
-                <span className="text-white">Platform</span>
+                <br />
+                <span className="text-white text-4xl sm:text-5xl lg:text-6xl font-bold">
+                  Platform
+                </span>
               </motion.h1>
 
               <motion.p
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="text-white/70 text-lg mb-4 leading-relaxed max-w-xl"
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="text-white/65 text-lg mb-5 leading-relaxed max-w-xl"
               >
                 Optimize hospital revenue cycle, reduce claim denials, and
                 manage healthcare operations through an intelligent command
@@ -950,8 +1310,8 @@ export function HomeDashboard() {
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                className="space-y-1.5 mb-8"
+                transition={{ duration: 0.5, delay: 0.45 }}
+                className="space-y-2 mb-8"
               >
                 {[
                   "We focus on what matters most to hospitals",
@@ -960,16 +1320,15 @@ export function HomeDashboard() {
                 ].map((tagline, i) => (
                   <div
                     key={tagline}
-                    className="flex items-center gap-2 text-sm"
+                    className="flex items-center gap-2.5 text-sm"
                   >
                     <div
                       className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                      style={{ background: "oklch(0.72 0.18 200)" }}
+                      style={{ background: "oklch(0.65 0.18 200)" }}
                     />
                     <span
-                      className={
-                        i === 1 ? "text-sky-300 font-semibold" : "text-white/60"
-                      }
+                      className={i === 1 ? "font-semibold" : "text-white/60"}
+                      style={i === 1 ? { color: "oklch(0.72 0.18 200)" } : {}}
                     >
                       {tagline}
                     </span>
@@ -980,15 +1339,16 @@ export function HomeDashboard() {
               <motion.div
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
+                transition={{ duration: 0.6, delay: 0.55 }}
                 className="flex flex-col sm:flex-row gap-3"
               >
                 <Button
                   size="lg"
-                  className="text-white font-semibold px-8 shadow-lg shadow-sky-900/40"
+                  className="text-white font-semibold px-8 shadow-xl"
                   style={{
                     background:
-                      "linear-gradient(135deg, oklch(0.38 0.14 188) 0%, oklch(0.55 0.16 200) 100%)",
+                      "linear-gradient(135deg, oklch(0.35 0.16 188) 0%, oklch(0.55 0.18 200) 100%)",
+                    boxShadow: "0 8px 32px oklch(0.35 0.16 188 / 0.4)",
                   }}
                   onClick={() => setIsDemoOpen(true)}
                   data-ocid="hero.primary_button"
@@ -1000,163 +1360,85 @@ export function HomeDashboard() {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="border-white/30 text-white hover:bg-white/10 hover:border-white/50 px-8 backdrop-blur-sm"
+                    className="border-white/25 text-white hover:bg-white/10 hover:border-white/50 px-8"
                   >
                     Explore Platform
                   </Button>
                 </a>
               </motion.div>
+
+              {/* Floating stat badges */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.75 }}
+                className="flex flex-wrap gap-3 mt-8"
+              >
+                {[
+                  "+127% Revenue Recovery",
+                  "95% Clean Claim Rate",
+                  "500+ Hospitals",
+                ].map((stat) => (
+                  <span
+                    key={stat}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border"
+                    style={{
+                      background: "oklch(0.18 0.06 188)",
+                      borderColor: "oklch(0.35 0.10 188)",
+                      color: "oklch(0.72 0.18 200)",
+                    }}
+                  >
+                    <CheckCircle2 className="w-3 h-3" />
+                    {stat}
+                  </span>
+                ))}
+              </motion.div>
             </div>
 
-            {/* Right: Mock dashboard card */}
+            {/* Right: Mock dashboard */}
             <motion.div
-              initial={{ opacity: 0, x: 30 }}
+              initial={{ opacity: 0, x: 40 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
+              transition={{ duration: 0.9, delay: 0.4 }}
               className="hidden lg:block"
             >
-              <div
-                className="rounded-2xl border border-white/10 overflow-hidden shadow-2xl shadow-black/40"
-                style={{
-                  background:
-                    "linear-gradient(145deg, oklch(0.18 0.06 188) 0%, oklch(0.14 0.04 200) 100%)",
-                }}
-              >
-                {/* Mock header bar */}
-                <div
-                  className="px-5 py-3 border-b border-white/10 flex items-center gap-2"
-                  style={{ background: "oklch(0.12 0.05 188)" }}
-                >
-                  <div className="w-3 h-3 rounded-full bg-red-500/80" />
-                  <div className="w-3 h-3 rounded-full bg-amber-500/80" />
-                  <div className="w-3 h-3 rounded-full bg-green-500/80" />
-                  <span className="ml-3 text-white/40 text-xs font-mono">
-                    AI Health Zon — Command Centre
-                  </span>
-                </div>
-
-                {/* Mock dashboard content */}
-                <div className="p-5">
-                  {/* KPI row */}
-                  <div className="grid grid-cols-4 gap-3 mb-5">
-                    {[
-                      { label: "Total Claims", value: "1,234", up: true },
-                      { label: "Clean Claim Rate", value: "95%", up: true },
-                      { label: "Revenue Recovered", value: "₹2.4Cr", up: true },
-                      { label: "Approvals Today", value: "187", up: false },
-                    ].map((m) => (
-                      <div
-                        key={m.label}
-                        className="rounded-lg p-3 border border-white/8"
-                        style={{ background: "oklch(0.16 0.05 188)" }}
-                      >
-                        <div className="text-white/50 text-xs mb-1 truncate">
-                          {m.label}
-                        </div>
-                        <div
-                          className="font-heading font-bold text-base"
-                          style={{ color: "oklch(0.72 0.18 200)" }}
-                        >
-                          {m.value}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Mock chart bars */}
-                  <div
-                    className="rounded-xl p-4 border border-white/8 mb-4"
-                    style={{ background: "oklch(0.16 0.05 188)" }}
-                  >
-                    <div className="text-white/60 text-xs mb-3 font-medium">
-                      Claim Status Distribution
-                    </div>
-                    <div className="space-y-2.5">
-                      {[
-                        {
-                          label: "Approved",
-                          pct: 80,
-                          color: "oklch(0.52 0.16 145)",
-                        },
-                        {
-                          label: "Pending",
-                          pct: 14,
-                          color: "oklch(0.68 0.17 60)",
-                        },
-                        {
-                          label: "Denied",
-                          pct: 6,
-                          color: "oklch(0.55 0.2 25)",
-                        },
-                      ].map((b) => (
-                        <div key={b.label}>
-                          <div className="flex justify-between text-xs mb-1">
-                            <span className="text-white/50">{b.label}</span>
-                            <span className="text-white/70 font-semibold">
-                              {b.pct}%
-                            </span>
-                          </div>
-                          <div
-                            className="h-1.5 rounded-full overflow-hidden"
-                            style={{
-                              background: "oklch(0.22 0.06 188)",
-                            }}
-                          >
-                            <div
-                              className="h-full rounded-full"
-                              style={{
-                                width: `${b.pct}%`,
-                                background: b.color,
-                              }}
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Department risk strip */}
-                  <div className="flex gap-2 flex-wrap">
-                    {[
-                      { dept: "Cardiology", risk: "Low", dot: "bg-green-500" },
-                      {
-                        dept: "Orthopedics",
-                        risk: "Low",
-                        dot: "bg-green-500",
-                      },
-                      {
-                        dept: "Emergency",
-                        risk: "Med",
-                        dot: "bg-amber-400",
-                      },
-                      {
-                        dept: "Gen. Med",
-                        risk: "High",
-                        dot: "bg-red-500",
-                      },
-                    ].map((d) => (
-                      <div
-                        key={d.dept}
-                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-white/10 text-xs"
-                        style={{ background: "oklch(0.16 0.05 188)" }}
-                      >
-                        <div className={`w-1.5 h-1.5 rounded-full ${d.dot}`} />
-                        <span className="text-white/60">{d.dept}</span>
-                        <span className="text-white/40">{d.risk}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              <MockDashboardCard />
             </motion.div>
           </div>
         </div>
       </section>
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* 2. PROBLEM SECTION                                        */}
+      {/* 2. MARQUEE TICKER STRIP                                   */}
       {/* ══════════════════════════════════════════════════════════ */}
-      <section className="py-20 px-4 md:px-8 lg:px-16 bg-white">
+      <div
+        className="overflow-hidden py-3.5 relative z-10"
+        style={{ background: "oklch(0.13 0.06 188)" }}
+        aria-hidden="true"
+      >
+        <div className="flex whitespace-nowrap animate-marquee gap-0">
+          {/* Duplicated content for seamless loop */}
+          <span className="inline-flex gap-0 shrink-0">
+            <span
+              className="text-sm font-medium tracking-wide"
+              style={{ color: "rgba(255,255,255,0.55)" }}
+            >
+              {marqueeText}
+            </span>
+            <span
+              className="text-sm font-medium tracking-wide"
+              style={{ color: "rgba(255,255,255,0.55)" }}
+            >
+              {marqueeText}
+            </span>
+          </span>
+        </div>
+      </div>
+
+      {/* ══════════════════════════════════════════════════════════ */}
+      {/* 3. PROBLEM SECTION — Numbered cards with left borders     */}
+      {/* ══════════════════════════════════════════════════════════ */}
+      <section className="py-24 px-4 md:px-8 lg:px-16 bg-white">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -1166,6 +1448,7 @@ export function HomeDashboard() {
             <SectionHeading
               badge="The Problem"
               title="Why Hospitals Lose Revenue"
+              accentWord="Lose"
               subtitle="Healthcare organizations lose billions annually due to preventable revenue cycle failures. These are the four biggest culprits."
               center
             />
@@ -1177,24 +1460,46 @@ export function HomeDashboard() {
               return (
                 <motion.div
                   key={pain.title}
-                  initial={{ opacity: 0, y: 24 }}
+                  initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.08 }}
-                  whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                  className={`rounded-2xl border ${pain.border} bg-white p-6 shadow-sm hover:shadow-md transition-shadow`}
+                  transition={{ delay: i * 0.1 }}
+                  whileHover={{ y: -6, transition: { duration: 0.2 } }}
+                  className={`relative bg-white rounded-xl border border-l-4 ${pain.borderColor} border-border shadow-sm hover:shadow-lg transition-all p-6 overflow-hidden`}
                   data-ocid={`problem.item.${i + 1}`}
                 >
-                  <div
-                    className={`w-11 h-11 rounded-xl ${pain.bg} flex items-center justify-center mb-4`}
+                  {/* Faded background number */}
+                  <span
+                    className="absolute top-2 right-3 font-heading font-black text-7xl leading-none select-none pointer-events-none"
+                    style={{ color: pain.accentColor, opacity: 0.07 }}
+                    aria-hidden="true"
                   >
-                    <Icon className={`w-5 h-5 ${pain.color}`} />
+                    {pain.num}
+                  </span>
+
+                  {/* Icon */}
+                  <div
+                    className="w-11 h-11 rounded-xl flex items-center justify-center mb-4"
+                    style={{
+                      background: `${pain.accentColor}18`,
+                    }}
+                  >
+                    <Icon
+                      className="w-5 h-5"
+                      style={{ color: pain.accentColor }}
+                    />
                   </div>
-                  <h3 className="font-heading font-bold text-foreground mb-1.5 text-base">
+
+                  <h3 className="font-heading font-bold text-foreground mb-2 text-base leading-tight">
                     {pain.title}
                   </h3>
                   <span
-                    className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold border ${pain.impactColor} mb-3`}
+                    className="inline-block px-2 py-0.5 rounded-full text-xs font-semibold mb-3"
+                    style={{
+                      background: `${pain.accentColor}15`,
+                      color: pain.accentColor,
+                      border: `1px solid ${pain.accentColor}30`,
+                    }}
                   >
                     ↓ {pain.impact}
                   </span>
@@ -1209,43 +1514,49 @@ export function HomeDashboard() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* 3. SOLUTION SECTION                                       */}
+      {/* 4. DARK STATS COUNTER BAND                               */}
       {/* ══════════════════════════════════════════════════════════ */}
-      <section className="py-20 px-4 md:px-8 lg:px-16 health-gradient-light">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <SectionHeading
-              badge="The Solution"
-              title="One Platform for Hospital Revenue Intelligence"
-              subtitle="AI Health Zon connects hospital operations, billing teams, and patient services into one unified AI-driven ecosystem."
-              center
-            />
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {pillars.map((pillar, i) => (
+      <section
+        className="py-16 px-4 relative overflow-hidden"
+        style={{ background: "oklch(0.10 0.06 188)" }}
+      >
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle, oklch(0.9 0.05 188) 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
+          }}
+          aria-hidden="true"
+        />
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 divide-x divide-white/[0.08]">
+            {[
+              { num: 1234, suffix: "+", label: "Claims Processed" },
+              { num: 95, suffix: "%", label: "Clean Claim Rate" },
+              { num: 500, suffix: "+", label: "Hospitals Connected" },
+              { num: 18, suffix: "", label: "Days Avg. Settlement" },
+            ].map((stat, i) => (
               <motion.div
-                key={pillar.title}
-                initial={{ opacity: 0, y: 24 }}
+                key={stat.label}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                className={`bg-white rounded-2xl border border-border border-t-4 ${pillar.topBorder} shadow-sm p-7`}
+                transition={{ delay: i * 0.12 }}
+                className="text-center px-6 py-4"
               >
-                <span className="text-4xl mb-4 block">{pillar.emoji}</span>
-                <h3
-                  className={`font-heading font-bold text-lg mb-3 ${pillar.textColor}`}
+                <div
+                  className="font-heading text-4xl sm:text-5xl font-black mb-2"
+                  style={{ color: "white" }}
                 >
-                  {pillar.title}
-                </h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  {pillar.description}
-                </p>
+                  <AnimatedCounter target={stat.num} />
+                </div>
+                <div
+                  className="text-sm font-medium"
+                  style={{ color: "oklch(0.65 0.18 200 / 0.7)" }}
+                >
+                  {stat.label}
+                </div>
               </motion.div>
             ))}
           </div>
@@ -1253,21 +1564,47 @@ export function HomeDashboard() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* 4. PLATFORM MODULES                                       */}
+      {/* 5. CORE MODULES — Numbered service cards                  */}
       {/* ══════════════════════════════════════════════════════════ */}
-      <section className="py-20 px-4 md:px-8 lg:px-16 bg-white">
+      <section
+        className="py-24 px-4 md:px-8 lg:px-16"
+        style={{ background: "oklch(0.975 0.018 188)" }}
+      >
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            className="text-center mb-12"
           >
-            <SectionHeading
-              badge="Core Product"
-              title="Core Platform Modules"
-              subtitle="Four powerful modules working together to eliminate revenue leakage and optimize every step of the healthcare revenue cycle."
-              center
-            />
+            <span
+              className="inline-block px-3 py-1 text-xs font-semibold rounded-full mb-3 uppercase tracking-wider border"
+              style={{
+                background: "oklch(0.92 0.05 188)",
+                color: "oklch(0.30 0.14 188)",
+                borderColor: "oklch(0.78 0.10 188)",
+              }}
+            >
+              Core Product
+            </span>
+            <h2 className="font-heading text-3xl sm:text-4xl font-bold text-foreground mb-3 leading-tight">
+              One Platform for{" "}
+              <span
+                className="relative inline-block"
+                style={{ color: "oklch(0.38 0.14 188)" }}
+              >
+                Hospital Revenue Intelligence
+                <span
+                  className="absolute -bottom-1 left-0 right-0 h-1 rounded-full"
+                  style={{ background: "oklch(0.55 0.18 200)" }}
+                  aria-hidden="true"
+                />
+              </span>
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto text-base">
+              AI Health Zon connects hospital operations, billing teams, and
+              patient services into one unified AI-driven ecosystem.
+            </p>
           </motion.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -1276,38 +1613,56 @@ export function HomeDashboard() {
               return (
                 <motion.div
                   key={mod.title}
-                  initial={{ opacity: 0, y: 24 }}
+                  initial={{ opacity: 0, y: 32 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.08 }}
-                  whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                  className="bg-white rounded-2xl border border-border shadow-sm hover:shadow-md transition-shadow p-7 flex flex-col"
+                  transition={{ delay: i * 0.1 }}
+                  whileHover={{
+                    y: -6,
+                    boxShadow: "0 20px 48px oklch(0.38 0.14 188 / 0.12)",
+                    transition: { duration: 0.25 },
+                  }}
+                  className={`bg-white rounded-2xl border border-l-4 ${mod.borderColor} border-border shadow-sm p-7 flex flex-col relative overflow-hidden`}
                   data-ocid={`modules.item.${i + 1}`}
                 >
-                  <div className="flex items-start gap-4 mb-4">
+                  {/* Faded background number */}
+                  <span
+                    className="absolute top-3 right-4 font-heading font-black text-8xl leading-none select-none pointer-events-none"
+                    style={{ color: mod.accentColor, opacity: 0.06 }}
+                    aria-hidden="true"
+                  >
+                    {mod.num}
+                  </span>
+
+                  <div className="flex items-center gap-3 mb-4 relative z-10">
                     <div
-                      className={`w-12 h-12 rounded-xl ${mod.bg} flex items-center justify-center flex-shrink-0`}
+                      className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                      style={{ background: `${mod.accentColor}18` }}
                     >
-                      <Icon className={`w-6 h-6 ${mod.color}`} />
+                      <Icon
+                        className="w-6 h-6"
+                        style={{ color: mod.accentColor }}
+                      />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-heading font-bold text-foreground text-base leading-tight mb-1">
+                    <div>
+                      <h3 className="font-heading font-bold text-foreground text-base leading-tight">
                         {mod.title}
                       </h3>
-                      <p className="text-muted-foreground text-sm">
+                      <p className="text-muted-foreground text-sm mt-0.5">
                         {mod.description}
                       </p>
                     </div>
                   </div>
 
-                  <ul className="space-y-2 mb-6 flex-1">
+                  <ul className="space-y-2 mb-5 flex-1 relative z-10">
                     {mod.features.map((feat) => (
                       <li
                         key={feat}
                         className="flex items-center gap-2.5 text-sm text-foreground"
                       >
                         <CheckCircle2
-                          className={`w-4 h-4 flex-shrink-0 ${mod.color}`}
+                          className="w-4 h-4 flex-shrink-0"
+                          style={{ color: mod.accentColor }}
                         />
                         {feat}
                       </li>
@@ -1316,10 +1671,11 @@ export function HomeDashboard() {
 
                   <Link
                     to={mod.href}
-                    className={`inline-flex items-center gap-1.5 text-sm font-semibold ${mod.color} mt-auto`}
+                    className="inline-flex items-center gap-1.5 text-sm font-semibold mt-auto relative z-10"
+                    style={{ color: mod.accentColor }}
                     data-ocid={`modules.link.${i + 1}`}
                   >
-                    Learn More
+                    Learn More →
                     <ChevronRight className="w-4 h-4" />
                   </Link>
                 </motion.div>
@@ -1330,187 +1686,115 @@ export function HomeDashboard() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* 5. PLATFORM DASHBOARD                                     */}
+      {/* 6. FEATURE HIGHLIGHT — Asymmetric layout                  */}
       {/* ══════════════════════════════════════════════════════════ */}
-      <section className="py-20 px-4 md:px-8 lg:px-16 health-gradient-light">
+      <section className="py-24 px-4 md:px-8 lg:px-16 bg-white">
         <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <SectionHeading
-              badge="Platform Dashboard"
-              title="Platform at a Glance"
-              subtitle="Real-time metrics from the AI Health Zon command centre — powering smarter decisions across India's hospitals."
-              center
-            />
-          </motion.div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
+            {/* Left: Mock dashboard with tilt hover */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              whileHover={{
+                rotateY: 3,
+                rotateX: -2,
+                scale: 1.02,
+                transition: { duration: 0.3 },
+              }}
+              style={{ perspective: "1000px" }}
+            >
+              <MockDashboardCard />
+            </motion.div>
 
-          {/* Animated KPI row */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            {kpiData.map((kpi, i) => {
-              const Icon = kpi.icon;
-              return (
-                <motion.div
-                  key={kpi.label}
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.07 }}
-                  className={`bg-white rounded-xl border border-border ${kpi.border} shadow-sm p-5 flex items-center gap-4`}
-                >
-                  <div
-                    className={`w-10 h-10 rounded-lg ${kpi.bg} flex items-center justify-center flex-shrink-0`}
-                  >
-                    <Icon className={`w-5 h-5 ${kpi.color}`} />
-                  </div>
-                  <div>
-                    <div
-                      className={`font-heading text-2xl font-bold ${kpi.color}`}
+            {/* Right: Platform at a Glance */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.15 }}
+            >
+              <SectionHeading
+                badge="Platform Dashboard"
+                title="Platform at a Glance"
+                accentWord="Glance"
+                subtitle="Real-time metrics from the AI Health Zon command centre — powering smarter decisions across India's hospitals."
+              />
+
+              {/* KPI rows */}
+              <div className="space-y-3 mb-6">
+                {kpiData.map((kpi, i) => {
+                  const Icon = kpi.icon;
+                  return (
+                    <motion.div
+                      key={kpi.label}
+                      initial={{ opacity: 0, x: 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.08 }}
+                      className={`flex items-center gap-4 bg-white rounded-xl border ${kpi.border} border-border shadow-sm p-4`}
                     >
-                      <AnimatedCounter target={kpi.target} />
-                    </div>
-                    <div className="text-muted-foreground text-xs">
-                      {kpi.label}
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
+                      <div
+                        className={`w-9 h-9 rounded-lg ${kpi.iconBg} flex items-center justify-center flex-shrink-0`}
+                      >
+                        <Icon
+                          className="w-4 h-4"
+                          style={{ color: kpi.color }}
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs text-muted-foreground">
+                          {kpi.label}
+                        </div>
+                      </div>
+                      <div
+                        className="font-heading text-2xl font-bold"
+                        style={{ color: kpi.color }}
+                      >
+                        <AnimatedCounter target={kpi.target} />
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
 
-          {/* 3-column dashboard */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Claim status bar chart */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="bg-white rounded-2xl border border-border shadow-sm p-6"
-            >
-              <h3 className="font-heading font-bold text-foreground mb-5 text-sm">
-                Claim Status Distribution
-              </h3>
-              <div className="space-y-5">
-                {claimBars.map((bar) => (
-                  <div key={bar.label}>
-                    <div className="flex justify-between text-xs mb-2">
-                      <span className="font-medium text-foreground">
-                        {bar.label}
-                      </span>
-                      <span className={`font-bold ${bar.text}`}>
-                        {bar.pct}%
-                      </span>
-                    </div>
-                    <div className="h-3 bg-muted rounded-full overflow-hidden">
-                      <motion.div
-                        className={`h-full ${bar.color} rounded-full`}
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${bar.pct}%` }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.9, ease: "easeOut" }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-5 pt-4 border-t border-border text-xs text-muted-foreground">
-                Total: <strong className="text-foreground">1,234 claims</strong>{" "}
-                · This month
-              </div>
-            </motion.div>
-
-            {/* Clean Claim Gauge */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="bg-white rounded-2xl border border-border shadow-sm p-6 flex flex-col items-center"
-            >
-              <h3 className="font-heading font-bold text-foreground mb-4 text-sm w-full">
-                Clean Claim Rate
-              </h3>
-              <CleanClaimGauge pct={95} />
-              <div className="flex gap-2 mt-4 w-full justify-center flex-wrap">
-                {[
-                  {
-                    label: "Target",
-                    value: "90%",
-                    cls: "bg-muted text-muted-foreground",
-                  },
-                  {
-                    label: "Current",
-                    value: "95%",
-                    cls: "bg-green-50 text-green-700 border border-green-200",
-                  },
-                  {
-                    label: "Trend",
-                    value: "↑ 3%",
-                    cls: "bg-health-blue-light text-health-blue border border-health-blue/20",
-                  },
-                ].map((pill) => (
-                  <div
-                    key={pill.label}
-                    className={`px-3 py-1.5 rounded-lg text-center ${pill.cls}`}
-                  >
-                    <div className="text-xs font-medium">{pill.label}</div>
-                    <div className="font-bold text-sm">{pill.value}</div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Revenue trend mini-chart */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="bg-white rounded-2xl border border-border shadow-sm p-6"
-            >
-              <h3 className="font-heading font-bold text-foreground mb-5 text-sm">
-                Revenue Recovery Trend
-              </h3>
-              {/* SVG sparkline bars */}
-              <div className="flex items-end gap-2 h-24 mb-3">
-                {(
-                  [
-                    { month: "Jan", pct: 42 },
-                    { month: "Feb", pct: 58 },
-                    { month: "Mar", pct: 51 },
-                    { month: "Apr", pct: 67 },
-                    { month: "May", pct: 72 },
-                    { month: "Jun", pct: 65 },
-                    { month: "Jul", pct: 80 },
-                    { month: "Aug", pct: 75 },
-                    { month: "Sep", pct: 88 },
-                    { month: "Oct", pct: 82 },
-                    { month: "Nov", pct: 92 },
-                    { month: "Dec", pct: 95 },
-                  ] as { month: string; pct: number }[]
-                ).map(({ month, pct }, i) => (
-                  <motion.div
-                    key={month}
-                    className="flex-1 rounded-t"
-                    style={{ background: "oklch(0.38 0.14 188)" }}
-                    initial={{ height: 0 }}
-                    whileInView={{ height: `${pct}%` }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: i * 0.05 }}
-                  />
-                ))}
-              </div>
-              <div className="flex justify-between text-xs text-muted-foreground mb-4">
-                <span>Jan</span>
-                <span>Jun</span>
-                <span>Dec</span>
-              </div>
-              <div className="text-center">
-                <div className="text-xl font-bold font-heading text-health-blue">
-                  +127%
+              {/* Progress bars */}
+              <div className="bg-white rounded-xl border border-border shadow-sm p-5">
+                <div className="text-sm font-semibold text-foreground mb-4">
+                  Claim Status Distribution
                 </div>
-                <div className="text-xs text-muted-foreground">
-                  Revenue recovery improvement YoY
+                <div className="space-y-4">
+                  {claimBars.map((bar) => (
+                    <div key={bar.label}>
+                      <div className="flex justify-between text-xs mb-1.5">
+                        <span className="font-medium text-foreground">
+                          {bar.label}
+                        </span>
+                        <span className={`font-bold ${bar.text}`}>
+                          {bar.pct}%
+                        </span>
+                      </div>
+                      <div className="h-2.5 bg-muted rounded-full overflow-hidden">
+                        <motion.div
+                          className={`h-full ${bar.color} rounded-full`}
+                          initial={{ width: 0 }}
+                          whileInView={{ width: `${bar.pct}%` }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 1, ease: "easeOut" }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 pt-4 border-t border-border flex items-center gap-3">
+                  <CleanClaimGauge pct={95} />
+                  <div className="text-xs text-muted-foreground leading-relaxed">
+                    <div className="font-semibold text-foreground text-sm mb-1">
+                      95% Clean Claim Rate
+                    </div>
+                    5% above industry target of 90%
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -1519,9 +1803,15 @@ export function HomeDashboard() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* 6. HOW IT WORKS                                          */}
+      {/* 7. HOW IT WORKS — Workflow timeline                       */}
       {/* ══════════════════════════════════════════════════════════ */}
-      <section className="py-20 px-4 md:px-8 lg:px-16 bg-white">
+      <section
+        className="py-24 px-4 md:px-8 lg:px-16"
+        style={{
+          background:
+            "linear-gradient(180deg, oklch(0.965 0.025 195) 0%, white 100%)",
+        }}
+      >
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -1531,56 +1821,42 @@ export function HomeDashboard() {
             <SectionHeading
               badge="How It Works"
               title="Hospital Revenue Cycle"
-              subtitle="AI Health Zon enhances every step of the revenue cycle with intelligent automation and real-time insights."
+              accentWord="Revenue Cycle"
+              subtitle="AI Health Zon enhances every step with intelligent automation and real-time insights."
               center
             />
           </motion.div>
 
-          {/* RCM image */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-            className="mb-12 max-w-4xl mx-auto"
-          >
-            <img
-              src="/assets/generated/hospital-rcm.dim_800x500.jpg"
-              alt="AI Health Zon Hospital Revenue Cycle Management workflow"
-              className="w-full rounded-2xl shadow-lg object-cover"
-              style={{ maxHeight: "340px" }}
-            />
-            <p className="text-center text-muted-foreground text-sm mt-3 italic">
-              AI Health Zon enhances every step of your revenue cycle with
-              intelligent automation.
-            </p>
-          </motion.div>
-
-          {/* Workflow steps */}
           <div className="relative">
-            {/* Connecting line */}
-            <div className="hidden lg:block absolute top-8 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-border to-transparent" />
+            {/* Connecting line desktop */}
+            <div
+              className="hidden lg:block absolute top-8 left-[7%] right-[7%] h-0.5"
+              style={{
+                background:
+                  "linear-gradient(90deg, transparent, oklch(0.78 0.10 188), transparent)",
+              }}
+              aria-hidden="true"
+            />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4">
               {workflowSteps.map((step, i) => {
                 const Icon = step.icon;
                 return (
                   <motion.div
                     key={step.step}
-                    initial={{ opacity: 0, y: 24 }}
+                    initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: i * 0.07 }}
+                    transition={{ delay: i * 0.08 }}
                     className="flex flex-col items-center text-center relative"
                     data-ocid={`workflow.item.${i + 1}`}
                   >
-                    {/* Step circle */}
                     <div
-                      className="w-16 h-16 rounded-full flex items-center justify-center mb-3 border-2 z-10 relative shadow-sm"
+                      className="w-16 h-16 rounded-full flex items-center justify-center mb-3 border-2 z-10 relative shadow-md"
                       style={{
                         background:
-                          "linear-gradient(135deg, oklch(0.38 0.14 188) 0%, oklch(0.55 0.16 200) 100%)",
-                        borderColor: "oklch(0.38 0.14 188)",
+                          "linear-gradient(135deg, oklch(0.35 0.14 188) 0%, oklch(0.55 0.18 200) 100%)",
+                        borderColor: "oklch(0.55 0.18 200)",
                       }}
                     >
                       <Icon className="w-6 h-6 text-white" />
@@ -1588,16 +1864,20 @@ export function HomeDashboard() {
                     <div className="font-heading font-bold text-foreground text-xs mb-2 leading-tight">
                       {step.title}
                     </div>
-                    {/* AI annotation */}
                     <div
-                      className="px-2 py-1.5 rounded-lg border text-xs leading-snug"
+                      className="px-2 py-1.5 rounded-lg border text-xs leading-snug w-full"
                       style={{
                         background: "oklch(0.96 0.04 188)",
                         borderColor: "oklch(0.88 0.05 188)",
-                        color: "oklch(0.38 0.14 188)",
+                        color: "oklch(0.35 0.14 188)",
                       }}
                     >
-                      <span className="font-semibold text-sky-600">AI: </span>
+                      <span
+                        className="font-semibold"
+                        style={{ color: "oklch(0.55 0.18 200)" }}
+                      >
+                        AI:{" "}
+                      </span>
                       {step.ai}
                     </div>
                   </motion.div>
@@ -1609,108 +1889,68 @@ export function HomeDashboard() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* 7. WHO BENEFITS                                          */}
-      {/* ══════════════════════════════════════════════════════════ */}
-      <section className="py-20 px-4 md:px-8 lg:px-16 health-gradient-light">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <SectionHeading
-              badge="Who Benefits"
-              title="Designed for Every Healthcare Stakeholder"
-              subtitle="Whether you run a 1,000-bed hospital or a specialist clinic, AI Health Zon scales to your needs."
-              center
-            />
-          </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {beneficiaries.map((b, i) => {
-              const Icon = b.icon;
-              return (
-                <motion.div
-                  key={b.title}
-                  initial={{ opacity: 0, y: 24 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.08 }}
-                  whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                  className="bg-white rounded-2xl border border-border shadow-sm hover:shadow-md transition-shadow p-6 text-center"
-                  data-ocid={`benefits.item.${i + 1}`}
-                >
-                  <div
-                    className={`w-14 h-14 rounded-2xl ${b.bg} flex items-center justify-center mx-auto mb-4`}
-                  >
-                    <Icon className={`w-7 h-7 ${b.color}`} />
-                  </div>
-                  <h3 className="font-heading font-bold text-foreground mb-2">
-                    {b.title}
-                  </h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed">
-                    {b.description}
-                  </p>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════ */}
-      {/* 7B. HEALTHCARE ECOSYSTEM OVERVIEW (from Ecosystem page)   */}
+      {/* 8. HEALTHCARE ECOSYSTEM                                   */}
       {/* ══════════════════════════════════════════════════════════ */}
       <section
         id="ecosystem-section"
-        className="py-20 px-4 md:px-8 lg:px-16 bg-white"
+        className="py-24 px-4 md:px-8 lg:px-16 bg-white"
       >
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Left: text + diagram */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
             <div>
               <motion.div
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
               >
-                <span className="inline-block px-3 py-1 bg-health-blue-light text-health-blue text-xs font-semibold rounded-full mb-3 uppercase tracking-wider border border-health-blue/20">
+                <span
+                  className="inline-block px-3 py-1 text-xs font-semibold rounded-full mb-3 uppercase tracking-wider border"
+                  style={{
+                    background: "oklch(0.92 0.05 188)",
+                    color: "oklch(0.30 0.14 188)",
+                    borderColor: "oklch(0.78 0.10 188)",
+                  }}
+                >
                   Healthcare Ecosystem
                 </span>
-                <h2 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-4 leading-tight">
-                  India's Connected Healthcare Ecosystem
+                <h2 className="font-heading text-3xl sm:text-4xl font-bold text-foreground mb-4 leading-tight">
+                  India's Connected{" "}
+                  <span
+                    className="relative inline-block"
+                    style={{ color: "oklch(0.38 0.14 188)" }}
+                  >
+                    Healthcare Ecosystem
+                    <span
+                      className="absolute -bottom-1 left-0 right-0 h-1 rounded-full"
+                      style={{ background: "oklch(0.55 0.18 200)" }}
+                      aria-hidden="true"
+                    />
+                  </span>
                 </h2>
                 <p className="text-muted-foreground text-base leading-relaxed mb-6 max-w-lg">
                   AI Health Zon is the central intelligence hub connecting every
                   stakeholder in India's healthcare value chain — hospitals,
-                  insurers, government schemes, and patients — enabling seamless
-                  data exchange, faster claims, and better outcomes for all.
+                  insurers, government schemes, and patients.
                 </p>
 
-                {/* Stat pills */}
                 <div className="flex flex-wrap gap-3 mb-8">
                   {[
-                    {
-                      label: "500+ Hospitals",
-                      color:
-                        "text-health-blue bg-health-blue-light border-health-blue/20",
-                    },
-                    {
-                      label: "50+ Insurers",
-                      color: "text-teal-700 bg-teal-50 border-teal-200",
-                    },
+                    { label: "500+ Hospitals", color: "oklch(0.38 0.14 188)" },
+                    { label: "50+ Insurers", color: "oklch(0.50 0.14 185)" },
                     {
                       label: "10+ Govt Schemes",
-                      color: "text-purple-700 bg-purple-50 border-purple-200",
+                      color: "oklch(0.45 0.18 295)",
                     },
-                    {
-                      label: "1M+ Patients",
-                      color: "text-rose-700 bg-rose-50 border-rose-200",
-                    },
+                    { label: "1M+ Patients", color: "oklch(0.52 0.22 15)" },
                   ].map((pill) => (
                     <span
                       key={pill.label}
-                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border ${pill.color}`}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border"
+                      style={{
+                        background: `${pill.color}12`,
+                        color: pill.color,
+                        borderColor: `${pill.color}30`,
+                      }}
                     >
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       {pill.label}
@@ -1732,7 +1972,6 @@ export function HomeDashboard() {
               </motion.div>
             </div>
 
-            {/* Right: ecosystem network image */}
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -1740,57 +1979,28 @@ export function HomeDashboard() {
               transition={{ duration: 0.7 }}
               className="flex flex-col gap-6"
             >
-              <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{
-                  repeat: Number.POSITIVE_INFINITY,
-                  duration: 5,
-                  ease: "easeInOut",
-                }}
-                className="relative"
-              >
-                <img
-                  src="/assets/generated/ecosystem-network.dim_800x500.jpg"
-                  alt="AI Health Zon healthcare network connecting hospitals, insurers, government and patients"
-                  className="w-full rounded-2xl shadow-2xl object-cover"
-                  style={{ maxHeight: "360px" }}
-                />
-                {/* Floating badge */}
-                <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-xl px-4 py-3 shadow-lg border border-border">
-                  <div className="text-xs text-muted-foreground mb-1">
-                    Network Status
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                    <span className="font-semibold text-foreground text-sm">
-                      All Systems Active
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Quick stats */}
+              {/* Quick stats grid */}
               <div className="grid grid-cols-2 gap-4">
                 {[
                   {
                     value: "99.9%",
                     label: "Platform Uptime",
-                    color: "text-green-600",
+                    color: "oklch(0.50 0.16 145)",
                   },
                   {
                     value: "<2s",
                     label: "Claim Validation",
-                    color: "text-health-blue",
+                    color: "oklch(0.38 0.14 188)",
                   },
                   {
                     value: "95%",
                     label: "Clean Claim Rate",
-                    color: "text-sky-600",
+                    color: "oklch(0.55 0.18 200)",
                   },
                   {
                     value: "18 days",
                     label: "Avg. Settlement",
-                    color: "text-purple-600",
+                    color: "oklch(0.45 0.18 295)",
                   },
                 ].map((stat, i) => (
                   <motion.div
@@ -1798,11 +2008,13 @@ export function HomeDashboard() {
                     initial={{ opacity: 0, y: 16 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: i * 0.08 }}
-                    className="bg-white rounded-xl border border-border shadow-sm p-4 text-center"
+                    transition={{ delay: i * 0.09 }}
+                    whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                    className="bg-white rounded-xl border border-border shadow-sm p-5 text-center"
                   >
                     <div
-                      className={`font-heading text-2xl font-bold ${stat.color} mb-1`}
+                      className="font-heading text-2xl font-bold mb-1"
+                      style={{ color: stat.color }}
                     >
                       {stat.value}
                     </div>
@@ -1812,20 +2024,54 @@ export function HomeDashboard() {
                   </motion.div>
                 ))}
               </div>
+
+              {/* Seven Pillars compact list */}
+              <div className="bg-white rounded-2xl border border-border shadow-sm p-6">
+                <div className="text-sm font-bold text-foreground mb-4 font-heading">
+                  Seven Pillars of Healthcare Intelligence
+                </div>
+                <div className="grid grid-cols-1 gap-2">
+                  {ecosystemPillars.map((pillar, i) => {
+                    const Icon = pillar.icon;
+                    return (
+                      <motion.div
+                        key={pillar.title}
+                        initial={{ opacity: 0, x: 16 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.06 }}
+                        className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-muted/50 transition-colors"
+                        data-ocid={`ecosystem.item.${i + 1}`}
+                      >
+                        <div
+                          className={`w-8 h-8 rounded-lg ${pillar.bg} flex items-center justify-center flex-shrink-0`}
+                        >
+                          <Icon className={`w-4 h-4 ${pillar.color}`} />
+                        </div>
+                        <div>
+                          <div className="text-xs font-semibold text-foreground">
+                            {pillar.title}
+                          </div>
+                          <div className="text-xs text-muted-foreground line-clamp-1">
+                            {pillar.description.split(":")[0]}
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
             </motion.div>
           </div>
         </div>
       </section>
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* 7C. SEVEN PILLARS OF HEALTHCARE INTELLIGENCE             */}
+      {/* 9. WHO BENEFITS — Gradient hover cards                    */}
       {/* ══════════════════════════════════════════════════════════ */}
       <section
-        className="py-20 px-4 md:px-8 lg:px-16"
-        style={{
-          background:
-            "linear-gradient(180deg, oklch(0.96 0.02 240) 0%, white 100%)",
-        }}
+        className="py-24 px-4 md:px-8 lg:px-16"
+        style={{ background: "oklch(0.975 0.018 188)" }}
       >
         <div className="max-w-7xl mx-auto">
           <motion.div
@@ -1834,38 +2080,46 @@ export function HomeDashboard() {
             viewport={{ once: true }}
           >
             <SectionHeading
-              badge="Ecosystem Pillars"
-              title="Seven Pillars of Healthcare Intelligence"
-              subtitle="Seven interconnected pillars form the foundation of India's most comprehensive healthcare digital ecosystem."
+              badge="Who Benefits"
+              title="Designed for Every Healthcare Stakeholder"
+              accentWord="Every Healthcare"
+              subtitle="Whether you run a 1,000-bed hospital or a specialist clinic, AI Health Zon scales to your needs."
               center
             />
           </motion.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {ecosystemPillars.map((pillar, i) => {
-              const Icon = pillar.icon;
+            {beneficiaries.map((b, i) => {
+              const Icon = b.icon;
               return (
                 <motion.div
-                  key={pillar.title}
-                  initial={{ opacity: 0, y: 24 }}
+                  key={b.title}
+                  initial={{ opacity: 0, y: 28 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.08 }}
-                  whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                  className="bg-white rounded-2xl border border-border shadow-sm hover:shadow-md transition-shadow p-6"
-                  data-ocid={`ecosystem.item.${i + 1}`}
+                  transition={{ delay: i * 0.1 }}
+                  whileHover={{ y: -6, transition: { duration: 0.25 } }}
+                  className="bg-white rounded-2xl border border-border shadow-sm hover:shadow-lg transition-all p-6 text-center relative overflow-hidden group"
+                  data-ocid={`benefits.item.${i + 1}`}
                 >
+                  {/* Bottom gradient fill on hover */}
                   <div
-                    className={`w-11 h-11 rounded-xl ${pillar.bg} flex items-center justify-center mb-4`}
-                  >
-                    <Icon className={`w-5 h-5 ${pillar.color}`} />
+                    className={`absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t ${b.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+                    aria-hidden="true"
+                  />
+                  <div className="relative z-10">
+                    <div
+                      className={`w-14 h-14 rounded-2xl ${b.iconBg} flex items-center justify-center mx-auto mb-4`}
+                    >
+                      <Icon className={`w-7 h-7 ${b.accent}`} />
+                    </div>
+                    <h3 className="font-heading font-bold text-foreground mb-2">
+                      {b.title}
+                    </h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed">
+                      {b.description}
+                    </p>
                   </div>
-                  <h3 className="font-heading font-bold text-foreground mb-2 text-sm">
-                    {pillar.title}
-                  </h3>
-                  <p className="text-muted-foreground text-xs leading-relaxed">
-                    {pillar.description}
-                  </p>
                 </motion.div>
               );
             })}
@@ -1874,9 +2128,9 @@ export function HomeDashboard() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* 8. TRUST & SECURITY                                      */}
+      {/* 10. TRUST & SECURITY                                      */}
       {/* ══════════════════════════════════════════════════════════ */}
-      <section className="py-20 px-4 md:px-8 lg:px-16 bg-white">
+      <section className="py-24 px-4 md:px-8 lg:px-16 bg-white">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -1886,23 +2140,24 @@ export function HomeDashboard() {
             <SectionHeading
               badge="Security & Compliance"
               title="Enterprise-Grade Security for Healthcare"
+              accentWord="Security"
               subtitle="Your healthcare data is protected with enterprise-grade security. AI Health Zon is built for the trust demands of regulated healthcare environments."
               center
             />
           </motion.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
-            {securityBadges.map((sec, i) => {
+            {securityCards.map((sec, i) => {
               const Icon = sec.icon;
               return (
                 <motion.div
                   key={sec.title}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 24 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.08 }}
-                  whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                  className="bg-white rounded-2xl border border-border shadow-sm p-6 text-center"
+                  transition={{ delay: i * 0.09 }}
+                  whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                  className="bg-white rounded-2xl border border-border shadow-sm p-6 text-center hover:shadow-md transition-shadow"
                   data-ocid={`security.item.${i + 1}`}
                 >
                   <div
@@ -1921,37 +2176,45 @@ export function HomeDashboard() {
             })}
           </div>
 
-          {/* Compliance strip */}
+          {/* Compliance ticker strip */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="rounded-2xl border border-health-blue/20 bg-health-blue-light p-5 flex flex-wrap items-center justify-center gap-4"
+            className="rounded-2xl overflow-hidden border"
+            style={{ borderColor: "oklch(0.78 0.10 188)" }}
           >
-            {[
-              "HIPAA Ready",
-              "NABH Aligned",
-              "ABDM / FHIR R4",
-              "DPDP Act 2023",
-              "ISO 27001",
-              "TLS 1.3 Encrypted",
-            ].map((badge) => (
-              <span
-                key={badge}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-health-blue/20 text-health-blue text-xs font-semibold rounded-full shadow-sm"
-              >
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                {badge}
-              </span>
-            ))}
+            <div
+              className="py-3.5 overflow-hidden"
+              style={{ background: "oklch(0.95 0.04 188)" }}
+              aria-hidden="true"
+            >
+              <div className="flex whitespace-nowrap animate-marquee gap-0">
+                <span className="inline-flex gap-0 shrink-0">
+                  <span
+                    className="text-sm font-semibold tracking-wide"
+                    style={{ color: "oklch(0.30 0.14 188)" }}
+                  >
+                    {complianceTicker}
+                    {complianceTicker}
+                  </span>
+                </span>
+              </div>
+            </div>
           </motion.div>
         </div>
       </section>
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* 9. CASE STUDY                                            */}
+      {/* 11. CASE STUDY                                            */}
       {/* ══════════════════════════════════════════════════════════ */}
-      <section className="py-20 px-4 md:px-8 lg:px-16 health-gradient-light">
+      <section
+        className="py-24 px-4 md:px-8 lg:px-16"
+        style={{
+          background:
+            "linear-gradient(135deg, oklch(0.94 0.04 188) 0%, oklch(0.95 0.04 195) 50%, oklch(0.94 0.04 200) 100%)",
+        }}
+      >
         <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -1961,18 +2224,18 @@ export function HomeDashboard() {
             <SectionHeading
               badge="Proven Results"
               title="What Our Clients Achieve"
+              accentWord="Clients Achieve"
               subtitle="Real-world outcomes from hospitals using AI Health Zon across India."
               center
             />
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 28 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="relative bg-white rounded-3xl border border-border shadow-lg overflow-hidden"
+            className="bg-white rounded-3xl border border-border shadow-xl overflow-hidden"
           >
-            {/* Top accent bar */}
             <div
               className="h-1.5 w-full"
               style={{
@@ -1984,24 +2247,33 @@ export function HomeDashboard() {
             <div className="p-8 md:p-12">
               <div className="flex items-start gap-4 mb-8">
                 <Quote
-                  className="w-10 h-10 text-health-blue opacity-30 flex-shrink-0 mt-1"
-                  aria-hidden
+                  className="w-10 h-10 opacity-20 flex-shrink-0 mt-1"
+                  style={{ color: "oklch(0.38 0.14 188)" }}
+                  aria-hidden="true"
                 />
                 <div>
-                  <p className="text-lg text-foreground leading-relaxed font-medium mb-3">
+                  <p className="text-lg text-foreground leading-relaxed font-medium mb-4">
                     "AI Health Zon transformed our revenue cycle. Within 6
                     months, we achieved a{" "}
-                    <strong className="text-health-blue">
+                    <strong style={{ color: "oklch(0.38 0.14 188)" }}>
                       35% improvement
                     </strong>{" "}
                     in claim approval rates, reduced our denial rate by{" "}
-                    <strong className="text-health-blue">20%</strong>, and
-                    accelerated our payment cycle from 45 days to under 18
+                    <strong style={{ color: "oklch(0.38 0.14 188)" }}>
+                      20%
+                    </strong>
+                    , and accelerated our payment cycle from 45 days to under 18
                     days."
                   </p>
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-health-blue-light flex items-center justify-center">
-                      <Building2 className="w-5 h-5 text-health-blue" />
+                    <div
+                      className="w-10 h-10 rounded-full flex items-center justify-center"
+                      style={{ background: "oklch(0.92 0.05 188)" }}
+                    >
+                      <Building2
+                        className="w-5 h-5"
+                        style={{ color: "oklch(0.38 0.14 188)" }}
+                      />
                     </div>
                     <div>
                       <div className="font-semibold text-foreground text-sm">
@@ -2023,14 +2295,13 @@ export function HomeDashboard() {
                 </div>
               </div>
 
-              {/* Result metrics */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {[
                   {
                     metric: "+35%",
                     label: "Claim Approval Rate",
                     sub: "Improved from 68% to 92%",
-                    color: "text-green-600",
+                    color: "oklch(0.50 0.16 145)",
                     bg: "bg-green-50",
                     border: "border-green-200",
                   },
@@ -2038,17 +2309,17 @@ export function HomeDashboard() {
                     metric: "−20%",
                     label: "Denial Rate Reduced",
                     sub: "From 18% down to 4.5%",
-                    color: "text-health-blue",
-                    bg: "bg-health-blue-light",
-                    border: "border-health-blue/20",
+                    color: "oklch(0.38 0.14 188)",
+                    bg: "bg-sky-50",
+                    border: "border-sky-200",
                   },
                   {
                     metric: "2.4×",
                     label: "Faster Payment Cycle",
                     sub: "45 days → 18 days average",
-                    color: "text-sky-600",
-                    bg: "bg-sky-50",
-                    border: "border-sky-200",
+                    color: "oklch(0.55 0.18 200)",
+                    bg: "bg-indigo-50",
+                    border: "border-indigo-200",
                   },
                 ].map((r) => (
                   <div
@@ -2057,7 +2328,8 @@ export function HomeDashboard() {
                     data-ocid="casestudy.card"
                   >
                     <div
-                      className={`font-heading text-3xl font-bold ${r.color} mb-1`}
+                      className="font-heading text-3xl font-bold mb-1"
+                      style={{ color: r.color }}
                     >
                       {r.metric}
                     </div>
@@ -2074,9 +2346,9 @@ export function HomeDashboard() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* 10. SIMULATION LAB TEASER                               */}
+      {/* 12. SIMULATION LAB TEASER                                 */}
       {/* ══════════════════════════════════════════════════════════ */}
-      <section className="py-20 px-4 md:px-8 lg:px-16 bg-white">
+      <section className="py-24 px-4 md:px-8 lg:px-16 bg-white">
         <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -2088,20 +2360,26 @@ export function HomeDashboard() {
                 "linear-gradient(135deg, oklch(0.12 0.06 188) 0%, oklch(0.18 0.08 200) 60%, oklch(0.14 0.05 220) 100%)",
             }}
           >
-            {/* Decorative grid */}
             <div
-              className="absolute inset-0 opacity-5"
+              className="absolute inset-0 opacity-[0.04]"
               style={{
                 backgroundImage:
-                  "linear-gradient(oklch(0.9 0.05 188) 1px, transparent 1px), linear-gradient(90deg, oklch(0.9 0.05 188) 1px, transparent 1px)",
-                backgroundSize: "30px 30px",
+                  "radial-gradient(circle, oklch(0.9 0.05 188) 1px, transparent 1px)",
+                backgroundSize: "28px 28px",
               }}
+              aria-hidden="true"
             />
 
             <div className="relative z-10 p-8 md:p-12">
-              <div className="flex items-center gap-3 mb-4">
-                <span className="inline-flex items-center gap-2 px-4 py-1.5 border border-white/20 text-white/80 text-xs font-semibold rounded-full bg-white/5">
-                  <FlaskConical className="w-3.5 h-3.5 text-sky-400" />
+              <div className="flex items-center gap-3 mb-5">
+                <span
+                  className="inline-flex items-center gap-2 px-4 py-1.5 border border-white/20 text-white/80 text-xs font-semibold rounded-full"
+                  style={{ background: "oklch(0.20 0.06 188)" }}
+                >
+                  <FlaskConical
+                    className="w-3.5 h-3.5"
+                    style={{ color: "oklch(0.65 0.18 200)" }}
+                  />
                   Unique Platform Feature
                 </span>
                 <Badge className="bg-sky-500 text-white border-0 text-xs">
@@ -2115,12 +2393,12 @@ export function HomeDashboard() {
                     AI Health Zon
                     <span
                       className="block mt-1"
-                      style={{ color: "oklch(0.72 0.18 200)" }}
+                      style={{ color: "oklch(0.65 0.18 200)" }}
                     >
                       Simulation Lab
                     </span>
                   </h2>
-                  <p className="text-white/70 text-base leading-relaxed mb-6">
+                  <p className="text-white/65 text-base leading-relaxed mb-6">
                     Experience a 45-minute leadership simulation where hospital
                     teams manage claims, billing, and revenue decisions in real
                     time — across 10 escalating RCM stages.
@@ -2133,9 +2411,17 @@ export function HomeDashboard() {
                     ].map(({ icon: Icon, text }) => (
                       <div
                         key={text}
-                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/15 bg-white/5 text-white/70 text-sm"
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm"
+                        style={{
+                          background: "oklch(0.18 0.06 188)",
+                          border: "1px solid oklch(0.30 0.08 188)",
+                          color: "rgba(255,255,255,0.65)",
+                        }}
                       >
-                        <Icon className="w-4 h-4 text-sky-400" />
+                        <Icon
+                          className="w-4 h-4"
+                          style={{ color: "oklch(0.65 0.18 200)" }}
+                        />
                         {text}
                       </div>
                     ))}
@@ -2143,10 +2429,11 @@ export function HomeDashboard() {
                   <Link to="/training-game" data-ocid="simlab.primary_button">
                     <Button
                       size="lg"
-                      className="text-white font-semibold px-8 shadow-lg"
+                      className="text-white font-semibold px-8 shadow-xl"
                       style={{
                         background:
-                          "linear-gradient(135deg, oklch(0.38 0.14 188) 0%, oklch(0.55 0.16 200) 100%)",
+                          "linear-gradient(135deg, oklch(0.35 0.16 188) 0%, oklch(0.55 0.18 200) 100%)",
+                        boxShadow: "0 8px 32px oklch(0.35 0.16 188 / 0.4)",
                       }}
                     >
                       Enter Simulation Lab
@@ -2155,7 +2442,6 @@ export function HomeDashboard() {
                   </Link>
                 </div>
 
-                {/* Simulation stage preview */}
                 <div className="hidden lg:grid grid-cols-2 gap-3">
                   {[
                     {
@@ -2198,7 +2484,7 @@ export function HomeDashboard() {
                           className="text-xs font-semibold px-2 py-0.5 rounded-full"
                           style={{
                             background: "oklch(0.25 0.08 188)",
-                            color: "oklch(0.75 0.14 200)",
+                            color: "oklch(0.72 0.18 200)",
                           }}
                         >
                           {stage.pts}
@@ -2217,34 +2503,68 @@ export function HomeDashboard() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* 11. CTA SECTION                                          */}
+      {/* 13. FINAL CTA — Dark gradient with particles              */}
       {/* ══════════════════════════════════════════════════════════ */}
-      <section className="py-24 px-4 md:px-8 lg:px-16 health-gradient-light">
-        <div className="max-w-4xl mx-auto text-center">
+      <section
+        className="py-28 px-4 md:px-8 lg:px-16 relative overflow-hidden"
+        style={{
+          background:
+            "linear-gradient(135deg, oklch(0.10 0.06 188) 0%, oklch(0.15 0.07 200) 50%, oklch(0.12 0.05 215) 100%)",
+        }}
+      >
+        {/* Particles */}
+        <ParticleField />
+
+        {/* Glow blob */}
+        <motion.div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full blur-[140px] pointer-events-none"
+          style={{ background: "oklch(0.45 0.16 200)" }}
+          animate={{ scale: [1, 1.15, 1], opacity: [0.06, 0.14, 0.06] }}
+          transition={{
+            repeat: Number.POSITIVE_INFINITY,
+            duration: 7,
+            ease: "easeInOut",
+          }}
+          aria-hidden="true"
+        />
+
+        <div className="max-w-4xl mx-auto text-center relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 28 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <span className="inline-block px-3 py-1 bg-health-blue-light text-health-blue text-xs font-semibold rounded-full mb-5 uppercase tracking-wider border border-health-blue/20">
+            <span
+              className="inline-block px-3 py-1 text-xs font-semibold rounded-full mb-5 uppercase tracking-wider border"
+              style={{
+                background: "oklch(0.20 0.06 188)",
+                color: "oklch(0.65 0.18 200)",
+                borderColor: "oklch(0.35 0.10 188)",
+              }}
+            >
               Get Started
             </span>
-            <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-5 leading-tight">
+
+            <h2 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-5 leading-tight">
               Transform Your Hospital
-              <span className="block text-health-blue">Revenue Cycle</span>
+              <br />
+              <span style={{ color: "oklch(0.65 0.18 200)" }}>
+                Revenue Cycle
+              </span>
             </h2>
-            <p className="text-muted-foreground text-lg mb-8 leading-relaxed max-w-2xl mx-auto">
+            <p className="text-white/60 text-lg mb-10 leading-relaxed max-w-2xl mx-auto">
               Join 500+ hospitals across India using AI Health Zon to achieve
               95%+ clean claim rates, reduce denials, and unlock revenue growth.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <Button
                 size="lg"
-                className="text-white font-semibold px-10 shadow-lg"
+                className="text-white font-semibold px-10 shadow-2xl"
                 style={{
                   background:
-                    "linear-gradient(135deg, oklch(0.38 0.14 188) 0%, oklch(0.55 0.16 200) 100%)",
+                    "linear-gradient(135deg, oklch(0.35 0.16 188) 0%, oklch(0.55 0.18 200) 100%)",
+                  boxShadow: "0 12px 40px oklch(0.35 0.16 188 / 0.5)",
                 }}
                 onClick={() => setIsDemoOpen(true)}
                 data-ocid="cta.primary_button"
@@ -2256,7 +2576,7 @@ export function HomeDashboard() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-primary text-primary hover:bg-health-blue-light px-10"
+                  className="border-white/30 text-white hover:bg-white/10 hover:border-white/50 px-10"
                 >
                   Contact Sales
                 </Button>
@@ -2264,7 +2584,7 @@ export function HomeDashboard() {
             </div>
 
             {/* Trust signals */}
-            <div className="flex flex-wrap items-center justify-center gap-6 mt-10 pt-10 border-t border-border">
+            <div className="flex flex-wrap items-center justify-center gap-6 pt-8 border-t border-white/10">
               {[
                 { icon: Shield, text: "HIPAA Ready" },
                 { icon: CheckCircle2, text: "Free Demo" },
@@ -2273,9 +2593,13 @@ export function HomeDashboard() {
               ].map(({ icon: Icon, text }) => (
                 <div
                   key={text}
-                  className="flex items-center gap-2 text-muted-foreground text-sm"
+                  className="flex items-center gap-2 text-sm"
+                  style={{ color: "rgba(255,255,255,0.55)" }}
                 >
-                  <Icon className="w-4 h-4 text-health-blue" />
+                  <Icon
+                    className="w-4 h-4"
+                    style={{ color: "oklch(0.65 0.18 200)" }}
+                  />
                   {text}
                 </div>
               ))}
