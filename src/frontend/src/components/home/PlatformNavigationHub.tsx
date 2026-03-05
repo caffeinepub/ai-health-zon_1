@@ -48,7 +48,7 @@ const platforms = [
   },
   {
     icon: Monitor,
-    title: "Command Centre",
+    title: "Claim Command Centre",
     description:
       "Real-time claims monitoring, rejection analytics, and risk intelligence.",
     href: "/command-centre",
@@ -68,7 +68,7 @@ const platforms = [
   },
   {
     icon: Shield,
-    title: "Compliance",
+    title: "NABH",
     description:
       "NABH 6th Edition compliance framework, audit readiness, and quality monitoring.",
     href: "/compliance",
@@ -78,7 +78,7 @@ const platforms = [
   },
   {
     icon: Smartphone,
-    title: "Digital Health",
+    title: "ABDM",
     description:
       "ABDM integration, ABHA ID management, and health information exchange.",
     href: "/digital-health",

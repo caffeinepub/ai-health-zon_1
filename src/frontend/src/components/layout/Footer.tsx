@@ -3,14 +3,14 @@ import { Activity, Cross, Mail, MapPin, Phone } from "lucide-react";
 import { SiFacebook, SiLinkedin, SiX, SiYoutube } from "react-icons/si";
 
 const platformLinks = [
-  { href: "/ecosystem", label: "Ecosystem" },
-  { href: "/hospitals", label: "Hospitals" },
-  { href: "/command-centre", label: "Command Centre" },
+  { href: "/hospitals", label: "Hospital Revenue Management" },
+  { href: "/command-centre", label: "Claim Command Centre" },
   { href: "/patient-support", label: "Patient Support" },
-  { href: "/compliance", label: "Compliance" },
-  { href: "/digital-health", label: "Digital Health" },
+  { href: "/compliance", label: "NABH" },
+  { href: "/digital-health", label: "ABDM" },
   { href: "/insights", label: "Insights" },
   { href: "/join-network", label: "Join Network" },
+  { href: "/ai-course", label: "AI Course" },
 ];
 
 export function Footer() {
@@ -148,25 +148,27 @@ export function Footer() {
               <li className="flex items-start gap-2">
                 <Phone className="w-4 h-4 text-health-teal mt-0.5 shrink-0" />
                 <a
-                  href="tel:+919876543210"
+                  href="tel:+918696766966"
                   className="text-white/70 hover:text-white text-sm transition-colors"
                 >
-                  +91 98765 43210
+                  +91 8696766966
                 </a>
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-health-teal mt-0.5 shrink-0" />
                 <span className="text-white/70 text-sm">
-                  Health Tech Hub, Bengaluru,
+                  Registered office Triple Top Pattern Health Pvt. Ltd.
                   <br />
-                  Karnataka 560001
+                  C-10/9, Chinab Appartment, Sector 28,
+                  <br />
+                  Pratap Nagar, Jaipur
                 </span>
               </li>
             </ul>
 
             <div className="mt-6 p-3 bg-white/10 rounded-lg border border-white/20">
               <p className="text-white/60 text-xs mb-1">Emergency Helpline</p>
-              <p className="text-white font-semibold text-sm">1800-XXX-XXXX</p>
+              <p className="text-white font-semibold text-sm">+91-8696766966</p>
               <p className="text-white/50 text-xs">Available 24/7</p>
             </div>
           </div>

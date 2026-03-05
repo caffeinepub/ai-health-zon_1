@@ -50,7 +50,7 @@ const ecosystemNodes = [
   },
   {
     id: "digital",
-    label: "Digital Health",
+    label: "ABDM",
     icon: Smartphone,
     color: "#059669",
     angle: 205.7,
@@ -59,7 +59,7 @@ const ecosystemNodes = [
   },
   {
     id: "compliance",
-    label: "Compliance",
+    label: "NABH",
     icon: ShieldCheck,
     color: "#d97706",
     angle: 257.1,
@@ -68,7 +68,7 @@ const ecosystemNodes = [
   },
   {
     id: "command",
-    label: "Command Centre",
+    label: "Claim Command Centre",
     icon: Monitor,
     color: "#6d28d9",
     angle: 308.5,
@@ -111,7 +111,7 @@ const pillars = [
       "ABHA ID management, health records, patient counseling, grievance redressal, and care continuity support.",
   },
   {
-    title: "Digital Health (ABDM)",
+    title: "ABDM",
     icon: Smartphone,
     color: "text-green-600",
     bg: "bg-green-50",
@@ -119,7 +119,7 @@ const pillars = [
       "Full ABDM ecosystem: Health Facility Registry, Healthcare Professionals Registry, ABHA, PHR, and HIE-CM.",
   },
   {
-    title: "Quality & Compliance",
+    title: "Quality & NABH",
     icon: ShieldCheck,
     color: "text-amber-600",
     bg: "bg-amber-50",

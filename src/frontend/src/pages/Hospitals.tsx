@@ -407,7 +407,7 @@ export function Hospitals() {
             animate={{ opacity: 1, y: 0 }}
           >
             <span className="inline-block px-4 py-1.5 bg-white/10 border border-white/20 text-white/80 text-xs rounded-full mb-4 uppercase tracking-wider">
-              Hospital Solutions
+              Hospital Revenue Management
             </span>
             <h1 className="font-heading text-4xl sm:text-5xl font-bold text-white mb-5">
               Transform Your Hospital's

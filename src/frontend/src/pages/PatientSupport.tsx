@@ -95,7 +95,7 @@ const helpdeskCards = [
       "24/7 support for claim status queries, document submission, and settlement follow-ups.",
     color: "text-blue-600",
     bg: "bg-blue-50",
-    contact: "1800-XXX-CLAIM",
+    contact: "+91-8696766966",
   },
   {
     icon: Shield,
@@ -104,7 +104,7 @@ const helpdeskCards = [
       "Help with ABHA ID creation, health record linking, and digital health profile management.",
     color: "text-green-600",
     bg: "bg-green-50",
-    contact: "1800-XXX-ABHA",
+    contact: "+91-8696766966",
   },
   {
     icon: MessageSquare,
@@ -113,7 +113,7 @@ const helpdeskCards = [
       "Expert guidance on policy coverage, pre-authorization, and insurer communication.",
     color: "text-teal-600",
     bg: "bg-teal-50",
-    contact: "1800-XXX-INS",
+    contact: "+91-8696766966",
   },
   {
     icon: AlertCircle,
@@ -122,7 +122,7 @@ const helpdeskCards = [
       "Structured grievance management with dedicated case managers and escalation support.",
     color: "text-amber-600",
     bg: "bg-amber-50",
-    contact: "1800-XXX-CARE",
+    contact: "+91-8696766966",
   },
 ];
 

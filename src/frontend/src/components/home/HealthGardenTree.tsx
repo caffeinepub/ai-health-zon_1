@@ -38,7 +38,7 @@ const branches = [
   },
   {
     id: "command",
-    label: "Command Centre",
+    label: "Claim Command Centre",
     icon: Monitor,
     x: 480,
     y: 160,
@@ -60,7 +60,7 @@ const branches = [
   },
   {
     id: "compliance",
-    label: "Compliance",
+    label: "NABH",
     icon: Shield,
     x: 150,
     y: 390,
@@ -71,7 +71,7 @@ const branches = [
   },
   {
     id: "digital",
-    label: "Digital Health",
+    label: "ABDM",
     icon: Smartphone,
     x: 450,
     y: 390,
@@ -104,38 +104,13 @@ export function HealthGardenTree() {
 
   return (
     <section className="relative min-h-screen overflow-hidden">
-      {/* Background */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(160deg, oklch(0.14 0.08 240) 0%, oklch(0.18 0.1 200) 40%, oklch(0.12 0.06 170) 100%)",
+            "linear-gradient(160deg, #0a1428 0%, #0a1923 50%, #051219 100%)",
         }}
       />
-      {/* Decorative mesh */}
-      <div
-        className="absolute inset-0 opacity-30"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 15% 85%, oklch(0.55 0.18 185 / 0.4) 0%, transparent 45%), radial-gradient(circle at 85% 15%, oklch(0.45 0.15 240 / 0.3) 0%, transparent 45%), radial-gradient(circle at 50% 50%, oklch(0.4 0.12 145 / 0.2) 0%, transparent 60%)",
-        }}
-      />
-
-      {/* Leaf particles */}
-      {["l0", "l1", "l2", "l3", "l4", "l5", "l6", "l7"].map((id, i) => (
-        <div
-          key={id}
-          className="absolute w-2 h-2 rounded-full opacity-30"
-          style={{
-            left: `${10 + i * 12}%`,
-            top: `${20 + (i % 3) * 25}%`,
-            backgroundColor:
-              i % 3 === 0 ? "#0d9488" : i % 3 === 1 ? "#1e40af" : "#16a34a",
-            animation: `leaf-fall ${3 + i * 0.5}s ease-in-out infinite`,
-            animationDelay: `${i * 0.6}s`,
-          }}
-        />
-      ))}
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 pt-20 pb-16">
         {/* Hero Text Above Tree */}
@@ -161,10 +136,38 @@ export function HealthGardenTree() {
               Digital Ecosystem
             </span>
           </h1>
-          <p className="text-white/65 text-base sm:text-lg max-w-2xl mx-auto">
+          <p className="text-white/65 text-base sm:text-lg max-w-2xl mx-auto mb-8">
             AI-powered solutions connecting hospitals, insurers, professionals
             and patients — driving better outcomes through technology.
           </p>
+
+          {/* Taglines */}
+          <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3">
+            {[
+              "We focus on what matters Most to Hospital",
+              "Faster Claim, Better Revenue",
+              "Unlock future Healthcare Innovations & Opportunities",
+            ].map((tagline, i) => (
+              <motion.div
+                key={tagline}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 + i * 0.15, duration: 0.5 }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/20 bg-white/8 backdrop-blur-sm"
+              >
+                <span
+                  className="w-1.5 h-1.5 rounded-full shrink-0"
+                  style={{
+                    backgroundColor:
+                      i === 0 ? "#0d9488" : i === 1 ? "#60a5fa" : "#34d399",
+                  }}
+                />
+                <span className="text-white/85 text-sm font-medium">
+                  {tagline}
+                </span>
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
 
         {/* SVG Tree */}
@@ -259,7 +262,7 @@ export function HealthGardenTree() {
               strokeWidth="10"
               strokeLinecap="round"
             />
-            {/* Left bottom branch — Compliance */}
+            {/* Left bottom branch — NABH */}
             <path
               d="M 295 360 C 265 360 210 370 188 398"
               fill="none"
@@ -461,7 +464,7 @@ export function HealthGardenTree() {
             Book a Free Demo
             <ArrowRight className="ml-2 w-4 h-4" />
           </Button>
-          <Link to="/ecosystem">
+          <Link to="/hospitals">
             <Button
               variant="outline"
               size="lg"

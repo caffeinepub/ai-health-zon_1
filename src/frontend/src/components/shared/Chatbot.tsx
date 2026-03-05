@@ -12,7 +12,7 @@ const responses: Record<string, string> = {
   services:
     "AI Health Zon offers: ✅ Revenue Cycle Management (RCM) ✅ NABH Compliance Tools ✅ ABDM/ABHA Integration ✅ Claims Command Centre ✅ Patient Support Hub ✅ Healthcare Network Management ✅ Digital Health Records",
   contact:
-    "📧 Email: info@aihealthzon.com\n📞 Phone: +91 98765 43210\n📍 Address: Health Tech Hub, Bengaluru, Karnataka 560001",
+    "📧 Email: info@aihealthzon.com\n📞 Phone: +91 8696766966\n📍 Registered office: Triple Top Pattern Health Pvt. Ltd., C-10/9, Chinab Appartment, Sector 28, Pratap Nagar, Jaipur",
   demo: "You can book a free personalized demo by clicking the 'Book Demo' button in the navigation, or visit our Join Network page. Our specialist will contact you within 2 business hours!",
   hospital:
     "We provide hospitals with: RCM automation, Pre-authorization management, Real-time claim tracking, NABH compliance tools, Financial analytics, and comprehensive staff training programs.",
@@ -23,11 +23,11 @@ const responses: Record<string, string> = {
   abdm: "We provide full ABDM integration including ABHA ID creation, Personal Health Records (PHR), Health Information Exchange, Consent Management, and Healthcare Interoperability — fully compliant with NHA guidelines.",
   abha: "ABHA (Ayushman Bharat Health Account) IDs can be created and managed through our platform. We handle enrollment, verification, and health record linkage seamlessly.",
   claim:
-    "Our Claims Command Centre provides real-time tracking, rejection analytics, clean claim scoring, and department risk index. We process 10,000+ claims monthly with a 95% clean claim rate.",
+    "Our Claim Command Centre provides real-time tracking, rejection analytics, clean claim scoring, and department risk index. We process 10,000+ claims monthly with a 95% clean claim rate.",
   patient:
     "Our Patient Support Hub covers the full patient lifecycle: Pre-admission (insurance verification, ABHA enrollment), During Admission (treatment documentation, insurance liaison), and Post-Discharge (claim filing, follow-up care, grievance handling).",
   compliance:
-    "Our Compliance Centre covers NABH standards, audit readiness workflows, documentation checklists, and real-time monitoring. We've helped 100+ hospitals achieve NABH certification with a 98% audit pass rate.",
+    "Our NABH module covers NABH standards, audit readiness workflows, documentation checklists, and real-time monitoring. We've helped 100+ hospitals achieve NABH certification with a 98% audit pass rate.",
   insurer:
     "We connect insurers with hospitals through our network for faster pre-authorization, real-time claim updates, fraud detection, and automated reconciliation — reducing processing time by 60%.",
   vendor:
@@ -36,7 +36,7 @@ const responses: Record<string, string> = {
   careers:
     "We're growing! We look for passionate healthcare technology professionals. Send your resume to careers@aihealthzon.com or connect with us on LinkedIn.",
   pricing:
-    "Our pricing is customized based on your organization's size and needs. Contact us at info@aihealthzon.com or call +91 98765 43210 for a tailored quote.",
+    "Our pricing is customized based on your organization's size and needs. Contact us at info@aihealthzon.com or call +91 8696766966 for a tailored quote.",
   help: "I can help you with:\n• Information about our services\n• Contact details\n• Demo booking\n• NABH compliance\n• ABDM/ABHA integration\n• Claims management\n• Joining our network\n\nWhat would you like to know?",
 };
 

@@ -7,14 +7,15 @@ import { useEffect, useState } from "react";
 
 const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/ecosystem", label: "Ecosystem" },
-  { href: "/hospitals", label: "Hospitals" },
-  { href: "/command-centre", label: "Command Centre" },
+  { href: "/hospitals", label: "Hospital Revenue Management" },
+  { href: "/command-centre", label: "Claim Command Centre" },
   { href: "/patient-support", label: "Patient Support" },
-  { href: "/compliance", label: "Compliance" },
-  { href: "/digital-health", label: "Digital Health" },
+  { href: "/compliance", label: "NABH" },
+  { href: "/digital-health", label: "ABDM" },
   { href: "/insights", label: "Insights" },
   { href: "/join-network", label: "Join Network" },
+  { href: "/training-game", label: "Training" },
+  { href: "/ai-course", label: "AI Course" },
 ];
 
 export function Navigation() {
@@ -121,6 +122,35 @@ export function Navigation() {
                 }`}
               >
                 Join Network
+              </Link>
+              <Link
+                to="/training-game"
+                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
+                  currentPath === "/training-game"
+                    ? isScrolled
+                      ? "bg-health-blue-light text-health-blue"
+                      : "bg-white/20 text-white"
+                    : isScrolled
+                      ? "text-foreground hover:bg-muted hover:text-health-blue"
+                      : "text-white/80 hover:text-white hover:bg-white/10"
+                }`}
+              >
+                🎮 Training
+              </Link>
+              <Link
+                data-ocid="nav.ai_course.link"
+                to="/ai-course"
+                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
+                  currentPath === "/ai-course"
+                    ? isScrolled
+                      ? "bg-health-blue-light text-health-blue"
+                      : "bg-white/20 text-white"
+                    : isScrolled
+                      ? "text-foreground hover:bg-muted hover:text-health-blue"
+                      : "text-white/80 hover:text-white hover:bg-white/10"
+                }`}
+              >
+                🎓 AI Course
               </Link>
             </div>
 

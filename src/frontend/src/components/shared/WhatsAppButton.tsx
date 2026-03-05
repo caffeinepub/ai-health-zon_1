@@ -4,7 +4,7 @@ import { SiWhatsapp } from "react-icons/si";
 export function WhatsAppButton() {
   return (
     <motion.a
-      href="https://wa.me/919876543210"
+      href="https://wa.me/918696766966"
       target="_blank"
       rel="noopener noreferrer"
       whileHover={{ scale: 1.1 }}

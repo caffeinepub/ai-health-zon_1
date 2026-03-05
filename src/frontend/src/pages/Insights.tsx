@@ -150,47 +150,55 @@ function InsightCard({
   insight,
   index,
 }: { insight: InsightItem; index: number }) {
+  const handleReadMore = () => {
+    window.open(`/insights/${insight.id}`, "_blank", "noopener,noreferrer");
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.07 }}
-      className="bg-white rounded-xl p-6 border border-border shadow-xs card-hover flex flex-col"
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.07, duration: 0.5 }}
+      className="bg-white rounded-xl border border-border shadow-xs card-hover flex flex-col overflow-hidden"
     >
-      <div className="flex items-center justify-between mb-3">
-        <Badge
-          className={`text-xs ${categoryColors[insight.category]} border-0`}
-        >
-          {insight.category}
-        </Badge>
-        <span className="text-muted-foreground text-xs">
-          {insight.readTime}
-        </span>
-      </div>
-      <h3 className="font-heading font-bold text-foreground text-base mb-2 leading-snug">
-        {insight.title}
-      </h3>
-      <p className="text-muted-foreground text-sm leading-relaxed flex-1 mb-4">
-        {insight.summary}
-      </p>
-      <div className="flex items-center justify-between pt-3 border-t border-border">
-        <div className="flex items-center gap-3 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1">
-            <User className="w-3 h-3" />
-            {insight.author}
-          </span>
-          <span className="flex items-center gap-1">
-            <Calendar className="w-3 h-3" />
-            {insight.date}
+      <div className="p-5 flex flex-col flex-1">
+        <div className="flex items-center justify-between mb-3">
+          <Badge
+            className={`text-xs ${categoryColors[insight.category]} border-0`}
+          >
+            {insight.category}
+          </Badge>
+          <span className="text-muted-foreground text-xs">
+            {insight.readTime}
           </span>
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-health-blue hover:text-health-blue/80 text-xs h-7 px-2"
-        >
-          Read More <ArrowRight className="w-3 h-3 ml-1" />
-        </Button>
+        <h3 className="font-heading font-bold text-foreground text-base mb-2 leading-snug">
+          {insight.title}
+        </h3>
+        <p className="text-muted-foreground text-sm leading-relaxed flex-1 mb-4">
+          {insight.summary}
+        </p>
+        <div className="flex items-center justify-between pt-3 border-t border-border">
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <User className="w-3 h-3" />
+              {insight.author}
+            </span>
+            <span className="flex items-center gap-1">
+              <Calendar className="w-3 h-3" />
+              {insight.date}
+            </span>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleReadMore}
+            className="text-health-blue hover:text-health-blue/80 text-xs h-7 px-2 cursor-pointer"
+          >
+            Read More <ArrowRight className="w-3 h-3 ml-1" />
+          </Button>
+        </div>
       </div>
     </motion.div>
   );

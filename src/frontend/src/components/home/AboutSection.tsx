@@ -14,7 +14,7 @@ const highlights = [
   "Revenue Cycle Management & Claims Automation",
   "NABH 6th Edition Compliance Framework",
   "Ayushman Bharat Digital Mission Integration",
-  "Real-time Claims Command Centre",
+  "Real-time Claim Command Centre",
   "Patient Support & Care Continuity",
   "Multi-stakeholder Network Management",
 ];
@@ -76,52 +76,53 @@ export function AboutSection() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="relative"
           >
-            {/* Background decoration */}
-            <div className="absolute -inset-4 health-gradient-light rounded-3xl" />
-
-            <div className="relative p-8">
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                {stats.map((stat, i) => (
-                  <motion.div
+            {/* Stats Grid */}
+            <motion.div
+              className="relative rounded-2xl overflow-hidden shadow-xl mb-6 health-gradient p-6"
+              animate={{ y: [0, -6, 0] }}
+              transition={{
+                duration: 5,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "easeInOut",
+              }}
+            >
+              <div className="grid grid-cols-2 gap-4">
+                {stats.map((stat) => (
+                  <div
                     key={stat.label}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                    transition={{ delay: 0.3 + i * 0.1 }}
-                    className="bg-white rounded-xl p-5 shadow-sm border border-border text-center"
+                    className="text-center p-4 bg-white/10 rounded-xl"
                   >
-                    <div
-                      className={`font-heading text-3xl font-bold mb-1 ${stat.color}`}
-                    >
+                    <div className="font-heading text-2xl font-bold text-white">
                       {stat.value}
                     </div>
-                    <div className="text-muted-foreground text-xs">
+                    <div className="text-white/70 text-xs leading-tight mt-1">
                       {stat.label}
                     </div>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
+            </motion.div>
 
-              {/* Certification badges */}
-              <div className="bg-white rounded-xl p-4 shadow-sm border border-border">
-                <p className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
-                  Certifications & Compliance
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    "NABH Compliant",
-                    "ABDM Ready",
-                    "HIPAA Aligned",
-                    "ISO 27001",
-                    "NHA Certified",
-                  ].map((cert) => (
-                    <span
-                      key={cert}
-                      className="px-2.5 py-1 bg-health-blue-light text-health-blue text-xs rounded-full font-medium"
-                    >
-                      {cert}
-                    </span>
-                  ))}
-                </div>
+            {/* Certification badges */}
+            <div className="bg-white rounded-xl p-4 shadow-sm border border-border">
+              <p className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
+                Certifications & Compliance
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  "NABH Compliant",
+                  "ABDM Ready",
+                  "HIPAA Aligned",
+                  "ISO 27001",
+                  "NHA Certified",
+                ].map((cert) => (
+                  <span
+                    key={cert}
+                    className="px-2.5 py-1 bg-health-blue-light text-health-blue text-xs rounded-full font-medium"
+                  >
+                    {cert}
+                  </span>
+                ))}
               </div>
             </div>
           </motion.div>
