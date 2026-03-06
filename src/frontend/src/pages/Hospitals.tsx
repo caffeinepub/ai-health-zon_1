@@ -14,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Link } from "@tanstack/react-router";
 import {
   Activity,
   AlertCircle,
@@ -577,10 +578,19 @@ export function Hospitals() {
             <h2 className="font-heading text-3xl font-bold text-foreground mb-3">
               Healthcare Journey Story
             </h2>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground mb-4">
               Follow a patient's complete journey through our integrated
               ecosystem.
             </p>
+            <Link to="/journey-film">
+              <Button
+                variant="outline"
+                data-ocid="hospitals.watch_film.button"
+                className="gap-2 border-primary text-primary hover:bg-primary/10"
+              >
+                🎬 Watch as Film
+              </Button>
+            </Link>
           </div>
           <div className="relative">
             <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-border hidden md:block -translate-x-1/2" />

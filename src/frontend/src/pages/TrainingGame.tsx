@@ -1528,7 +1528,7 @@ function useAngryCreature() {
   };
 }
 
-// Doctor Owl — bobs up and down, becomes angry on touch
+// Doctor Owl → Dr. Sharma (Senior Physician) — bobs up and down, becomes angry on touch
 function DoctorOwl({ show }: { show: boolean }) {
   const {
     isAngry,
@@ -1571,8 +1571,8 @@ function DoctorOwl({ show }: { show: boolean }) {
         <CreatureTooltip
           text={
             isAngry
-              ? "😤 Don't disturb me while I'm advising!"
-              : "🦉 Complete all tasks to unlock submission!"
+              ? "😤 Don't interrupt my rounds!"
+              : "🩺 Complete all tasks to unlock submission!"
           }
           visible={tooltipVisible}
           angry={isAngry}
@@ -1585,19 +1585,19 @@ function DoctorOwl({ show }: { show: boolean }) {
               : undefined
           }
         >
-          {isAngry ? "😡" : "🦉"}
+          {isAngry ? "😤" : "👨‍⚕️"}
         </motion.span>
         <div
           className={`text-[9px] font-bold text-center mt-0.5 bg-white/80 rounded px-1 ${isAngry ? "text-red-700" : "text-teal-700"}`}
         >
-          Dr. Owl
+          Dr. Sharma
         </div>
       </div>
     </motion.div>
   );
 }
 
-// Running Rabbit Nurse — dashes left to right, becomes angry on touch
+// Running Rabbit → Nurse Priya (Head Nurse) — dashes left to right, becomes angry on touch
 function RunningRabbit({ show }: { show: boolean }) {
   const {
     isAngry,
@@ -1637,8 +1637,8 @@ function RunningRabbit({ show }: { show: boolean }) {
         <CreatureTooltip
           text={
             isAngry
-              ? "💢 I'm in a hurry! Stop that!"
-              : "🐇 Hurry! Submit before time runs out!"
+              ? "💢 I'm on duty! Stop that!"
+              : "💉 Hurry! Submit before time runs out!"
           }
           visible={tooltipVisible}
           angry={isAngry}
@@ -1663,19 +1663,19 @@ function RunningRabbit({ show }: { show: boolean }) {
                 }
           }
         >
-          {isAngry ? "😠🐇" : "🐇"}
+          {isAngry ? "😠" : "👩‍⚕️"}
         </motion.span>
         <div
           className={`text-[9px] font-bold text-center mt-0.5 bg-white/80 rounded px-1 ${isAngry ? "text-red-700" : "text-pink-700"}`}
         >
-          Nurse
+          Nurse Priya
         </div>
       </div>
     </motion.div>
   );
 }
 
-// Wise Turtle — crawls slowly, becomes angry on touch
+// Wise Turtle → Mr. Arun (Billing Expert) — crawls slowly, becomes angry on touch
 function WiseTurtle({ show }: { show: boolean }) {
   const {
     isAngry,
@@ -1719,8 +1719,8 @@ function WiseTurtle({ show }: { show: boolean }) {
         <CreatureTooltip
           text={
             isAngry
-              ? "😤 I'm slow but I bite!"
-              : "🐢 Accuracy beats speed every time."
+              ? "😤 I'm slow but precise — don't rush me!"
+              : "📋 Accuracy beats speed every time."
           }
           visible={tooltipVisible}
           angry={isAngry}
@@ -1743,19 +1743,19 @@ function WiseTurtle({ show }: { show: boolean }) {
                 }
           }
         >
-          {isAngry ? "😤" : "🐢"}
+          {isAngry ? "😤" : "🧑‍💼"}
         </motion.span>
         <div
           className={`text-[9px] font-bold text-center mt-0.5 bg-white/80 rounded px-1 ${isAngry ? "text-red-700" : "text-green-700"}`}
         >
-          Sensei
+          Mr. Arun
         </div>
       </div>
     </motion.div>
   );
 }
 
-// Cheerful Bear Doctor — bounces, becomes angry on touch
+// Cheerful Bear → Dr. Mehta (RCM Director) — bounces, becomes angry on touch
 function CheerfulBear({ show }: { show: boolean }) {
   const {
     isAngry,
@@ -1798,8 +1798,8 @@ function CheerfulBear({ show }: { show: boolean }) {
         <CreatureTooltip
           text={
             isAngry
-              ? "🤬 Step back or face my claws!"
-              : "🐻 Keep going! You're doing great!"
+              ? "🤬 Step back — I'm reviewing claims!"
+              : "💪 Keep going! You're doing great!"
           }
           visible={tooltipVisible}
           angry={isAngry}
@@ -1812,19 +1812,19 @@ function CheerfulBear({ show }: { show: boolean }) {
               : undefined
           }
         >
-          {isAngry ? "🤬" : "🐻"}
+          {isAngry ? "🤬" : "👨‍💼"}
         </motion.span>
         <div
           className={`text-[9px] font-bold text-center mt-0.5 bg-white/80 rounded px-1 ${isAngry ? "text-red-700" : "text-amber-700"}`}
         >
-          Dr. Bear
+          Dr. Mehta
         </div>
       </div>
     </motion.div>
   );
 }
 
-// Mischievous Fox — blinks/flashes near Challenge Twist, becomes angry on touch
+// Mischievous Fox → Rahul (TPA Agent) — blinks/flashes near Challenge Twist, becomes angry on touch
 function MischievousFox({
   show,
   stageNum,
@@ -1871,8 +1871,8 @@ function MischievousFox({
         <CreatureTooltip
           text={
             isAngry
-              ? "🔥 You've unleashed the fox!"
-              : "🦊 I caused this challenge... 😈"
+              ? "🔥 You've disrupted the TPA process!"
+              : "🕵️ I caused this challenge... 😈"
           }
           visible={tooltipVisible}
           angry={isAngry}
@@ -1895,21 +1895,21 @@ function MischievousFox({
               : { duration: 2.5, repeat: Number.POSITIVE_INFINITY, delay: 1 }
           }
         >
-          {isAngry ? "😡" : "🦊"}
+          {isAngry ? "😡" : "🕵️"}
         </motion.span>
         <div
           className={`text-[9px] font-bold text-center mt-0.5 bg-white/80 rounded px-1 ${isAngry ? "text-red-700" : "text-orange-700"}`}
         >
-          Fox
+          Rahul TPA
         </div>
       </div>
     </motion.div>
   );
 }
 
-// ─── Big Animals ──────────────────────────────────────────────────────────────
+// ─── Big Staff ────────────────────────────────────────────────────────────────
 
-// Wise Elephant — stomps slowly, becomes angry on touch
+// Wise Elephant → Mr. Gupta (Hospital CEO) — stomps slowly, becomes angry on touch
 function WiseElephant({ show }: { show: boolean }) {
   const {
     isAngry,
@@ -1953,8 +1953,8 @@ function WiseElephant({ show }: { show: boolean }) {
         <CreatureTooltip
           text={
             isAngry
-              ? "💢 Never anger an elder elephant!"
-              : "🐘 Every step matters — don't miss a document!"
+              ? "💢 Never disturb the CEO during strategy!"
+              : "🏥 Every step matters — don't miss a document!"
           }
           visible={tooltipVisible}
           angry={isAngry}
@@ -1979,19 +1979,19 @@ function WiseElephant({ show }: { show: boolean }) {
                 }
           }
         >
-          {isAngry ? "😡" : "🐘"}
+          {isAngry ? "😡" : "🧑‍💼"}
         </motion.span>
         <div
           className={`text-[10px] font-bold text-center mt-0.5 bg-white/80 rounded px-1 ${isAngry ? "text-red-700" : "text-gray-700"}`}
         >
-          Elder Elephant
+          CEO Gupta
         </div>
       </div>
     </motion.div>
   );
 }
 
-// Roaring Lion — paces back and forth, becomes angry on touch
+// Roaring Lion → Dr. Kapoor (Chief Medical Officer) — paces back and forth, becomes angry on touch
 function RoaringLion({ show }: { show: boolean }) {
   const {
     isAngry,
@@ -2035,8 +2035,8 @@ function RoaringLion({ show }: { show: boolean }) {
         <CreatureTooltip
           text={
             isAngry
-              ? "🦁 ROAAARRR! You dare touch the King?!"
-              : "🦁 Lead like a lion — own your role!"
+              ? "CMO is watching — take that seriously!"
+              : "🌟 Lead like a CMO — own your role!"
           }
           visible={tooltipVisible}
           angry={isAngry}
@@ -2061,19 +2061,19 @@ function RoaringLion({ show }: { show: boolean }) {
                 }
           }
         >
-          {isAngry ? "😾" : "🦁"}
+          {isAngry ? "😾" : "👨‍⚕️"}
         </motion.span>
         <div
           className={`text-[10px] font-bold text-center mt-0.5 bg-white/80 rounded px-1 ${isAngry ? "text-red-700" : "text-yellow-700"}`}
         >
-          {isAngry ? "ROAR!" : "King Lion"}
+          {isAngry ? "CMO Alert!" : "Dr. Kapoor"}
         </div>
       </div>
     </motion.div>
   );
 }
 
-// Mighty Gorilla — beats chest, becomes angry on touch
+// Mighty Gorilla → Mrs. Singh (Quality Head) — beats chest, becomes angry on touch
 function MightyGorilla({ show }: { show: boolean }) {
   const {
     isAngry,
@@ -2112,8 +2112,8 @@ function MightyGorilla({ show }: { show: boolean }) {
         <CreatureTooltip
           text={
             isAngry
-              ? "🦍 AARRGH! Don't poke the gorilla!"
-              : "🦍 Strength is in the details — check every field!"
+              ? "🤬 NABH audit pending! Don't poke me!"
+              : "✅ Strength is in the details — check every field!"
           }
           visible={tooltipVisible}
           angry={isAngry}
@@ -2136,19 +2136,19 @@ function MightyGorilla({ show }: { show: boolean }) {
                 }
           }
         >
-          {isAngry ? "🤬" : "🦍"}
+          {isAngry ? "🤬" : "👩‍💼"}
         </motion.span>
         <div
           className={`text-[10px] font-bold text-center mt-0.5 bg-white/80 rounded px-1 ${isAngry ? "text-red-700" : "text-gray-800"}`}
         >
-          Chief Gorilla
+          Mrs. Singh
         </div>
       </div>
     </motion.div>
   );
 }
 
-// Tall Giraffe — sways gracefully, becomes angry on touch
+// Tall Giraffe → Priti (ABHA Coordinator) — sways gracefully, becomes angry on touch
 function TallGiraffe({ show }: { show: boolean }) {
   const {
     isAngry,
@@ -2193,8 +2193,8 @@ function TallGiraffe({ show }: { show: boolean }) {
         <CreatureTooltip
           text={
             isAngry
-              ? "🦒 I'll neck-slap you! That hurt!"
-              : "🦒 Keep your head high — spot issues early!"
+              ? "📡 ABHA system alert — back off!"
+              : "🔍 Keep your head high — spot issues early!"
           }
           visible={tooltipVisible}
           angry={isAngry}
@@ -2217,12 +2217,12 @@ function TallGiraffe({ show }: { show: boolean }) {
                 }
           }
         >
-          {isAngry ? "😤" : "🦒"}
+          {isAngry ? "😤" : "👩‍💻"}
         </motion.span>
         <div
           className={`text-[10px] font-bold text-center mt-0.5 bg-white/80 rounded px-1 ${isAngry ? "text-red-700" : "text-orange-700"}`}
         >
-          Giraffe Scout
+          Priti ABHA
         </div>
       </div>
     </motion.div>
@@ -2410,11 +2410,11 @@ export function TrainingGame() {
             >
               {showCreatures ? (
                 <>
-                  <EyeOff className="w-3.5 h-3.5" />🐾 Hide Creatures
+                  <EyeOff className="w-3.5 h-3.5" />👥 Hide Staff
                 </>
               ) : (
                 <>
-                  <Eye className="w-3.5 h-3.5" />🐾 Show Creatures
+                  <Eye className="w-3.5 h-3.5" />👥 Show Staff
                 </>
               )}
             </motion.button>

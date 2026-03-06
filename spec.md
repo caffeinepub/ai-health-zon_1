@@ -1,44 +1,37 @@
 # AI Health Zon
 
 ## Current State
-- Home page (`HomeDashboard.tsx`) is a comprehensive SaaS-style page with 11 sections: Hero, Problem, Solution, Modules, Dashboard, How It Works, Who Benefits, Security, Case Study, Simulation Lab, CTA.
-- Ecosystem page (`Ecosystem.tsx`) has its own hero, an interactive SVG ecosystem diagram (orbiting nodes), and 7 pillar cards.
-- Both pages are separate routes (`/` and `/ecosystem`).
-- Nav includes both "Home" and "Ecosystem" as separate links.
-- The app has animations via `motion/react` throughout.
+The app has a Hospitals page with a "Healthcare Journey Story" section rendered as a simple alternating left-right timeline with 6 stages (Discovery, Registration, Pre-Authorization, Treatment, Claim Submission, Reconciliation). There is no dedicated cinematic film-style experience for this content.
 
 ## Requested Changes (Diff)
 
 ### Add
-- Merge Ecosystem content into the Home page: the interactive SVG ecosystem diagram and 7 ecosystem pillar cards should become sections of the merged Home page.
-- Add relevant generated images (hero background visual, ecosystem diagram visual, RCM workflow visual, case study hospital visual) as impactful section backgrounds or side visuals — positioned to enhance readability.
-- Add entrance animations (fade-up, scale-in, stagger) to all major sections and cards on the merged page.
-- Add a floating "pulse" or "glow" animated background element to the hero section to make it more dynamic.
-- Add counter animation to KPI numbers (animate from 0 to final value when scrolled into view).
-- Ecosystem section within the home page should have a brief introductory heading explaining what the ecosystem is.
-- Remove the standalone `/ecosystem` route and its nav link — redirect to home.
+- A new page `/journey-film` — a full-screen cinematic "film experience" presenting the Healthcare Journey Story as a scrollable movie/film strip
+- Each of the 6 journey stages is presented as a cinematic scene with: scene number (clapperboard style), full-screen dark backdrop, dramatic title card, description, and animated badge tags
+- Film strip / reel aesthetic: sprocket holes on sides, scene transitions, film grain overlay, cinematic letterbox bars
+- Auto-play mode: scenes advance automatically every 4 seconds with a progress bar; can be paused/manually navigated
+- "Now Playing" header bar styled like a cinema screen with title
+- Stage progress indicator styled like film frames at the bottom
+- A "Play Film" button on the Hospitals page Journey Story section that links to this new page
+- Nav link added for the film page (or accessible via Hospitals page)
 
 ### Modify
-- `HomeDashboard.tsx` (or `Home.tsx`): Merge the Ecosystem SVG diagram section and pillar cards into the body of the homepage, positioned after the "Who Benefits" section and before Security.
-- `Navigation.tsx`: Remove the "Ecosystem" link from nav (since the page is merged). Keep all other nav links. The logo still links to `/`.
-- `Footer.tsx`: Remove the "Ecosystem" footer link.
-- `App.tsx`: Remove the `ecosystemRoute`. The `/ecosystem` path can redirect to `/` or simply be removed.
-- Hero section: Add an animated background with subtle healthcare/data network SVG particle effect or glowing orb animation.
-- All section cards: Ensure smooth staggered entrance animations.
+- `Hospitals.tsx` — add a "Watch as Film" button to the Journey Story section that links to `/journey-film`
+- `App.tsx` — add the new `/journey-film` route
+- `Navigation.tsx` — no change needed (accessible via Hospitals page CTA)
 
 ### Remove
-- `Ecosystem.tsx` page as a standalone page (content merged into HomeDashboard).
-- Ecosystem route from router.
-- Ecosystem link from nav and footer.
+- Nothing removed
 
 ## Implementation Plan
-1. Generate 2–3 images: hero section visual (hospital command centre / healthcare data network), ecosystem network diagram visual, and an RCM workflow / hospital corridor visual.
-2. Merge Ecosystem SVG diagram and pillars into `HomeDashboard.tsx` as two new sections (after "Who Benefits").
-3. Enhance hero section with animated background: add floating gradient blobs that pulse/move, and optionally an image overlay.
-4. Add section images where appropriate: side-by-side image in the "How It Works" or "Case Study" section.
-5. Add counter animations on KPI cards (using `useInView` + `useMotionValue`).
-6. Update `Navigation.tsx` to remove Ecosystem link.
-7. Update `Footer.tsx` to remove Ecosystem link.
-8. Update `App.tsx` to remove ecosystemRoute and import.
-9. `Home.tsx` continues to render `HomeDashboard`.
-10. Run typecheck and build to verify.
+1. Create `src/frontend/src/pages/JourneyFilm.tsx` — cinematic film page with:
+   - Dark full-screen layout (no standard nav/footer, or minimal nav)
+   - Film strip sprocket holes using CSS
+   - Each stage is a "scene" with cinematic typography
+   - Auto-advance with progress bar, pause/play, previous/next controls
+   - Film reel bottom navigation showing all 6 scene frames
+   - Smooth fade/slide scene transitions using framer-motion
+   - Letterbox black bars top and bottom (cinema feel)
+   - Film grain texture overlay via CSS noise animation
+2. Add route `/journey-film` to `App.tsx`
+3. Add "Watch as Film 🎬" button/link to the Journey Story section in `Hospitals.tsx`
