@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useRef, useState } from "react";
+import { TrainingProgramInfo } from "./TrainingProgram";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -2351,12 +2352,15 @@ export function TrainingGame() {
 
   return (
     <Layout section="training-game">
+      {/* ── Program Info Sections ── */}
+      <TrainingProgramInfo />
+
       {/* ── Page Hero ── */}
       <section
         className="pt-20 pb-8 px-4 md:px-8 relative overflow-hidden"
         style={{
           background:
-            "linear-gradient(135deg, oklch(0.22 0.12 188) 0%, oklch(0.28 0.14 200) 60%, oklch(0.20 0.10 188) 100%)",
+            "linear-gradient(135deg, oklch(0.38 0.14 188) 0%, oklch(0.48 0.16 200) 60%, oklch(0.42 0.15 188) 100%)",
         }}
       >
         {/* Rabbit creature — runs across hero bottom */}
@@ -2374,13 +2378,13 @@ export function TrainingGame() {
           >
             <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-white/80 text-xs font-semibold uppercase tracking-wider mb-5">
               <Zap className="w-3.5 h-3.5" />
-              Interactive Training Module
+              Interactive Training Simulation
             </span>
             <h1 className="font-heading text-4xl sm:text-5xl font-bold text-white mb-3">
               Clean Claim Command
             </h1>
             <p className="text-white/70 text-lg mb-5">
-              Multi-Role Training Simulation · 10 Escalating Stages
+              Multi-Role Team Simulation · 10 Escalating Stages
             </p>
             <div className="flex flex-wrap justify-center gap-4 text-sm">
               {[

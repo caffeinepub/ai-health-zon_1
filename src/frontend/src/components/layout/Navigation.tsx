@@ -43,8 +43,8 @@ export function Navigation() {
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
-            ? "bg-white/95 backdrop-blur-md shadow-lg border-b border-border"
-            : "bg-transparent"
+            ? "bg-white/98 backdrop-blur-md shadow-lg border-b border-border"
+            : "bg-white/95 backdrop-blur-sm border-b border-border/60"
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -59,18 +59,10 @@ export function Navigation() {
                 />
               </div>
               <div className="flex flex-col">
-                <span
-                  className={`font-heading font-bold text-sm leading-tight transition-colors ${
-                    isScrolled ? "text-health-blue" : "text-white"
-                  }`}
-                >
+                <span className="font-heading font-bold text-sm leading-tight text-health-blue">
                   AI Health Zon
                 </span>
-                <span
-                  className={`text-[9px] leading-tight transition-colors ${
-                    isScrolled ? "text-muted-foreground" : "text-white/70"
-                  }`}
-                >
+                <span className="text-[9px] leading-tight text-muted-foreground">
                   Healthcare Ecosystem
                 </span>
               </div>
@@ -84,12 +76,8 @@ export function Navigation() {
                   to={link.href}
                   className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
                     currentPath === link.href
-                      ? isScrolled
-                        ? "bg-health-blue-light text-health-blue"
-                        : "bg-white/20 text-white"
-                      : isScrolled
-                        ? "text-foreground hover:bg-muted hover:text-health-blue"
-                        : "text-white/80 hover:text-white hover:bg-white/10"
+                      ? "bg-health-blue-light text-health-blue"
+                      : "text-foreground hover:bg-muted hover:text-health-blue"
                   }`}
                 >
                   {link.label}
@@ -99,12 +87,8 @@ export function Navigation() {
                 to="/insights"
                 className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
                   currentPath === "/insights"
-                    ? isScrolled
-                      ? "bg-health-blue-light text-health-blue"
-                      : "bg-white/20 text-white"
-                    : isScrolled
-                      ? "text-foreground hover:bg-muted hover:text-health-blue"
-                      : "text-white/80 hover:text-white hover:bg-white/10"
+                    ? "bg-health-blue-light text-health-blue"
+                    : "text-foreground hover:bg-muted hover:text-health-blue"
                 }`}
               >
                 Insights
@@ -113,12 +97,8 @@ export function Navigation() {
                 to="/join-network"
                 className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
                   currentPath === "/join-network"
-                    ? isScrolled
-                      ? "bg-health-blue-light text-health-blue"
-                      : "bg-white/20 text-white"
-                    : isScrolled
-                      ? "text-foreground hover:bg-muted hover:text-health-blue"
-                      : "text-white/80 hover:text-white hover:bg-white/10"
+                    ? "bg-health-blue-light text-health-blue"
+                    : "text-foreground hover:bg-muted hover:text-health-blue"
                 }`}
               >
                 Join Network
@@ -127,12 +107,8 @@ export function Navigation() {
                 to="/training-game"
                 className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
                   currentPath === "/training-game"
-                    ? isScrolled
-                      ? "bg-health-blue-light text-health-blue"
-                      : "bg-white/20 text-white"
-                    : isScrolled
-                      ? "text-foreground hover:bg-muted hover:text-health-blue"
-                      : "text-white/80 hover:text-white hover:bg-white/10"
+                    ? "bg-health-blue-light text-health-blue"
+                    : "text-foreground hover:bg-muted hover:text-health-blue"
                 }`}
               >
                 🎮 Training
@@ -142,12 +118,8 @@ export function Navigation() {
                 to="/ai-course"
                 className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
                   currentPath === "/ai-course"
-                    ? isScrolled
-                      ? "bg-health-blue-light text-health-blue"
-                      : "bg-white/20 text-white"
-                    : isScrolled
-                      ? "text-foreground hover:bg-muted hover:text-health-blue"
-                      : "text-white/80 hover:text-white hover:bg-white/10"
+                    ? "bg-health-blue-light text-health-blue"
+                    : "text-foreground hover:bg-muted hover:text-health-blue"
                 }`}
               >
                 🎓 AI Course
@@ -159,22 +131,14 @@ export function Navigation() {
               <Button
                 onClick={() => setIsDemoOpen(true)}
                 size="sm"
-                className={`hidden sm:flex text-xs font-semibold transition-all duration-200 ${
-                  isScrolled
-                    ? "bg-health-blue hover:bg-health-blue/90 text-white shadow-health"
-                    : "bg-white text-health-blue hover:bg-white/90 shadow-md"
-                }`}
+                className="hidden sm:flex text-xs font-semibold bg-health-blue hover:bg-health-blue/90 text-white shadow-sm"
               >
                 Book Demo
               </Button>
               <button
                 type="button"
                 onClick={() => setIsMobileOpen(!isMobileOpen)}
-                className={`lg:hidden p-2 rounded-md transition-colors ${
-                  isScrolled
-                    ? "text-foreground hover:bg-muted"
-                    : "text-white hover:bg-white/10"
-                }`}
+                className="lg:hidden p-2 rounded-md transition-colors text-foreground hover:bg-muted"
               >
                 {isMobileOpen ? (
                   <X className="w-5 h-5" />

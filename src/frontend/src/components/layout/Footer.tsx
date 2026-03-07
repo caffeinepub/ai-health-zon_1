@@ -19,14 +19,13 @@ export function Footer() {
     typeof window !== "undefined" ? window.location.hostname : "";
 
   return (
-    <footer className="relative overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 health-gradient" />
+    <footer className="relative overflow-hidden bg-slate-900">
+      {/* Subtle teal accent overlay */}
       <div
-        className="absolute inset-0 opacity-10"
+        className="absolute inset-0 opacity-5"
         style={{
           backgroundImage:
-            "radial-gradient(circle at 20% 50%, oklch(0.7 0.2 185) 0%, transparent 50%), radial-gradient(circle at 80% 80%, oklch(0.5 0.15 240) 0%, transparent 40%)",
+            "radial-gradient(circle at 20% 50%, oklch(0.55 0.18 200) 0%, transparent 50%), radial-gradient(circle at 80% 80%, oklch(0.38 0.14 188) 0%, transparent 40%)",
         }}
       />
 
@@ -35,10 +34,10 @@ export function Footer() {
           {/* Brand */}
           <div className="lg:col-span-1">
             <Link to="/" className="flex items-center gap-2 mb-4">
-              <div className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
+              <div className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 backdrop-blur-sm">
                 <Cross className="w-5 h-5 text-white" strokeWidth={2.5} />
                 <Activity
-                  className="w-3 h-3 text-green-300 absolute bottom-1 right-1"
+                  className="w-3 h-3 text-teal-400 absolute bottom-1 right-1"
                   strokeWidth={2.5}
                 />
               </div>
@@ -46,12 +45,12 @@ export function Footer() {
                 <div className="font-heading font-bold text-white text-lg leading-tight">
                   AI Health Zon
                 </div>
-                <div className="text-white/60 text-xs">
+                <div className="text-slate-400 text-xs">
                   Healthcare Ecosystem
                 </div>
               </div>
             </Link>
-            <p className="text-white/70 text-sm leading-relaxed mb-5">
+            <p className="text-slate-400 text-sm leading-relaxed mb-5">
               Transforming India's Healthcare Ecosystem through intelligent
               digital solutions for hospitals, insurers, and patients.
             </p>
@@ -80,9 +79,9 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors group"
+                  className="w-9 h-9 rounded-full bg-white/10 hover:bg-teal-500/30 flex items-center justify-center transition-colors group"
                 >
-                  <Icon className="w-4 h-4 text-white/70 group-hover:text-white transition-colors" />
+                  <Icon className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors" />
                 </a>
               ))}
             </div>
@@ -98,7 +97,7 @@ export function Footer() {
                 <li key={link.href}>
                   <Link
                     to={link.href}
-                    className="text-white/65 hover:text-white text-sm transition-colors"
+                    className="text-slate-400 hover:text-white text-sm transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -124,7 +123,7 @@ export function Footer() {
                 "Staff Training",
               ].map((item) => (
                 <li key={item}>
-                  <span className="text-white/65 text-sm">{item}</span>
+                  <span className="text-slate-400 text-sm">{item}</span>
                 </li>
               ))}
             </ul>
@@ -137,26 +136,26 @@ export function Footer() {
             </h3>
             <ul className="space-y-3">
               <li className="flex items-start gap-2">
-                <Mail className="w-4 h-4 text-health-teal mt-0.5 shrink-0" />
+                <Mail className="w-4 h-4 text-teal-400 mt-0.5 shrink-0" />
                 <a
                   href="mailto:info@aihealthzon.com"
-                  className="text-white/70 hover:text-white text-sm transition-colors"
+                  className="text-slate-400 hover:text-white text-sm transition-colors"
                 >
                   info@aihealthzon.com
                 </a>
               </li>
               <li className="flex items-start gap-2">
-                <Phone className="w-4 h-4 text-health-teal mt-0.5 shrink-0" />
+                <Phone className="w-4 h-4 text-teal-400 mt-0.5 shrink-0" />
                 <a
                   href="tel:+918696766966"
-                  className="text-white/70 hover:text-white text-sm transition-colors"
+                  className="text-slate-400 hover:text-white text-sm transition-colors"
                 >
                   +91 8696766966
                 </a>
               </li>
               <li className="flex items-start gap-2">
-                <MapPin className="w-4 h-4 text-health-teal mt-0.5 shrink-0" />
-                <span className="text-white/70 text-sm">
+                <MapPin className="w-4 h-4 text-teal-400 mt-0.5 shrink-0" />
+                <span className="text-slate-400 text-sm">
                   Registered office Triple Top Pattern Health Pvt. Ltd.
                   <br />
                   C-10/9, Chinab Appartment, Sector 28,
@@ -166,26 +165,26 @@ export function Footer() {
               </li>
             </ul>
 
-            <div className="mt-6 p-3 bg-white/10 rounded-lg border border-white/20">
-              <p className="text-white/60 text-xs mb-1">Emergency Helpline</p>
+            <div className="mt-6 p-3 bg-white/5 rounded-lg border border-white/10">
+              <p className="text-slate-400 text-xs mb-1">Emergency Helpline</p>
               <p className="text-white font-semibold text-sm">+91-8696766966</p>
-              <p className="text-white/50 text-xs">Available 24/7</p>
+              <p className="text-slate-500 text-xs">Available 24/7</p>
             </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-white/15 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3">
-          <p className="text-white/50 text-xs">
+        <div className="border-t border-white/10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3">
+          <p className="text-slate-500 text-xs">
             © {currentYear} AI Health Zon. All rights reserved.
           </p>
-          <p className="text-white/40 text-xs">
+          <p className="text-slate-500 text-xs">
             Built with ♥ using{" "}
             <a
               href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(hostname)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/60 hover:text-white transition-colors underline underline-offset-2"
+              className="text-slate-400 hover:text-white transition-colors underline underline-offset-2"
             >
               caffeine.ai
             </a>

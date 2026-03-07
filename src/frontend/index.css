@@ -124,7 +124,7 @@
   .bg-health-green-light { background-color: var(--health-green-light); }
 
   .health-gradient {
-    background: linear-gradient(135deg, oklch(0.25 0.14 188) 0%, oklch(0.35 0.13 195) 50%, oklch(0.28 0.12 200) 100%);
+    background: linear-gradient(135deg, oklch(0.35 0.14 188) 0%, oklch(0.45 0.16 195) 50%, oklch(0.50 0.18 200) 100%);
   }
 
   .health-gradient-light {

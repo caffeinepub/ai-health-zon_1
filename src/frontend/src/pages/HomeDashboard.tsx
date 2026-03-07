@@ -806,20 +806,19 @@ function EcosystemDiagram() {
 function MockDashboardCard({ className = "" }: { className?: string }) {
   return (
     <div
-      className={`rounded-2xl border border-white/10 overflow-hidden shadow-2xl shadow-black/40 ${className}`}
+      className={`rounded-2xl border border-border overflow-hidden shadow-2xl shadow-black/10 ${className}`}
       style={{
-        background:
-          "linear-gradient(145deg, oklch(0.18 0.06 188) 0%, oklch(0.14 0.04 200) 100%)",
+        background: "white",
       }}
     >
       <div
-        className="px-5 py-3 border-b border-white/10 flex items-center gap-2"
-        style={{ background: "oklch(0.12 0.05 188)" }}
+        className="px-5 py-3 border-b border-border flex items-center gap-2"
+        style={{ background: "oklch(0.95 0.04 188)" }}
       >
-        <div className="w-3 h-3 rounded-full bg-red-500/80" />
-        <div className="w-3 h-3 rounded-full bg-amber-500/80" />
-        <div className="w-3 h-3 rounded-full bg-green-500/80" />
-        <span className="ml-3 text-white/40 text-xs font-mono">
+        <div className="w-3 h-3 rounded-full bg-red-400/80" />
+        <div className="w-3 h-3 rounded-full bg-amber-400/80" />
+        <div className="w-3 h-3 rounded-full bg-green-400/80" />
+        <span className="ml-3 text-muted-foreground text-xs font-mono">
           AI Health Zon — Command Centre
         </span>
       </div>
@@ -833,15 +832,15 @@ function MockDashboardCard({ className = "" }: { className?: string }) {
           ].map((m) => (
             <div
               key={m.label}
-              className="rounded-lg p-3 border border-white/[0.08]"
-              style={{ background: "oklch(0.16 0.05 188)" }}
+              className="rounded-lg p-3 border border-border"
+              style={{ background: "oklch(0.97 0.02 188)" }}
             >
-              <div className="text-white/50 text-xs mb-1 truncate">
+              <div className="text-muted-foreground text-xs mb-1 truncate">
                 {m.label}
               </div>
               <div
                 className="font-heading font-bold text-base"
-                style={{ color: "oklch(0.72 0.18 200)" }}
+                style={{ color: "oklch(0.38 0.14 188)" }}
               >
                 {m.value}
               </div>
@@ -849,10 +848,10 @@ function MockDashboardCard({ className = "" }: { className?: string }) {
           ))}
         </div>
         <div
-          className="rounded-xl p-4 border border-white/[0.08] mb-4"
-          style={{ background: "oklch(0.16 0.05 188)" }}
+          className="rounded-xl p-4 border border-border mb-4"
+          style={{ background: "oklch(0.97 0.02 188)" }}
         >
-          <div className="text-white/60 text-xs mb-3 font-medium">
+          <div className="text-muted-foreground text-xs mb-3 font-medium">
             Claim Status Distribution
           </div>
           <div className="space-y-2.5">
@@ -863,12 +862,14 @@ function MockDashboardCard({ className = "" }: { className?: string }) {
             ].map((b) => (
               <div key={b.label}>
                 <div className="flex justify-between text-xs mb-1">
-                  <span className="text-white/50">{b.label}</span>
-                  <span className="text-white/70 font-semibold">{b.pct}%</span>
+                  <span className="text-muted-foreground">{b.label}</span>
+                  <span className="text-foreground font-semibold">
+                    {b.pct}%
+                  </span>
                 </div>
                 <div
                   className="h-1.5 rounded-full overflow-hidden"
-                  style={{ background: "oklch(0.22 0.06 188)" }}
+                  style={{ background: "oklch(0.90 0.04 188)" }}
                 >
                   <div
                     className="h-full rounded-full"
@@ -888,12 +889,11 @@ function MockDashboardCard({ className = "" }: { className?: string }) {
           ].map((d) => (
             <div
               key={d.dept}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-white/10 text-xs"
-              style={{ background: "oklch(0.16 0.05 188)" }}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-border text-xs bg-white"
             >
               <div className={`w-1.5 h-1.5 rounded-full ${d.dot}`} />
-              <span className="text-white/60">{d.dept}</span>
-              <span className="text-white/40">{d.risk}</span>
+              <span className="text-foreground">{d.dept}</span>
+              <span className="text-muted-foreground">{d.risk}</span>
             </div>
           ))}
         </div>
@@ -1190,22 +1190,22 @@ export function HomeDashboard() {
   return (
     <Layout section="home">
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* 1. HERO — Full dark, GenLab-style                         */}
+      {/* 1. HERO — Light teal-to-white gradient                    */}
       {/* ══════════════════════════════════════════════════════════ */}
       <section
         className="relative min-h-screen flex flex-col justify-center px-4 md:px-8 lg:px-16 pt-24 pb-0 overflow-hidden"
         style={{
           background:
-            "linear-gradient(135deg, oklch(0.10 0.06 188) 0%, oklch(0.15 0.07 195) 50%, oklch(0.12 0.05 205) 100%)",
+            "linear-gradient(135deg, oklch(0.94 0.04 188) 0%, oklch(0.97 0.025 195) 50%, oklch(0.99 0.01 200) 100%)",
           clipPath: "polygon(0 0, 100% 0, 100% 94%, 0 100%)",
         }}
       >
         {/* Subtle dot grid */}
         <div
-          className="absolute inset-0 opacity-[0.04]"
+          className="absolute inset-0 opacity-[0.06]"
           style={{
             backgroundImage:
-              "radial-gradient(circle, oklch(0.9 0.05 188) 1px, transparent 1px)",
+              "radial-gradient(circle, oklch(0.38 0.14 188) 1px, transparent 1px)",
             backgroundSize: "32px 32px",
           }}
           aria-hidden="true"
@@ -1215,7 +1215,7 @@ export function HomeDashboard() {
         <motion.div
           className="absolute top-1/4 right-1/3 w-[500px] h-[500px] rounded-full blur-[120px] pointer-events-none"
           style={{ background: "oklch(0.55 0.16 200)" }}
-          animate={{ scale: [1, 1.2, 1], opacity: [0.06, 0.14, 0.06] }}
+          animate={{ scale: [1, 1.2, 1], opacity: [0.08, 0.18, 0.08] }}
           transition={{
             repeat: Number.POSITIVE_INFINITY,
             duration: 8,
@@ -1226,7 +1226,7 @@ export function HomeDashboard() {
         <motion.div
           className="absolute -bottom-20 -left-20 w-[400px] h-[400px] rounded-full blur-[100px] pointer-events-none"
           style={{ background: "oklch(0.48 0.16 155)" }}
-          animate={{ scale: [1, 1.3, 1], opacity: [0.05, 0.1, 0.05] }}
+          animate={{ scale: [1, 1.3, 1], opacity: [0.06, 0.12, 0.06] }}
           transition={{
             repeat: Number.POSITIVE_INFINITY,
             duration: 12,
@@ -1251,19 +1251,19 @@ export function HomeDashboard() {
                 <span
                   className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold mb-6 border"
                   style={{
-                    background: "oklch(0.20 0.06 188)",
-                    borderColor: "oklch(0.35 0.10 188)",
-                    color: "oklch(0.72 0.18 200)",
+                    background: "oklch(0.92 0.06 188)",
+                    borderColor: "oklch(0.72 0.12 188)",
+                    color: "oklch(0.30 0.14 188)",
                   }}
                 >
                   <span
                     className="w-1.5 h-1.5 rounded-full"
-                    style={{ background: "oklch(0.65 0.18 200)" }}
+                    style={{ background: "oklch(0.38 0.14 188)" }}
                   />
                   AI-Powered
-                  <span className="text-white/40">·</span>
+                  <span className="text-foreground/40">·</span>
                   Healthcare
-                  <span className="text-white/40">·</span>
+                  <span className="text-foreground/40">·</span>
                   Revenue Intelligence
                 </span>
               </motion.div>
@@ -1272,18 +1272,19 @@ export function HomeDashboard() {
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.1 }}
-                className="font-heading text-5xl sm:text-6xl lg:text-7xl font-black text-white mb-6 leading-[1.05]"
+                className="font-heading text-5xl sm:text-6xl lg:text-7xl font-black mb-6 leading-[1.05]"
+                style={{ color: "oklch(0.12 0.06 188)" }}
               >
                 AI Health Zon
                 <br />
                 <span
                   className="relative inline-block"
-                  style={{ color: "oklch(0.65 0.18 200)" }}
+                  style={{ color: "oklch(0.38 0.14 188)" }}
                 >
                   Revenue Intelligence
                   <motion.span
                     className="absolute -bottom-2 left-0 h-1 rounded-full"
-                    style={{ background: "oklch(0.65 0.18 200)" }}
+                    style={{ background: "oklch(0.55 0.18 200)" }}
                     initial={{ width: 0 }}
                     animate={{ width: "100%" }}
                     transition={{ duration: 0.8, delay: 0.9 }}
@@ -1291,7 +1292,10 @@ export function HomeDashboard() {
                   />
                 </span>
                 <br />
-                <span className="text-white text-4xl sm:text-5xl lg:text-6xl font-bold">
+                <span
+                  className="text-4xl sm:text-5xl lg:text-6xl font-bold"
+                  style={{ color: "oklch(0.25 0.1 188)" }}
+                >
                   Platform
                 </span>
               </motion.h1>
@@ -1300,7 +1304,7 @@ export function HomeDashboard() {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
-                className="text-white/65 text-lg mb-5 leading-relaxed max-w-xl"
+                className="text-muted-foreground text-lg mb-5 leading-relaxed max-w-xl"
               >
                 Optimize hospital revenue cycle, reduce claim denials, and
                 manage healthcare operations through an intelligent command
@@ -1324,11 +1328,13 @@ export function HomeDashboard() {
                   >
                     <div
                       className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                      style={{ background: "oklch(0.65 0.18 200)" }}
+                      style={{ background: "oklch(0.38 0.14 188)" }}
                     />
                     <span
-                      className={i === 1 ? "font-semibold" : "text-white/60"}
-                      style={i === 1 ? { color: "oklch(0.72 0.18 200)" } : {}}
+                      className={
+                        i === 1 ? "font-semibold" : "text-muted-foreground"
+                      }
+                      style={i === 1 ? { color: "oklch(0.30 0.14 188)" } : {}}
                     >
                       {tagline}
                     </span>
@@ -1347,8 +1353,8 @@ export function HomeDashboard() {
                   className="text-white font-semibold px-8 shadow-xl"
                   style={{
                     background:
-                      "linear-gradient(135deg, oklch(0.35 0.16 188) 0%, oklch(0.55 0.18 200) 100%)",
-                    boxShadow: "0 8px 32px oklch(0.35 0.16 188 / 0.4)",
+                      "linear-gradient(135deg, oklch(0.35 0.16 188) 0%, oklch(0.50 0.18 200) 100%)",
+                    boxShadow: "0 8px 32px oklch(0.35 0.16 188 / 0.35)",
                   }}
                   onClick={() => setIsDemoOpen(true)}
                   data-ocid="hero.primary_button"
@@ -1360,7 +1366,7 @@ export function HomeDashboard() {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="border-white/25 text-white hover:bg-white/10 hover:border-white/50 px-8"
+                    className="border-border text-foreground hover:bg-muted px-8"
                   >
                     Explore Platform
                   </Button>
@@ -1383,9 +1389,9 @@ export function HomeDashboard() {
                     key={stat}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border"
                     style={{
-                      background: "oklch(0.18 0.06 188)",
-                      borderColor: "oklch(0.35 0.10 188)",
-                      color: "oklch(0.72 0.18 200)",
+                      background: "oklch(0.92 0.06 188)",
+                      borderColor: "oklch(0.72 0.12 188)",
+                      color: "oklch(0.30 0.14 188)",
                     }}
                   >
                     <CheckCircle2 className="w-3 h-3" />
@@ -1412,8 +1418,8 @@ export function HomeDashboard() {
       {/* 2. MARQUEE TICKER STRIP                                   */}
       {/* ══════════════════════════════════════════════════════════ */}
       <div
-        className="overflow-hidden py-3.5 relative z-10"
-        style={{ background: "oklch(0.13 0.06 188)" }}
+        className="overflow-hidden py-3.5 relative z-10 border-y border-border"
+        style={{ background: "oklch(0.96 0.04 188)" }}
         aria-hidden="true"
       >
         <div className="flex whitespace-nowrap animate-marquee gap-0">
@@ -1421,13 +1427,13 @@ export function HomeDashboard() {
           <span className="inline-flex gap-0 shrink-0">
             <span
               className="text-sm font-medium tracking-wide"
-              style={{ color: "rgba(255,255,255,0.55)" }}
+              style={{ color: "oklch(0.30 0.12 188)" }}
             >
               {marqueeText}
             </span>
             <span
               className="text-sm font-medium tracking-wide"
-              style={{ color: "rgba(255,255,255,0.55)" }}
+              style={{ color: "oklch(0.30 0.12 188)" }}
             >
               {marqueeText}
             </span>
@@ -1514,23 +1520,26 @@ export function HomeDashboard() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* 4. DARK STATS COUNTER BAND                               */}
+      {/* 4. STATS COUNTER BAND — Light teal                       */}
       {/* ══════════════════════════════════════════════════════════ */}
       <section
         className="py-16 px-4 relative overflow-hidden"
-        style={{ background: "oklch(0.10 0.06 188)" }}
+        style={{
+          background:
+            "linear-gradient(135deg, oklch(0.35 0.14 188) 0%, oklch(0.45 0.16 195) 50%, oklch(0.50 0.18 200) 100%)",
+        }}
       >
         <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.05]"
           style={{
             backgroundImage:
-              "radial-gradient(circle, oklch(0.9 0.05 188) 1px, transparent 1px)",
+              "radial-gradient(circle, white 1px, transparent 1px)",
             backgroundSize: "28px 28px",
           }}
           aria-hidden="true"
         />
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 divide-x divide-white/[0.08]">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 divide-x divide-white/20">
             {[
               { num: 1234, suffix: "+", label: "Claims Processed" },
               { num: 95, suffix: "%", label: "Clean Claim Rate" },
@@ -1545,16 +1554,10 @@ export function HomeDashboard() {
                 transition={{ delay: i * 0.12 }}
                 className="text-center px-6 py-4"
               >
-                <div
-                  className="font-heading text-4xl sm:text-5xl font-black mb-2"
-                  style={{ color: "white" }}
-                >
+                <div className="font-heading text-4xl sm:text-5xl font-black mb-2 text-white">
                   <AnimatedCounter target={stat.num} />
                 </div>
-                <div
-                  className="text-sm font-medium"
-                  style={{ color: "oklch(0.65 0.18 200 / 0.7)" }}
-                >
+                <div className="text-sm font-medium text-white/75">
                   {stat.label}
                 </div>
               </motion.div>
@@ -2354,17 +2357,17 @@ export function HomeDashboard() {
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="relative rounded-3xl overflow-hidden"
+            className="relative rounded-3xl overflow-hidden border border-border shadow-xl"
             style={{
               background:
-                "linear-gradient(135deg, oklch(0.12 0.06 188) 0%, oklch(0.18 0.08 200) 60%, oklch(0.14 0.05 220) 100%)",
+                "linear-gradient(135deg, oklch(0.94 0.04 188) 0%, oklch(0.96 0.03 195) 60%, oklch(0.97 0.02 210) 100%)",
             }}
           >
             <div
-              className="absolute inset-0 opacity-[0.04]"
+              className="absolute inset-0 opacity-[0.06]"
               style={{
                 backgroundImage:
-                  "radial-gradient(circle, oklch(0.9 0.05 188) 1px, transparent 1px)",
+                  "radial-gradient(circle, oklch(0.38 0.14 188) 1px, transparent 1px)",
                 backgroundSize: "28px 28px",
               }}
               aria-hidden="true"
@@ -2373,12 +2376,16 @@ export function HomeDashboard() {
             <div className="relative z-10 p-8 md:p-12">
               <div className="flex items-center gap-3 mb-5">
                 <span
-                  className="inline-flex items-center gap-2 px-4 py-1.5 border border-white/20 text-white/80 text-xs font-semibold rounded-full"
-                  style={{ background: "oklch(0.20 0.06 188)" }}
+                  className="inline-flex items-center gap-2 px-4 py-1.5 border text-xs font-semibold rounded-full"
+                  style={{
+                    background: "oklch(0.92 0.06 188)",
+                    borderColor: "oklch(0.72 0.12 188)",
+                    color: "oklch(0.30 0.14 188)",
+                  }}
                 >
                   <FlaskConical
                     className="w-3.5 h-3.5"
-                    style={{ color: "oklch(0.65 0.18 200)" }}
+                    style={{ color: "oklch(0.38 0.14 188)" }}
                   />
                   Unique Platform Feature
                 </span>
@@ -2389,16 +2396,19 @@ export function HomeDashboard() {
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                 <div>
-                  <h2 className="font-heading text-3xl sm:text-4xl font-bold text-white mb-4 leading-tight">
+                  <h2
+                    className="font-heading text-3xl sm:text-4xl font-bold mb-4 leading-tight"
+                    style={{ color: "oklch(0.12 0.06 188)" }}
+                  >
                     AI Health Zon
                     <span
                       className="block mt-1"
-                      style={{ color: "oklch(0.65 0.18 200)" }}
+                      style={{ color: "oklch(0.38 0.14 188)" }}
                     >
                       Simulation Lab
                     </span>
                   </h2>
-                  <p className="text-white/65 text-base leading-relaxed mb-6">
+                  <p className="text-muted-foreground text-base leading-relaxed mb-6">
                     Experience a 45-minute leadership simulation where hospital
                     teams manage claims, billing, and revenue decisions in real
                     time — across 10 escalating RCM stages.
@@ -2411,16 +2421,11 @@ export function HomeDashboard() {
                     ].map(({ icon: Icon, text }) => (
                       <div
                         key={text}
-                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm"
-                        style={{
-                          background: "oklch(0.18 0.06 188)",
-                          border: "1px solid oklch(0.30 0.08 188)",
-                          color: "rgba(255,255,255,0.65)",
-                        }}
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm border border-border bg-white text-foreground"
                       >
                         <Icon
                           className="w-4 h-4"
-                          style={{ color: "oklch(0.65 0.18 200)" }}
+                          style={{ color: "oklch(0.38 0.14 188)" }}
                         />
                         {text}
                       </div>
@@ -2429,11 +2434,11 @@ export function HomeDashboard() {
                   <Link to="/training-game" data-ocid="simlab.primary_button">
                     <Button
                       size="lg"
-                      className="text-white font-semibold px-8 shadow-xl"
+                      className="text-white font-semibold px-8 shadow-lg"
                       style={{
                         background:
-                          "linear-gradient(135deg, oklch(0.35 0.16 188) 0%, oklch(0.55 0.18 200) 100%)",
-                        boxShadow: "0 8px 32px oklch(0.35 0.16 188 / 0.4)",
+                          "linear-gradient(135deg, oklch(0.35 0.16 188) 0%, oklch(0.50 0.18 200) 100%)",
+                        boxShadow: "0 8px 32px oklch(0.35 0.16 188 / 0.3)",
                       }}
                     >
                       Enter Simulation Lab
@@ -2471,8 +2476,7 @@ export function HomeDashboard() {
                   ].map((stage) => (
                     <div
                       key={stage.num}
-                      className="rounded-xl border border-white/10 p-4"
-                      style={{ background: "oklch(0.18 0.06 188)" }}
+                      className="rounded-xl border border-border p-4 bg-white shadow-sm"
                     >
                       <div className="flex items-center gap-2 mb-2">
                         <span
@@ -2483,14 +2487,14 @@ export function HomeDashboard() {
                         <span
                           className="text-xs font-semibold px-2 py-0.5 rounded-full"
                           style={{
-                            background: "oklch(0.25 0.08 188)",
-                            color: "oklch(0.72 0.18 200)",
+                            background: "oklch(0.92 0.06 188)",
+                            color: "oklch(0.30 0.14 188)",
                           }}
                         >
                           {stage.pts}
                         </span>
                       </div>
-                      <div className="text-white/80 text-xs font-medium leading-snug">
+                      <div className="text-foreground text-xs font-medium leading-snug">
                         {stage.name}
                       </div>
                     </div>
@@ -2503,13 +2507,13 @@ export function HomeDashboard() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* 13. FINAL CTA — Dark gradient with particles              */}
+      {/* 13. FINAL CTA — Teal gradient                            */}
       {/* ══════════════════════════════════════════════════════════ */}
       <section
         className="py-28 px-4 md:px-8 lg:px-16 relative overflow-hidden"
         style={{
           background:
-            "linear-gradient(135deg, oklch(0.10 0.06 188) 0%, oklch(0.15 0.07 200) 50%, oklch(0.12 0.05 215) 100%)",
+            "linear-gradient(135deg, oklch(0.35 0.14 188) 0%, oklch(0.45 0.16 195) 50%, oklch(0.50 0.18 210) 100%)",
         }}
       >
         {/* Particles */}
@@ -2518,8 +2522,8 @@ export function HomeDashboard() {
         {/* Glow blob */}
         <motion.div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full blur-[140px] pointer-events-none"
-          style={{ background: "oklch(0.45 0.16 200)" }}
-          animate={{ scale: [1, 1.15, 1], opacity: [0.06, 0.14, 0.06] }}
+          style={{ background: "oklch(0.60 0.18 200)" }}
+          animate={{ scale: [1, 1.15, 1], opacity: [0.15, 0.25, 0.15] }}
           transition={{
             repeat: Number.POSITIVE_INFINITY,
             duration: 7,
@@ -2534,25 +2538,16 @@ export function HomeDashboard() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <span
-              className="inline-block px-3 py-1 text-xs font-semibold rounded-full mb-5 uppercase tracking-wider border"
-              style={{
-                background: "oklch(0.20 0.06 188)",
-                color: "oklch(0.65 0.18 200)",
-                borderColor: "oklch(0.35 0.10 188)",
-              }}
-            >
+            <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full mb-5 uppercase tracking-wider border border-white/30 bg-white/15 text-white">
               Get Started
             </span>
 
             <h2 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-5 leading-tight">
               Transform Your Hospital
               <br />
-              <span style={{ color: "oklch(0.65 0.18 200)" }}>
-                Revenue Cycle
-              </span>
+              <span className="text-white/85">Revenue Cycle</span>
             </h2>
-            <p className="text-white/60 text-lg mb-10 leading-relaxed max-w-2xl mx-auto">
+            <p className="text-white/75 text-lg mb-10 leading-relaxed max-w-2xl mx-auto">
               Join 500+ hospitals across India using AI Health Zon to achieve
               95%+ clean claim rates, reduce denials, and unlock revenue growth.
             </p>
@@ -2560,12 +2555,8 @@ export function HomeDashboard() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <Button
                 size="lg"
-                className="text-white font-semibold px-10 shadow-2xl"
-                style={{
-                  background:
-                    "linear-gradient(135deg, oklch(0.35 0.16 188) 0%, oklch(0.55 0.18 200) 100%)",
-                  boxShadow: "0 12px 40px oklch(0.35 0.16 188 / 0.5)",
-                }}
+                className="font-semibold px-10 shadow-2xl bg-white hover:bg-white/90"
+                style={{ color: "oklch(0.35 0.14 188)" }}
                 onClick={() => setIsDemoOpen(true)}
                 data-ocid="cta.primary_button"
               >
@@ -2576,7 +2567,7 @@ export function HomeDashboard() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-white/30 text-white hover:bg-white/10 hover:border-white/50 px-10"
+                  className="border-white/50 text-white hover:bg-white/15 hover:border-white/70 px-10"
                 >
                   Contact Sales
                 </Button>
@@ -2584,7 +2575,7 @@ export function HomeDashboard() {
             </div>
 
             {/* Trust signals */}
-            <div className="flex flex-wrap items-center justify-center gap-6 pt-8 border-t border-white/10">
+            <div className="flex flex-wrap items-center justify-center gap-6 pt-8 border-t border-white/20">
               {[
                 { icon: Shield, text: "HIPAA Ready" },
                 { icon: CheckCircle2, text: "Free Demo" },
@@ -2593,13 +2584,9 @@ export function HomeDashboard() {
               ].map(({ icon: Icon, text }) => (
                 <div
                   key={text}
-                  className="flex items-center gap-2 text-sm"
-                  style={{ color: "rgba(255,255,255,0.55)" }}
+                  className="flex items-center gap-2 text-sm text-white/75"
                 >
-                  <Icon
-                    className="w-4 h-4"
-                    style={{ color: "oklch(0.65 0.18 200)" }}
-                  />
+                  <Icon className="w-4 h-4 text-white/90" />
                   {text}
                 </div>
               ))}
