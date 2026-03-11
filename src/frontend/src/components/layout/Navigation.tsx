@@ -12,6 +12,7 @@ const navLinks = [
   { href: "/patient-support", label: "Patient Support" },
   { href: "/compliance", label: "NABH" },
   { href: "/digital-health", label: "ABDM" },
+  { href: "/nhcx", label: "NHCX" },
   { href: "/insights", label: "Insights" },
   { href: "/join-network", label: "Join Network" },
   { href: "/training-game", label: "Training" },
@@ -70,10 +71,11 @@ export function Navigation() {
 
             {/* Desktop Nav */}
             <div className="hidden lg:flex items-center gap-1">
-              {navLinks.slice(0, 7).map((link) => (
+              {navLinks.slice(0, 8).map((link) => (
                 <Link
                   key={link.href}
                   to={link.href}
+                  data-ocid={`nav.${link.label.toLowerCase().replace(/\s+/g, "_")}.link`}
                   className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
                     currentPath === link.href
                       ? "bg-health-blue-light text-health-blue"
@@ -84,17 +86,8 @@ export function Navigation() {
                 </Link>
               ))}
               <Link
-                to="/insights"
-                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
-                  currentPath === "/insights"
-                    ? "bg-health-blue-light text-health-blue"
-                    : "text-foreground hover:bg-muted hover:text-health-blue"
-                }`}
-              >
-                Insights
-              </Link>
-              <Link
                 to="/join-network"
+                data-ocid="nav.join_network.link"
                 className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
                   currentPath === "/join-network"
                     ? "bg-health-blue-light text-health-blue"
@@ -105,6 +98,7 @@ export function Navigation() {
               </Link>
               <Link
                 to="/training-game"
+                data-ocid="nav.training.link"
                 className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
                   currentPath === "/training-game"
                     ? "bg-health-blue-light text-health-blue"

@@ -15,6 +15,7 @@ import { InsightDetail } from "./pages/InsightDetail";
 import { Insights } from "./pages/Insights";
 import { JoinNetwork } from "./pages/JoinNetwork";
 import { JourneyFilm } from "./pages/JourneyFilm";
+import { NHCX } from "./pages/NHCX";
 import { PatientSupport } from "./pages/PatientSupport";
 import { TrainingGame } from "./pages/TrainingGame";
 
@@ -84,6 +85,11 @@ const journeyFilmRoute = createRoute({
   path: "/journey-film",
   component: JourneyFilm,
 });
+const nhcxRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/nhcx",
+  component: NHCX,
+});
 
 const routeTree = rootRoute.addChildren([
   homeRoute,
@@ -98,6 +104,7 @@ const routeTree = rootRoute.addChildren([
   trainingGameRoute,
   aiCourseRoute,
   journeyFilmRoute,
+  nhcxRoute,
 ]);
 
 const router = createRouter({ routeTree });
