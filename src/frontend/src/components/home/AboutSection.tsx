@@ -6,7 +6,7 @@ import { useRef } from "react";
 const stats = [
   { value: "500+", label: "Network Entities", color: "text-health-blue" },
   { value: "10K+", label: "Monthly Claims", color: "text-health-teal" },
-  { value: "95%", label: "Clean Claim Rate", color: "text-health-green" },
+  { value: "97%", label: "Clean Claim Rate", color: "text-health-green" },
   { value: "100+", label: "Partner Hospitals", color: "text-health-blue" },
 ];
 
@@ -50,7 +50,7 @@ export function AboutSection() {
               Founded with a vision to transform healthcare operations across
               India, our platform serves 500+ network entities across 50+
               cities, processing over 10,000 claims monthly with an
-              industry-leading 95% clean claim rate.
+              industry-leading 97% clean claim rate.
             </p>
 
             <ul className="space-y-2.5">

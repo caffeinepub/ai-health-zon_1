@@ -2,6 +2,7 @@ import { Layout } from "@/components/layout/Layout";
 import { DemoBookingDialog } from "@/components/shared/DemoBookingDialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { generateAIHealthZonPPT } from "@/utils/generatePPT";
 import { Link } from "@tanstack/react-router";
 import {
   Activity,
@@ -15,6 +16,7 @@ import {
   Clock,
   Cloud,
   Database,
+  Download,
   FileCheck,
   FileX,
   FlaskConical,
@@ -825,8 +827,8 @@ function MockDashboardCard({ className = "" }: { className?: string }) {
       <div className="p-5">
         <div className="grid grid-cols-4 gap-3 mb-5">
           {[
-            { label: "Total Claims", value: "1,234" },
-            { label: "Clean Claim Rate", value: "95%" },
+            { label: "Total Claims", value: "5,00,000+" },
+            { label: "Clean Claim Rate", value: "97%" },
             { label: "Revenue Recovered", value: "₹2.4Cr" },
             { label: "Approvals Today", value: "187" },
           ].map((m) => (
@@ -856,9 +858,9 @@ function MockDashboardCard({ className = "" }: { className?: string }) {
           </div>
           <div className="space-y-2.5">
             {[
-              { label: "Approved", pct: 80, color: "oklch(0.52 0.16 145)" },
-              { label: "Pending", pct: 14, color: "oklch(0.68 0.17 60)" },
-              { label: "Denied", pct: 6, color: "oklch(0.55 0.2 25)" },
+              { label: "Approved", pct: 97, color: "oklch(0.52 0.16 145)" },
+              { label: "Pending", pct: 1.2, color: "oklch(0.68 0.17 60)" },
+              { label: "Denied", pct: 1.8, color: "oklch(0.55 0.2 25)" },
             ].map((b) => (
               <div key={b.label}>
                 <div className="flex justify-between text-xs mb-1">
@@ -1020,7 +1022,7 @@ const coreModules = [
 const kpiData = [
   {
     label: "Total Claims",
-    target: 1234,
+    target: 500000,
     icon: FileCheck,
     color: "oklch(0.38 0.14 188)",
     iconBg: "bg-sky-50",
@@ -1028,7 +1030,7 @@ const kpiData = [
   },
   {
     label: "Approved",
-    target: 987,
+    target: 485000,
     icon: CheckCircle2,
     color: "oklch(0.50 0.16 145)",
     iconBg: "bg-green-50",
@@ -1036,7 +1038,7 @@ const kpiData = [
   },
   {
     label: "Pending",
-    target: 167,
+    target: 6000,
     icon: Clock,
     color: "oklch(0.60 0.17 60)",
     iconBg: "bg-amber-50",
@@ -1044,7 +1046,7 @@ const kpiData = [
   },
   {
     label: "Denied",
-    target: 80,
+    target: 9000,
     icon: XCircle,
     color: "oklch(0.55 0.20 25)",
     iconBg: "bg-red-50",
@@ -1053,9 +1055,9 @@ const kpiData = [
 ];
 
 const claimBars = [
-  { label: "Approved", pct: 80, color: "bg-green-500", text: "text-green-700" },
-  { label: "Pending", pct: 14, color: "bg-amber-400", text: "text-amber-700" },
-  { label: "Denied", pct: 6, color: "bg-red-400", text: "text-red-700" },
+  { label: "Approved", pct: 97, color: "bg-green-500", text: "text-green-700" },
+  { label: "Pending", pct: 1.2, color: "bg-amber-400", text: "text-amber-700" },
+  { label: "Denied", pct: 1.8, color: "bg-red-400", text: "text-red-700" },
 ];
 
 const workflowSteps = [
@@ -1108,7 +1110,7 @@ const beneficiaries = [
     icon: Building2,
     title: "Hospitals",
     description:
-      "Improve revenue cycle efficiency, reduce denials, and achieve 95%+ clean claim rates with our integrated RCM platform.",
+      "Improve revenue cycle efficiency, reduce denials, and achieve 97%+ clean claim rates with our integrated RCM platform.",
     gradient: "from-sky-500/10 to-sky-500/0",
     accent: "text-sky-600",
     iconBg: "bg-sky-50",
@@ -1178,7 +1180,7 @@ const securityCards = [
 ];
 
 const marqueeText =
-  "✦ Faster Claims  ·  Better Revenue  ·  500+ Hospitals  ·  95% Clean Claims  ·  18 Day Settlement  ·  ABDM Compliant  ·  NABH Ready  ·  Real-Time Insights  ·  Zero Revenue Leakage  ·  ";
+  "✦ Faster Claims  ·  Better Revenue  ·  500+ Hospitals  ·  97% Clean Claims  ·  18 Day Settlement  ·  ABDM Compliant  ·  NABH Ready  ·  Real-Time Insights  ·  Zero Revenue Leakage  ·  ";
 
 const complianceTicker =
   "✦ HIPAA Ready  ·  NABH Aligned  ·  ABDM / FHIR R4  ·  DPDP Act 2023  ·  ISO 27001  ·  TLS 1.3 Encrypted  ·  AES-256 Encryption  ·  ";
@@ -1371,6 +1373,16 @@ export function HomeDashboard() {
                     Explore Platform
                   </Button>
                 </a>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-border text-foreground hover:bg-muted px-6 gap-2 font-semibold"
+                  onClick={() => generateAIHealthZonPPT()}
+                  data-ocid="hero.download_ppt_button"
+                >
+                  <Download className="w-4 h-4" />
+                  Download Presentation
+                </Button>
               </motion.div>
 
               {/* Floating stat badges */}
@@ -1382,7 +1394,7 @@ export function HomeDashboard() {
               >
                 {[
                   "+127% Revenue Recovery",
-                  "95% Clean Claim Rate",
+                  "97% Clean Claim Rate",
                   "500+ Hospitals",
                 ].map((stat) => (
                   <span
@@ -1541,8 +1553,8 @@ export function HomeDashboard() {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 divide-x divide-white/20">
             {[
-              { num: 1234, suffix: "+", label: "Claims Processed" },
-              { num: 95, suffix: "%", label: "Clean Claim Rate" },
+              { num: 500000, suffix: "+", label: "Claims Processed" },
+              { num: 97, suffix: "%", label: "Clean Claim Rate" },
               { num: 500, suffix: "+", label: "Hospitals Connected" },
               { num: 18, suffix: "", label: "Days Avg. Settlement" },
             ].map((stat, i) => (
@@ -1794,7 +1806,7 @@ export function HomeDashboard() {
                   <CleanClaimGauge pct={95} />
                   <div className="text-xs text-muted-foreground leading-relaxed">
                     <div className="font-semibold text-foreground text-sm mb-1">
-                      95% Clean Claim Rate
+                      97% Clean Claim Rate
                     </div>
                     5% above industry target of 90%
                   </div>
@@ -1996,7 +2008,7 @@ export function HomeDashboard() {
                     color: "oklch(0.38 0.14 188)",
                   },
                   {
-                    value: "95%",
+                    value: "97%",
                     label: "Clean Claim Rate",
                     color: "oklch(0.55 0.18 200)",
                   },
@@ -2549,7 +2561,7 @@ export function HomeDashboard() {
             </h2>
             <p className="text-white/75 text-lg mb-10 leading-relaxed max-w-2xl mx-auto">
               Join 500+ hospitals across India using AI Health Zon to achieve
-              95%+ clean claim rates, reduce denials, and unlock revenue growth.
+              97%+ clean claim rates, reduce denials, and unlock revenue growth.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">

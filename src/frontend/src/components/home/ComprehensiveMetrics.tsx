@@ -40,7 +40,7 @@ const metrics = [
   },
   {
     icon: TrendingUp,
-    value: 95,
+    value: 97,
     suffix: "%",
     label: "Clean Claim Rate",
     description: "Industry-leading first-pass acceptance rate",

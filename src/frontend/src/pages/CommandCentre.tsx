@@ -1,12 +1,25 @@
 import { Layout } from "@/components/layout/Layout";
-import { CheckCircle2, Clock, FileCheck, XCircle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+
+import {
+  Award,
+  Building2,
+  CheckCircle2,
+  Clock,
+  FileCheck,
+  Monitor,
+  Shield,
+  Users,
+  XCircle,
+} from "lucide-react";
 import { motion } from "motion/react";
 
 const kpis = [
   {
     icon: FileCheck,
     label: "Total Claims",
-    value: "1,234",
+    value: "5,00,000+",
     subtitle: "This Month",
     color: "text-blue-600",
     bg: "bg-blue-50",
@@ -73,6 +86,109 @@ const riskColor: Record<string, string> = {
   Medium: "bg-amber-100 text-amber-700",
   High: "bg-red-100 text-red-700",
 };
+
+const staffRoles = [
+  {
+    role: "Claim Command Centre Head",
+    count: "1",
+    responsibilities: "Overall P&L, insurer negotiations, SOP governance",
+    qualification: "MBBS + MBA/MHA, 8+ years",
+    icon: Award,
+  },
+  {
+    role: "Senior Claim Manager",
+    count: "2",
+    responsibilities: "Escalations, complex claims, audit coordination",
+    qualification: "BHMS/MBBS + coding certification, 5+ years",
+    icon: Shield,
+  },
+  {
+    role: "Medical Coding Specialists",
+    count: "4–6",
+    responsibilities: "ICD-10/CPT coding, DRG mapping, NHCX compliance",
+    qualification: "CPC/CCS certified, clinical background",
+    icon: FileCheck,
+  },
+  {
+    role: "Pre-Auth Officers",
+    count: "3–4",
+    responsibilities: "Pre-authorization, eligibility check, insurer liaison",
+    qualification: "Graduate + insurance training, 2+ years",
+    icon: CheckCircle2,
+  },
+  {
+    role: "Claim Submission Officers",
+    count: "3–4",
+    responsibilities: "Digital claim filing, NHCX portal, document management",
+    qualification: "Graduate, computer proficiency",
+    icon: Monitor,
+  },
+  {
+    role: "Rejection Analysis Executive",
+    count: "2",
+    responsibilities: "Root cause analysis, re-submission, trend reporting",
+    qualification: "Graduate, analytical skills, 2+ years",
+    icon: XCircle,
+  },
+  {
+    role: "QA / Audit Executive",
+    count: "1–2",
+    responsibilities: "Internal audit, compliance checks, staff training",
+    qualification: "BHMS/BDS, quality management background",
+    icon: Shield,
+  },
+  {
+    role: "IT / System Support",
+    count: "1",
+    responsibilities: "Software maintenance, integrations, data security",
+    qualification: "B.Tech/BCA, healthcare IT experience",
+    icon: Monitor,
+  },
+];
+
+const scalingData = [
+  {
+    hospitals: "2–3 Hospitals",
+    model: "Centralized Hub + Liaisons",
+    staffing: "1 central team + 1 liaison per hospital",
+    size: "12–18 staff",
+    color: "bg-blue-50 border-blue-200",
+    badge: "bg-blue-100 text-blue-700",
+  },
+  {
+    hospitals: "4–6 Hospitals",
+    model: "Regional Lead Model",
+    staffing: "1 central HQ team + dedicated regional leads",
+    size: "18–28 staff",
+    color: "bg-teal-50 border-teal-200",
+    badge: "bg-teal-100 text-teal-700",
+  },
+  {
+    hospitals: "7–10 Hospitals",
+    model: "Centre of Excellence (COE)",
+    staffing: "Full COE model with specialized teams",
+    size: "25–40 staff",
+    color: "bg-indigo-50 border-indigo-200",
+    badge: "bg-indigo-100 text-indigo-700",
+  },
+  {
+    hospitals: "10+ Hospitals",
+    model: "Dedicated Division",
+    staffing: "Separate Claim Command Centre division",
+    size: "40+ staff",
+    color: "bg-purple-50 border-purple-200",
+    badge: "bg-purple-100 text-purple-700",
+  },
+];
+
+const techStack = [
+  "AI Health Zon Platform",
+  "NHCX Integration",
+  "ICD-10 Coding Software",
+  "Claims Management System",
+  "Real-time Dashboard",
+  "Rejection Alert System",
+];
 
 function PieChart() {
   let cumAngle = 0;
@@ -156,7 +272,7 @@ function CleanClaimGauge() {
       role="img"
       aria-label="Clean claim score gauge"
     >
-      <title>Clean Claim Score: 95%</title>
+      <title>Clean Claim Score: 97%</title>
       <defs>
         <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stopColor="#1e40af" />
@@ -271,9 +387,9 @@ export function CommandCentre() {
             </h3>
             <div className="space-y-4">
               {[
-                { label: "Approved", value: 80, color: "bg-green-500" },
-                { label: "Pending", value: 14, color: "bg-amber-500" },
-                { label: "Rejected", value: 6, color: "bg-red-500" },
+                { label: "Approved", value: 97, color: "bg-green-500" },
+                { label: "Pending", value: 1.2, color: "bg-amber-500" },
+                { label: "Rejected", value: 1.8, color: "bg-red-500" },
               ].map((bar) => (
                 <div key={bar.label} className="flex items-center gap-4">
                   <span className="w-20 text-sm font-medium text-foreground shrink-0">
@@ -352,7 +468,7 @@ export function CommandCentre() {
               <div className="mt-4 grid grid-cols-3 gap-3">
                 {[
                   { label: "Target", value: "90%", color: "text-blue-600" },
-                  { label: "Current", value: "95%", color: "text-green-600" },
+                  { label: "Current", value: "97%", color: "text-green-600" },
                   { label: "Trend", value: "↑ 3%", color: "text-teal-600" },
                 ].map((m) => (
                   <div
@@ -667,6 +783,407 @@ export function CommandCentre() {
               </tbody>
             </table>
           </div>
+        </div>
+      </section>
+
+      {/* ============================================================
+           STAFF REQUIREMENTS FOR CENTRALIZED CLAIM COMMAND CENTRE
+           ============================================================ */}
+      <section
+        className="section-padding"
+        style={{
+          background:
+            "linear-gradient(160deg, oklch(0.97 0.015 220) 0%, oklch(0.99 0.008 180) 100%)",
+        }}
+      >
+        <div className="max-w-7xl mx-auto">
+          {/* Section Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-12"
+          >
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full mb-4 uppercase tracking-wider">
+              <Building2 className="w-3.5 h-3.5" />
+              Chain Hospital Setup Guide
+            </span>
+            <h2 className="font-heading text-3xl sm:text-4xl font-bold text-foreground mb-4">
+              Staff Requirements for Centralized
+              <span className="block text-health-blue">
+                Claim Command Centre
+              </span>
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              A complete staffing blueprint for chain hospitals looking to build
+              a centralized claim command centre to manage insurance claims
+              across all branches from a single hub.
+            </p>
+          </motion.div>
+
+          {/* Overview Cards */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-12"
+          >
+            {[
+              {
+                icon: Users,
+                label: "Total Recommended Staff",
+                value: "15–25",
+                sub: "per 500 beds",
+                color: "text-blue-600",
+                bg: "bg-blue-50",
+                border: "border-blue-200",
+              },
+              {
+                icon: Clock,
+                label: "Coverage",
+                value: "24 × 7",
+                sub: "in 3 rotating shifts",
+                color: "text-teal-600",
+                bg: "bg-teal-50",
+                border: "border-teal-200",
+              },
+              {
+                icon: Building2,
+                label: "Reporting",
+                value: "Centralized",
+                sub: "to hospital HQ",
+                color: "text-indigo-600",
+                bg: "bg-indigo-50",
+                border: "border-indigo-200",
+              },
+            ].map((card, i) => {
+              const Icon = card.icon;
+              return (
+                <motion.div
+                  key={card.label}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className={`bg-white rounded-2xl p-6 border ${card.border} shadow-sm flex items-start gap-4`}
+                >
+                  <div
+                    className={`w-12 h-12 rounded-xl ${card.bg} flex items-center justify-center shrink-0`}
+                  >
+                    <Icon className={`w-6 h-6 ${card.color}`} />
+                  </div>
+                  <div>
+                    <div
+                      className={`font-heading text-2xl font-bold ${card.color}`}
+                    >
+                      {card.value}
+                    </div>
+                    <div className="text-sm font-semibold text-foreground">
+                      {card.label}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-0.5">
+                      {card.sub}
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+
+          {/* Staff Roles Table */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="bg-white rounded-2xl border border-border shadow-sm overflow-hidden mb-10"
+            data-ocid="staff.table"
+          >
+            <div className="px-6 py-5 border-b border-border bg-gradient-to-r from-blue-600 to-teal-600">
+              <div className="flex items-center gap-3">
+                <Users className="w-5 h-5 text-white" />
+                <h3 className="font-heading text-lg font-bold text-white">
+                  Staff Role Matrix — Per 500 Beds
+                </h3>
+              </div>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[700px]">
+                <thead>
+                  <tr className="bg-slate-50 border-b border-border">
+                    <th className="p-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                      Role
+                    </th>
+                    <th className="p-4 text-center text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                      Count
+                    </th>
+                    <th className="p-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                      Key Responsibilities
+                    </th>
+                    <th className="p-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                      Required Qualification
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {staffRoles.map((row, i) => {
+                    const Icon = row.icon;
+                    return (
+                      <tr
+                        key={row.role}
+                        className={`border-b border-border last:border-0 transition-colors hover:bg-blue-50/50 ${
+                          i % 2 === 0 ? "bg-white" : "bg-slate-50/60"
+                        }`}
+                      >
+                        <td className="p-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
+                              <Icon className="w-4 h-4 text-blue-600" />
+                            </div>
+                            <span className="text-sm font-semibold text-foreground">
+                              {row.role}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="p-4 text-center">
+                          <span className="inline-flex items-center justify-center min-w-[40px] px-3 py-1 rounded-full text-sm font-bold bg-teal-100 text-teal-700">
+                            {row.count}
+                          </span>
+                        </td>
+                        <td className="p-4 text-sm text-muted-foreground max-w-[260px]">
+                          {row.responsibilities}
+                        </td>
+                        <td className="p-4">
+                          <span className="inline-block px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 text-xs font-medium">
+                            {row.qualification}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </motion.div>
+
+          {/* Shift Structure */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="mb-10"
+          >
+            <h3 className="font-heading text-xl font-bold text-foreground mb-5 flex items-center gap-2">
+              <Clock className="w-5 h-5 text-health-blue" />
+              Shift Structure
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {[
+                {
+                  shift: "Morning Shift",
+                  time: "8:00 AM – 4:00 PM",
+                  desc: "Full team deployment. Peak volume processing, pre-auth approvals, and insurer coordination.",
+                  color: "from-amber-400 to-orange-400",
+                  bg: "bg-amber-50",
+                  border: "border-amber-200",
+                  textColor: "text-amber-700",
+                  badgeBg: "bg-amber-100",
+                },
+                {
+                  shift: "Evening Shift",
+                  time: "4:00 PM – 12:00 AM",
+                  desc: "Claim submission team, follow-up on pending approvals, documentation review.",
+                  color: "from-blue-400 to-indigo-400",
+                  bg: "bg-blue-50",
+                  border: "border-blue-200",
+                  textColor: "text-blue-700",
+                  badgeBg: "bg-blue-100",
+                },
+                {
+                  shift: "Night Shift",
+                  time: "12:00 AM – 8:00 AM",
+                  desc: "Emergency pre-authorization requests, urgent claim submissions, overnight monitoring.",
+                  color: "from-indigo-500 to-purple-500",
+                  bg: "bg-indigo-50",
+                  border: "border-indigo-200",
+                  textColor: "text-indigo-700",
+                  badgeBg: "bg-indigo-100",
+                },
+              ].map((s, i) => (
+                <motion.div
+                  key={s.shift}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.12 }}
+                  className={`bg-white rounded-2xl border ${s.border} overflow-hidden shadow-sm`}
+                >
+                  <div className={`h-1.5 bg-gradient-to-r ${s.color}`} />
+                  <div className="p-5">
+                    <div
+                      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${s.badgeBg} ${s.textColor} mb-3`}
+                    >
+                      <Clock className="w-3 h-3" />
+                      {s.time}
+                    </div>
+                    <h4 className="font-heading font-bold text-foreground mb-2">
+                      {s.shift}
+                    </h4>
+                    <p className="text-sm text-muted-foreground">{s.desc}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Chain Hospital Scaling Table */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="bg-white rounded-2xl border border-border shadow-sm overflow-hidden mb-10"
+            data-ocid="staff.scaling_table"
+          >
+            <div className="px-6 py-5 border-b border-border">
+              <div className="flex items-center gap-3">
+                <Building2 className="w-5 h-5 text-health-blue" />
+                <div>
+                  <h3 className="font-heading text-lg font-bold text-foreground">
+                    Scaling Model for Chain Hospitals
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    How your Claim Command Centre grows with your hospital
+                    network
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[600px]">
+                <thead>
+                  <tr className="bg-slate-50 border-b border-border">
+                    <th className="p-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                      Network Size
+                    </th>
+                    <th className="p-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                      Operating Model
+                    </th>
+                    <th className="p-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                      Staffing Structure
+                    </th>
+                    <th className="p-4 text-center text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                      Recommended Size
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {scalingData.map((row, i) => (
+                    <tr
+                      key={row.hospitals}
+                      className={`border-b border-border last:border-0 hover:bg-blue-50/40 transition-colors ${
+                        i % 2 === 0 ? "bg-white" : "bg-slate-50/60"
+                      }`}
+                    >
+                      <td className="p-4">
+                        <span
+                          className={`inline-block px-3 py-1 rounded-full text-xs font-bold border ${row.color}`}
+                        >
+                          {row.hospitals}
+                        </span>
+                      </td>
+                      <td className="p-4 text-sm font-semibold text-foreground">
+                        {row.model}
+                      </td>
+                      <td className="p-4 text-sm text-muted-foreground">
+                        {row.staffing}
+                      </td>
+                      <td className="p-4 text-center">
+                        <span
+                          className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${row.badge}`}
+                        >
+                          {row.size}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </motion.div>
+
+          {/* Technology Stack */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="bg-white rounded-2xl border border-border shadow-sm p-6 mb-10"
+          >
+            <div className="flex items-center gap-2 mb-5">
+              <Monitor className="w-5 h-5 text-health-blue" />
+              <h3 className="font-heading text-lg font-bold text-foreground">
+                Key Technology Stack for Staff
+              </h3>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {techStack.map((tech, i) => (
+                <motion.div
+                  key={tech}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.07 }}
+                >
+                  <Badge
+                    variant="secondary"
+                    className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-blue-50 to-teal-50 text-blue-700 border border-blue-200 hover:from-blue-100 hover:to-teal-100 transition-colors cursor-default"
+                  >
+                    {tech}
+                  </Badge>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* CTA Banner */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-700 via-blue-600 to-teal-600 p-8 sm:p-12 text-center shadow-xl"
+          >
+            {/* Decorative circles */}
+            <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-white/5" />
+            <div className="absolute -bottom-8 -left-8 w-36 h-36 rounded-full bg-white/5" />
+            <div className="relative z-10">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/15 rounded-full text-white/90 text-xs font-semibold mb-5 uppercase tracking-wider">
+                <Shield className="w-3.5 h-3.5" />
+                Chain Hospital Special
+              </div>
+              <h3 className="font-heading text-2xl sm:text-3xl font-bold text-white mb-3">
+                Ready to set up your Claim Command Centre?
+              </h3>
+              <p className="text-white/75 text-base max-w-xl mx-auto mb-8">
+                Our experts will help you design the ideal staffing structure,
+                technology setup, and SOPs tailored to your hospital network.
+              </p>
+              <Button
+                size="lg"
+                onClick={() => {
+                  window.location.href = "/contact";
+                }}
+                className="bg-white text-blue-700 hover:bg-blue-50 font-bold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all"
+                data-ocid="staff.cta_button"
+              >
+                Book a Consultation
+              </Button>
+            </div>
+          </motion.div>
         </div>
       </section>
     </Layout>

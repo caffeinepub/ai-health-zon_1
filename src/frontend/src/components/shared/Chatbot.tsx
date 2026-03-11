@@ -16,14 +16,14 @@ const responses: Record<string, string> = {
   demo: "You can book a free personalized demo by clicking the 'Book Demo' button in the navigation, or visit our Join Network page. Our specialist will contact you within 2 business hours!",
   hospital:
     "We provide hospitals with: RCM automation, Pre-authorization management, Real-time claim tracking, NABH compliance tools, Financial analytics, and comprehensive staff training programs.",
-  rcm: "Our Revenue Cycle Management (RCM) solution automates the entire billing cycle — from patient registration to final settlement. We achieve 95%+ clean claim rates and reduce denial rates by up to 40%.",
+  rcm: "Our Revenue Cycle Management (RCM) solution automates the entire billing cycle — from patient registration to final settlement. We achieve 97%+ clean claim rates and reduce denial rates by up to 40%.",
   revenue:
-    "Our Revenue Cycle Management (RCM) solution automates the entire billing cycle — from patient registration to final settlement. We achieve 95%+ clean claim rates and reduce denial rates by up to 40%.",
+    "Our Revenue Cycle Management (RCM) solution automates the entire billing cycle — from patient registration to final settlement. We achieve 97%+ clean claim rates and reduce denial rates by up to 40%.",
   nabh: "We offer comprehensive NABH 6th Edition compliance support covering all 5 pillars: Patient Rights, Clinical Documentation, Medication Safety, Quality Indicators, and Infection Control. 100+ hospitals certified through our platform!",
   abdm: "We provide full ABDM integration including ABHA ID creation, Personal Health Records (PHR), Health Information Exchange, Consent Management, and Healthcare Interoperability — fully compliant with NHA guidelines.",
   abha: "ABHA (Ayushman Bharat Health Account) IDs can be created and managed through our platform. We handle enrollment, verification, and health record linkage seamlessly.",
   claim:
-    "Our Claim Command Centre provides real-time tracking, rejection analytics, clean claim scoring, and department risk index. We process 10,000+ claims monthly with a 95% clean claim rate.",
+    "Our Claim Command Centre provides real-time tracking, rejection analytics, clean claim scoring, and department risk index. We process 10,000+ claims monthly with a 97% clean claim rate.",
   patient:
     "Our Patient Support Hub covers the full patient lifecycle: Pre-admission (insurance verification, ABHA enrollment), During Admission (treatment documentation, insurance liaison), and Post-Discharge (claim filing, follow-up care, grievance handling).",
   compliance:
