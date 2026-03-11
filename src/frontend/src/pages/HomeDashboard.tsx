@@ -2,6 +2,7 @@ import { Layout } from "@/components/layout/Layout";
 import { DemoBookingDialog } from "@/components/shared/DemoBookingDialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { generateAIHealthZonPPT } from "@/utils/generatePPT";
 import { Link } from "@tanstack/react-router";
 import {
@@ -12,7 +13,6 @@ import {
   Brain,
   Building2,
   CheckCircle2,
-  ChevronRight,
   Clock,
   Cloud,
   Database,
@@ -34,11 +34,41 @@ import {
   XCircle,
   Zap,
 } from "lucide-react";
-import { motion, useInView } from "motion/react";
+import { AnimatePresence, motion, useInView } from "motion/react";
+import type React from "react";
 import { useEffect, useRef, useState } from "react";
 
-// ─── Floating Particle Shapes ────────────────────────────────────────────────
-const heroParticles = [
+// ─── useCountUp hook ──────────────────────────────────────────────────────────
+function useCountUp(target: number, duration = 1800) {
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true });
+  useEffect(() => {
+    if (!inView) return;
+    let startTime: number | null = null;
+    const step = (ts: number) => {
+      if (!startTime) startTime = ts;
+      const prog = Math.min((ts - startTime) / duration, 1);
+      const eased = 1 - (1 - prog) ** 4;
+      setCount(Math.floor(eased * target));
+      if (prog < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, [inView, target, duration]);
+  return { count, ref };
+}
+
+// ─── Animated Count Display ───────────────────────────────────────────────────
+function CountUp({
+  target,
+  duration = 1800,
+}: { target: number; duration?: number }) {
+  const { count, ref } = useCountUp(target, duration);
+  return <span ref={ref}>{count.toLocaleString("en-IN")}</span>;
+}
+
+// ─── Floating Particle Shapes ─────────────────────────────────────────────────
+const particles = [
   {
     x: "8%",
     y: "12%",
@@ -103,15 +133,6 @@ const heroParticles = [
     opacity: 0.1,
   },
   {
-    x: "58%",
-    y: "40%",
-    size: 14,
-    shape: "hex",
-    delay: 4,
-    dur: 13,
-    opacity: 0.05,
-  },
-  {
     x: "5%",
     y: "50%",
     size: 10,
@@ -119,87 +140,6 @@ const heroParticles = [
     delay: 0.8,
     dur: 10,
     opacity: 0.08,
-  },
-  {
-    x: "96%",
-    y: "42%",
-    size: 18,
-    shape: "hex",
-    delay: 3.5,
-    dur: 15,
-    opacity: 0.06,
-  },
-  {
-    x: "22%",
-    y: "38%",
-    size: 6,
-    shape: "dot",
-    delay: 1.2,
-    dur: 9,
-    opacity: 0.12,
-  },
-  {
-    x: "65%",
-    y: "80%",
-    size: 16,
-    shape: "hex",
-    delay: 2.8,
-    dur: 17,
-    opacity: 0.05,
-  },
-  {
-    x: "40%",
-    y: "5%",
-    size: 12,
-    shape: "dot",
-    delay: 0.3,
-    dur: 12,
-    opacity: 0.09,
-  },
-  {
-    x: "78%",
-    y: "90%",
-    size: 8,
-    shape: "dot",
-    delay: 4.5,
-    dur: 8,
-    opacity: 0.08,
-  },
-  {
-    x: "12%",
-    y: "92%",
-    size: 20,
-    shape: "hex",
-    delay: 1.8,
-    dur: 14,
-    opacity: 0.06,
-  },
-  {
-    x: "50%",
-    y: "58%",
-    size: 10,
-    shape: "dot",
-    delay: 3.2,
-    dur: 10,
-    opacity: 0.07,
-  },
-  {
-    x: "88%",
-    y: "55%",
-    size: 14,
-    shape: "hex",
-    delay: 0.6,
-    dur: 18,
-    opacity: 0.05,
-  },
-  {
-    x: "35%",
-    y: "60%",
-    size: 8,
-    shape: "dot",
-    delay: 2.2,
-    dur: 11,
-    opacity: 0.1,
   },
   {
     x: "62%",
@@ -220,7 +160,6 @@ const heroParticles = [
     opacity: 0.09,
   },
 ];
-
 const floatAnims = ["float1", "float2", "float3", "float4", "float5"];
 
 function HexShape({ size, opacity }: { size: number; opacity: number }) {
@@ -258,9 +197,9 @@ function ParticleField() {
       className="absolute inset-0 overflow-hidden pointer-events-none"
       aria-hidden="true"
     >
-      {heroParticles.map((p, i) => (
+      {particles.map((p, i) => (
         <div
-          key={`particle-${p.x}-${p.y}`}
+          key={`p-${p.x}-${p.y}`}
           className="absolute"
           style={{
             left: p.x,
@@ -291,32 +230,214 @@ function ParticleField() {
   );
 }
 
-// ─── Animated KPI Counter ─────────────────────────────────────────────────────
-function AnimatedCounter({
-  target,
-  duration = 1600,
-}: {
-  target: number;
-  duration?: number;
-}) {
-  const [count, setCount] = useState(0);
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true });
+// ─── Glassmorphism Hero Dashboard Card ───────────────────────────────────────
+function GlassKPICard() {
+  return (
+    <div
+      className="relative rounded-3xl overflow-hidden border border-white/60 shadow-2xl"
+      style={{
+        background: "rgba(255,255,255,0.72)",
+        backdropFilter: "blur(24px)",
+        WebkitBackdropFilter: "blur(24px)",
+        boxShadow:
+          "0 32px 80px oklch(0.38 0.14 188 / 0.18), 0 8px 24px oklch(0.55 0.18 200 / 0.12), inset 0 1px 0 rgba(255,255,255,0.8)",
+      }}
+    >
+      {/* Window chrome */}
+      <div
+        className="px-5 py-3.5 border-b border-white/50 flex items-center gap-2"
+        style={{ background: "rgba(255,255,255,0.6)" }}
+      >
+        <div className="w-3 h-3 rounded-full bg-red-400" />
+        <div className="w-3 h-3 rounded-full bg-amber-400" />
+        <div className="w-3 h-3 rounded-full bg-green-400" />
+        <span
+          className="ml-3 text-xs font-mono"
+          style={{ color: "oklch(0.45 0.10 188)" }}
+        >
+          AI Health Zon — Command Centre
+        </span>
+        <div className="ml-auto flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+          <span className="text-xs" style={{ color: "oklch(0.50 0.16 145)" }}>
+            Live
+          </span>
+        </div>
+      </div>
 
-  useEffect(() => {
-    if (!inView) return;
-    let startTime: number | null = null;
-    const step = (timestamp: number) => {
-      if (!startTime) startTime = timestamp;
-      const progress = Math.min((timestamp - startTime) / duration, 1);
-      const eased = 1 - (1 - progress) ** 4;
-      setCount(Math.floor(eased * target));
-      if (progress < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  }, [inView, target, duration]);
+      <div className="p-5">
+        {/* Mini KPI grid */}
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          {[
+            {
+              label: "Total Claims",
+              value: "5,00,000+",
+              trend: "+12%",
+              trendUp: true,
+              color: "oklch(0.38 0.14 188)",
+            },
+            {
+              label: "Clean Claim Rate",
+              value: "97%",
+              trend: "+5%",
+              trendUp: true,
+              color: "oklch(0.50 0.16 145)",
+            },
+            {
+              label: "Rejected",
+              value: "1.8%",
+              trend: "-0.4%",
+              trendUp: true,
+              color: "oklch(0.55 0.2 25)",
+            },
+            {
+              label: "Approval Speed",
+              value: "2.4 hrs",
+              trend: "avg",
+              trendUp: true,
+              color: "oklch(0.55 0.18 200)",
+            },
+          ].map((m) => (
+            <div
+              key={m.label}
+              className="rounded-xl p-3 border"
+              style={{
+                background: "rgba(255,255,255,0.7)",
+                borderColor: "rgba(255,255,255,0.8)",
+              }}
+            >
+              <div
+                className="text-xs mb-1 truncate"
+                style={{ color: "oklch(0.50 0.08 188)" }}
+              >
+                {m.label}
+              </div>
+              <div
+                className="font-heading font-bold text-lg leading-none"
+                style={{ color: m.color }}
+              >
+                {m.value}
+              </div>
+              <div
+                className="text-xs mt-1"
+                style={{
+                  color: m.trendUp
+                    ? "oklch(0.50 0.16 145)"
+                    : "oklch(0.55 0.2 25)",
+                }}
+              >
+                ↑ {m.trend}
+              </div>
+            </div>
+          ))}
+        </div>
 
-  return <div ref={ref}>{count.toLocaleString()}</div>;
+        {/* Progress bars */}
+        <div
+          className="rounded-xl p-4 border mb-3"
+          style={{
+            background: "rgba(255,255,255,0.6)",
+            borderColor: "rgba(255,255,255,0.8)",
+          }}
+        >
+          <div
+            className="text-xs font-semibold mb-3"
+            style={{ color: "oklch(0.35 0.10 188)" }}
+          >
+            Claim Status Distribution
+          </div>
+          <div className="space-y-2">
+            {[
+              { label: "Approved", pct: 97, color: "oklch(0.52 0.16 145)" },
+              { label: "Pending", pct: 1.2, color: "oklch(0.68 0.17 60)" },
+              { label: "Denied", pct: 1.8, color: "oklch(0.55 0.2 25)" },
+            ].map((b) => (
+              <div key={b.label}>
+                <div className="flex justify-between text-xs mb-1">
+                  <span style={{ color: "oklch(0.50 0.08 188)" }}>
+                    {b.label}
+                  </span>
+                  <span
+                    className="font-semibold"
+                    style={{ color: "rgba(255,255,255,0.9)" }}
+                  >
+                    {b.pct}%
+                  </span>
+                </div>
+                <div
+                  className="h-1.5 rounded-full"
+                  style={{ background: "oklch(0.90 0.04 188)" }}
+                >
+                  <div
+                    className="h-full rounded-full"
+                    style={{ width: `${b.pct}%`, background: b.color }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Risk badges */}
+        <div className="flex gap-1.5 flex-wrap">
+          {[
+            { dept: "Cardiology", risk: "Low", dot: "oklch(0.52 0.16 145)" },
+            { dept: "Orthopedics", risk: "Low", dot: "oklch(0.52 0.16 145)" },
+            { dept: "Emergency", risk: "Med", dot: "oklch(0.68 0.17 60)" },
+            { dept: "Gen. Med", risk: "High", dot: "oklch(0.55 0.2 25)" },
+          ].map((d) => (
+            <div
+              key={d.dept}
+              className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs border"
+              style={{
+                background: "rgba(255,255,255,0.7)",
+                borderColor: "rgba(255,255,255,0.9)",
+              }}
+            >
+              <div
+                className="w-1.5 h-1.5 rounded-full"
+                style={{ background: d.dot }}
+              />
+              <span style={{ color: "rgba(255,255,255,0.9)" }}>{d.dept}</span>
+              <span style={{ color: "oklch(0.50 0.08 188)" }}>{d.risk}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Floating certification badges */}
+      <div
+        className="absolute -top-3 -right-3 px-3 py-1.5 rounded-full text-xs font-bold border shadow-lg"
+        style={{
+          background: "oklch(0.38 0.14 188)",
+          borderColor: "oklch(0.55 0.18 200)",
+          color: "white",
+        }}
+      >
+        ABDM Ready
+      </div>
+      <div
+        className="absolute top-12 -right-4 px-3 py-1.5 rounded-full text-xs font-bold border shadow-lg"
+        style={{
+          background: "oklch(0.50 0.16 145)",
+          borderColor: "oklch(0.60 0.18 145)",
+          color: "white",
+        }}
+      >
+        NHCX Integrated
+      </div>
+      <div
+        className="absolute top-24 -right-3 px-3 py-1.5 rounded-full text-xs font-bold border shadow-lg"
+        style={{
+          background: "oklch(0.55 0.18 200)",
+          borderColor: "oklch(0.65 0.20 200)",
+          color: "white",
+        }}
+      >
+        NABH Aligned
+      </div>
+    </div>
+  );
 }
 
 // ─── Clean Claim Gauge SVG ────────────────────────────────────────────────────
@@ -372,7 +493,7 @@ function CleanClaimGauge({ pct }: { pct: number }) {
   );
 }
 
-// ─── Section Heading with accent underline ────────────────────────────────────
+// ─── Section Heading ──────────────────────────────────────────────────────────
 function SectionHeading({
   badge,
   title,
@@ -389,7 +510,6 @@ function SectionHeading({
   light?: boolean;
 }) {
   const titleParts = accentWord ? title.split(accentWord) : [title];
-
   return (
     <div className={`mb-10 ${center ? "text-center" : ""}`}>
       {badge && (
@@ -443,7 +563,6 @@ const ecosystemNodes = [
   {
     id: "hospitals",
     label: "Hospitals",
-    icon: Building2,
     color: "#1e40af",
     angle: 0,
     description:
@@ -452,7 +571,6 @@ const ecosystemNodes = [
   {
     id: "insurers",
     label: "Insurers",
-    icon: ShieldCheck,
     color: "#0d9488",
     angle: 51.4,
     description:
@@ -460,8 +578,7 @@ const ecosystemNodes = [
   },
   {
     id: "government",
-    label: "Government Schemes",
-    icon: BarChart3,
+    label: "Govt Schemes",
     color: "#7c3aed",
     angle: 102.8,
     description:
@@ -470,7 +587,6 @@ const ecosystemNodes = [
   {
     id: "patients",
     label: "Patients",
-    icon: Heart,
     color: "#dc2626",
     angle: 154.2,
     description:
@@ -479,7 +595,6 @@ const ecosystemNodes = [
   {
     id: "digital",
     label: "ABDM",
-    icon: Smartphone,
     color: "#059669",
     angle: 205.7,
     description:
@@ -488,7 +603,6 @@ const ecosystemNodes = [
   {
     id: "compliance",
     label: "NABH",
-    icon: ShieldCheck,
     color: "#d97706",
     angle: 257.1,
     description:
@@ -496,8 +610,7 @@ const ecosystemNodes = [
   },
   {
     id: "command",
-    label: "Claim Command Centre",
-    icon: Monitor,
+    label: "Claim Cmd",
     color: "#6d28d9",
     angle: 308.5,
     description:
@@ -566,11 +679,9 @@ const ecosystemPillars = [
 
 function EcosystemDiagram() {
   const [hovered, setHovered] = useState<string | null>(null);
-
   const cx = 300;
   const cy = 280;
   const radius = 180;
-
   return (
     <div className="relative bg-white rounded-2xl border border-border shadow-xl overflow-hidden p-4">
       <svg
@@ -606,9 +717,7 @@ function EcosystemDiagram() {
             </radialGradient>
           ))}
         </defs>
-
         <circle cx={cx} cy={cy} r="90" fill="url(#centerGlow)" />
-
         <circle
           cx={cx}
           cy={cy}
@@ -628,7 +737,6 @@ function EcosystemDiagram() {
             repeatCount="indefinite"
           />
         </circle>
-
         {ecosystemNodes.map((node) => {
           const rad = (node.angle - 90) * (Math.PI / 180);
           const nx = cx + radius * Math.cos(rad);
@@ -659,13 +767,11 @@ function EcosystemDiagram() {
             </line>
           );
         })}
-
         {ecosystemNodes.map((node) => {
           const rad = (node.angle - 90) * (Math.PI / 180);
           const nx = cx + radius * Math.cos(rad);
           const ny = cy + radius * Math.sin(rad);
           const isHov = hovered === node.id;
-
           return (
             <g
               key={node.id}
@@ -689,7 +795,7 @@ function EcosystemDiagram() {
               <text
                 textAnchor="middle"
                 y="4"
-                fontSize="11"
+                fontSize="10"
                 fill="white"
                 fontWeight="600"
                 style={{ pointerEvents: "none" }}
@@ -711,7 +817,6 @@ function EcosystemDiagram() {
             </g>
           );
         })}
-
         <circle
           cx={cx}
           cy={cy}
@@ -758,7 +863,6 @@ function EcosystemDiagram() {
         >
           Ecosystem Hub
         </text>
-
         {hovered &&
           (() => {
             const node = ecosystemNodes.find((n) => n.id === hovered);
@@ -800,106 +904,6 @@ function EcosystemDiagram() {
             );
           })()}
       </svg>
-    </div>
-  );
-}
-
-// ─── Mock Dashboard Card (reusable) ──────────────────────────────────────────
-function MockDashboardCard({ className = "" }: { className?: string }) {
-  return (
-    <div
-      className={`rounded-2xl border border-border overflow-hidden shadow-2xl shadow-black/10 ${className}`}
-      style={{
-        background: "white",
-      }}
-    >
-      <div
-        className="px-5 py-3 border-b border-border flex items-center gap-2"
-        style={{ background: "oklch(0.95 0.04 188)" }}
-      >
-        <div className="w-3 h-3 rounded-full bg-red-400/80" />
-        <div className="w-3 h-3 rounded-full bg-amber-400/80" />
-        <div className="w-3 h-3 rounded-full bg-green-400/80" />
-        <span className="ml-3 text-muted-foreground text-xs font-mono">
-          AI Health Zon — Command Centre
-        </span>
-      </div>
-      <div className="p-5">
-        <div className="grid grid-cols-4 gap-3 mb-5">
-          {[
-            { label: "Total Claims", value: "5,00,000+" },
-            { label: "Clean Claim Rate", value: "97%" },
-            { label: "Revenue Recovered", value: "₹2.4Cr" },
-            { label: "Approvals Today", value: "187" },
-          ].map((m) => (
-            <div
-              key={m.label}
-              className="rounded-lg p-3 border border-border"
-              style={{ background: "oklch(0.97 0.02 188)" }}
-            >
-              <div className="text-muted-foreground text-xs mb-1 truncate">
-                {m.label}
-              </div>
-              <div
-                className="font-heading font-bold text-base"
-                style={{ color: "oklch(0.38 0.14 188)" }}
-              >
-                {m.value}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div
-          className="rounded-xl p-4 border border-border mb-4"
-          style={{ background: "oklch(0.97 0.02 188)" }}
-        >
-          <div className="text-muted-foreground text-xs mb-3 font-medium">
-            Claim Status Distribution
-          </div>
-          <div className="space-y-2.5">
-            {[
-              { label: "Approved", pct: 97, color: "oklch(0.52 0.16 145)" },
-              { label: "Pending", pct: 1.2, color: "oklch(0.68 0.17 60)" },
-              { label: "Denied", pct: 1.8, color: "oklch(0.55 0.2 25)" },
-            ].map((b) => (
-              <div key={b.label}>
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="text-muted-foreground">{b.label}</span>
-                  <span className="text-foreground font-semibold">
-                    {b.pct}%
-                  </span>
-                </div>
-                <div
-                  className="h-1.5 rounded-full overflow-hidden"
-                  style={{ background: "oklch(0.90 0.04 188)" }}
-                >
-                  <div
-                    className="h-full rounded-full"
-                    style={{ width: `${b.pct}%`, background: b.color }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="flex gap-2 flex-wrap">
-          {[
-            { dept: "Cardiology", risk: "Low", dot: "bg-green-500" },
-            { dept: "Orthopedics", risk: "Low", dot: "bg-green-500" },
-            { dept: "Emergency", risk: "Med", dot: "bg-amber-400" },
-            { dept: "Gen. Med", risk: "High", dot: "bg-red-500" },
-          ].map((d) => (
-            <div
-              key={d.dept}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-border text-xs bg-white"
-            >
-              <div className={`w-1.5 h-1.5 rounded-full ${d.dot}`} />
-              <span className="text-foreground">{d.dept}</span>
-              <span className="text-muted-foreground">{d.risk}</span>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }
@@ -946,118 +950,6 @@ const painPoints = [
     accentColor: "oklch(0.45 0.18 295)",
     borderColor: "border-l-purple-400",
   },
-];
-
-const coreModules = [
-  {
-    num: "01",
-    icon: Activity,
-    title: "Hospital Revenue Management",
-    description:
-      "End-to-end revenue cycle automation from registration to payment reconciliation.",
-    href: "/hospitals",
-    borderColor: "border-l-sky-500",
-    accentColor: "oklch(0.55 0.18 200)",
-    features: [
-      "Claim submission automation",
-      "Insurance eligibility verification",
-      "Medical coding support",
-      "Payment reconciliation",
-      "Denial management",
-    ],
-  },
-  {
-    num: "02",
-    icon: Monitor,
-    title: "AI Command Centre",
-    description:
-      "Live operational dashboard giving complete visibility into claims and revenue.",
-    href: "/command-centre",
-    borderColor: "border-l-indigo-500",
-    accentColor: "oklch(0.50 0.20 265)",
-    features: [
-      "Real-time operational dashboard",
-      "Claims tracking & analytics",
-      "Revenue performance metrics",
-      "Risk alerts & notifications",
-      "Executive insights reports",
-    ],
-  },
-  {
-    num: "03",
-    icon: Heart,
-    title: "Patient Financial Support",
-    description:
-      "AI-powered assistance for patients navigating insurance and billing.",
-    href: "/patient-support",
-    borderColor: "border-l-rose-500",
-    accentColor: "oklch(0.55 0.22 15)",
-    features: [
-      "AI chatbot for billing queries",
-      "Flexible payment plans",
-      "Insurance assistance",
-      "ABHA ID creation & linking",
-      "Grievance resolution",
-    ],
-  },
-  {
-    num: "04",
-    icon: BarChart3,
-    title: "Analytics & Insights",
-    description:
-      "Predictive analytics and financial forecasting for smarter hospital decisions.",
-    href: "/insights",
-    borderColor: "border-l-emerald-500",
-    accentColor: "oklch(0.50 0.18 155)",
-    features: [
-      "Claim approval rate analytics",
-      "Revenue trends & forecasting",
-      "Denial prediction engine",
-      "Department risk heatmap",
-      "Benchmark comparisons",
-    ],
-  },
-];
-
-const kpiData = [
-  {
-    label: "Total Claims",
-    target: 500000,
-    icon: FileCheck,
-    color: "oklch(0.38 0.14 188)",
-    iconBg: "bg-sky-50",
-    border: "border-l-4 border-l-sky-500",
-  },
-  {
-    label: "Approved",
-    target: 485000,
-    icon: CheckCircle2,
-    color: "oklch(0.50 0.16 145)",
-    iconBg: "bg-green-50",
-    border: "border-l-4 border-l-green-500",
-  },
-  {
-    label: "Pending",
-    target: 6000,
-    icon: Clock,
-    color: "oklch(0.60 0.17 60)",
-    iconBg: "bg-amber-50",
-    border: "border-l-4 border-l-amber-500",
-  },
-  {
-    label: "Denied",
-    target: 9000,
-    icon: XCircle,
-    color: "oklch(0.55 0.20 25)",
-    iconBg: "bg-red-50",
-    border: "border-l-4 border-l-red-500",
-  },
-];
-
-const claimBars = [
-  { label: "Approved", pct: 97, color: "bg-green-500", text: "text-green-700" },
-  { label: "Pending", pct: 1.2, color: "bg-amber-400", text: "text-amber-700" },
-  { label: "Denied", pct: 1.8, color: "bg-red-400", text: "text-red-700" },
 ];
 
 const workflowSteps = [
@@ -1135,7 +1027,7 @@ const beneficiaries = [
   },
   {
     icon: Brain,
-    title: "Healthcare Administrators",
+    title: "Healthcare Admins",
     description:
       "Gain complete operational visibility with executive dashboards and AI-powered risk intelligence.",
     gradient: "from-purple-500/10 to-purple-500/0",
@@ -1181,69 +1073,373 @@ const securityCards = [
 
 const marqueeText =
   "✦ Faster Claims  ·  Better Revenue  ·  500+ Hospitals  ·  97% Clean Claims  ·  18 Day Settlement  ·  ABDM Compliant  ·  NABH Ready  ·  Real-Time Insights  ·  Zero Revenue Leakage  ·  ";
-
 const complianceTicker =
   "✦ HIPAA Ready  ·  NABH Aligned  ·  ABDM / FHIR R4  ·  DPDP Act 2023  ·  ISO 27001  ·  TLS 1.3 Encrypted  ·  AES-256 Encryption  ·  ";
+
+const partnerSchemes = [
+  "PMJAY",
+  "RGHS",
+  "Chiranjeevi Yojana",
+  "MAA Yojana",
+  "NHCX",
+  "ABDM",
+  "NHA",
+  "IRDAI",
+  "ESI",
+  "CGHS",
+  "ECHS",
+  "PM-JAY+",
+  "State NHA",
+  "NIC",
+];
+
+const platformTabs: Array<{
+  id: string;
+  label: string;
+  icon: React.ElementType;
+  title: string;
+  description: string;
+  href: string;
+  color: string;
+  features: string[];
+  metric: { label: string; value: string; sub: string };
+  chartBars: Array<{ id: string; v: number }>;
+}> = [
+  {
+    id: "revenue",
+    label: "Hospital Revenue",
+    icon: Activity,
+    title: "Hospital Revenue Management",
+    description:
+      "End-to-end revenue cycle automation from registration to payment reconciliation, powered by AI.",
+    href: "/hospitals",
+    color: "oklch(0.55 0.18 200)",
+    features: [
+      "Claim submission automation",
+      "Insurance eligibility verification",
+      "Medical coding support (ICD-10/CPT)",
+      "Payment reconciliation & remittance",
+      "Denial management & appeals",
+    ],
+    metric: {
+      label: "Clean Claim Rate",
+      value: "97%",
+      sub: "+5% above industry avg",
+    },
+    chartBars: [
+      { id: "r1", v: 62 },
+      { id: "r2", v: 75 },
+      { id: "r3", v: 83 },
+      { id: "r4", v: 88 },
+      { id: "r5", v: 91 },
+      { id: "r6", v: 94 },
+      { id: "r7", v: 97 },
+    ],
+  },
+  {
+    id: "command",
+    label: "Command Centre",
+    icon: Monitor,
+    title: "AI Claim Command Centre",
+    description:
+      "Live operational intelligence dashboard giving complete visibility into claims, revenue, and risk.",
+    href: "/command-centre",
+    color: "oklch(0.50 0.20 265)",
+    features: [
+      "Real-time operational dashboard",
+      "Claims tracking & analytics",
+      "Revenue performance metrics",
+      "Risk alerts & department heatmap",
+      "Executive insights reports",
+    ],
+    metric: {
+      label: "Claims Tracked",
+      value: "5,00,000+",
+      sub: "Across partner hospitals",
+    },
+    chartBars: [
+      { id: "c1", v: 40 },
+      { id: "c2", v: 55 },
+      { id: "c3", v: 60 },
+      { id: "c4", v: 72 },
+      { id: "c5", v: 80 },
+      { id: "c6", v: 87 },
+      { id: "c7", v: 97 },
+    ],
+  },
+  {
+    id: "patient",
+    label: "Patient Support",
+    icon: Heart,
+    title: "Patient Financial Support",
+    description:
+      "AI-powered assistance for patients navigating insurance, billing, and care continuity.",
+    href: "/patient-support",
+    color: "oklch(0.55 0.22 15)",
+    features: [
+      "AI chatbot for billing queries",
+      "Flexible payment plans",
+      "Insurance assistance & ABHA setup",
+      "Grievance redressal",
+      "Care continuity navigation",
+    ],
+    metric: {
+      label: "Patient Satisfaction",
+      value: "94%",
+      sub: "CSAT from 1M+ interactions",
+    },
+    chartBars: [
+      { id: "p1", v: 55 },
+      { id: "p2", v: 65 },
+      { id: "p3", v: 70 },
+      { id: "p4", v: 78 },
+      { id: "p5", v: 84 },
+      { id: "p6", v: 90 },
+      { id: "p7", v: 94 },
+    ],
+  },
+  {
+    id: "analytics",
+    label: "Analytics & Insights",
+    icon: BarChart3,
+    title: "Analytics & Insights",
+    description:
+      "Predictive analytics and financial forecasting for smarter, data-driven hospital decisions.",
+    href: "/insights",
+    color: "oklch(0.50 0.18 155)",
+    features: [
+      "Claim approval rate analytics",
+      "Revenue trends & forecasting",
+      "Denial prediction engine",
+      "Department risk heatmap",
+      "Benchmark comparisons",
+    ],
+    metric: {
+      label: "Denial Prediction Accuracy",
+      value: "91%",
+      sub: "AI model precision rate",
+    },
+    chartBars: [
+      { id: "a1", v: 50 },
+      { id: "a2", v: 60 },
+      { id: "a3", v: 67 },
+      { id: "a4", v: 74 },
+      { id: "a5", v: 80 },
+      { id: "a6", v: 86 },
+      { id: "a7", v: 91 },
+    ],
+  },
+];
+
+const testimonials = [
+  {
+    quote:
+      "Claim rejection rate dropped from 18% to under 2% in 3 months. The Command Centre gave us complete visibility into every department's risk profile.",
+    name: "Dr. Ramesh Sharma",
+    role: "Medical Superintendent",
+    org: "500-bed Multi-Specialty Hospital, Jaipur",
+    stars: 5,
+  },
+  {
+    quote:
+      "Revenue cycle efficiency improved dramatically. NHCX readiness made our insurance settlements 3× faster with zero manual intervention.",
+    name: "Anita Agarwal",
+    role: "Chief Financial Officer",
+    org: "Hospital Chain, Rajasthan",
+    stars: 5,
+  },
+  {
+    quote:
+      "The NABH compliance module and documentation support transformed our audit preparation. We achieved NABH accreditation in record time.",
+    name: "Priya Mehta",
+    role: "NABH Coordinator",
+    org: "Government Empanelled Hospital",
+    stars: 5,
+  },
+];
+
+const kpiData = [
+  {
+    label: "Total Claims",
+    target: 500000,
+    icon: FileCheck,
+    color: "oklch(0.38 0.14 188)",
+    iconBg: "bg-sky-50",
+    border: "border-l-4 border-l-sky-500",
+  },
+  {
+    label: "Approved",
+    target: 485000,
+    icon: CheckCircle2,
+    color: "oklch(0.50 0.16 145)",
+    iconBg: "bg-green-50",
+    border: "border-l-4 border-l-green-500",
+  },
+  {
+    label: "Pending",
+    target: 6000,
+    icon: Clock,
+    color: "oklch(0.60 0.17 60)",
+    iconBg: "bg-amber-50",
+    border: "border-l-4 border-l-amber-500",
+  },
+  {
+    label: "Denied",
+    target: 9000,
+    icon: XCircle,
+    color: "oklch(0.55 0.20 25)",
+    iconBg: "bg-red-50",
+    border: "border-l-4 border-l-red-500",
+  },
+];
+
+const claimBars = [
+  {
+    label: "Approved",
+    pct: 97,
+    color: "bg-green-500",
+    motionColor: "oklch(0.52 0.16 145)",
+    text: "text-green-700",
+  },
+  {
+    label: "Pending",
+    pct: 1.2,
+    color: "bg-amber-400",
+    motionColor: "oklch(0.68 0.17 60)",
+    text: "text-amber-700",
+  },
+  {
+    label: "Denied",
+    pct: 1.8,
+    color: "bg-red-400",
+    motionColor: "oklch(0.55 0.2 25)",
+    text: "text-red-700",
+  },
+];
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export function HomeDashboard() {
   const [isDemoOpen, setIsDemoOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("revenue");
 
   return (
     <Layout section="home">
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* 1. HERO — Light teal-to-white gradient                    */}
+      {/* 1. HERO — Animated mesh gradient + glassmorphism split    */}
       {/* ══════════════════════════════════════════════════════════ */}
       <section
         className="relative min-h-screen flex flex-col justify-center px-4 md:px-8 lg:px-16 pt-24 pb-0 overflow-hidden"
         style={{
-          background:
-            "linear-gradient(135deg, oklch(0.94 0.04 188) 0%, oklch(0.97 0.025 195) 50%, oklch(0.99 0.01 200) 100%)",
+          background: "oklch(0.10 0.04 188)",
           clipPath: "polygon(0 0, 100% 0, 100% 94%, 0 100%)",
         }}
       >
-        {/* Subtle dot grid */}
+        {/* YouTube Video Background */}
+        <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
+          <iframe
+            src="https://www.youtube.com/embed/nlRl-V2lvSg?autoplay=1&mute=1&loop=1&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&playlist=nlRl-V2lvSg"
+            allow="autoplay; fullscreen"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+            style={{
+              width: "177.78vh",
+              height: "56.25vw",
+              minWidth: "100%",
+              minHeight: "100%",
+            }}
+            title="Background video"
+          />
+        </div>
+        {/* Dark overlay for text readability */}
         <div
-          className="absolute inset-0 opacity-[0.06]"
+          className="absolute inset-0 bg-black/60 z-[1]"
+          aria-hidden="true"
+        />
+
+        {/* Animated mesh gradient blobs */}
+        <div
+          className="absolute inset-0 overflow-hidden pointer-events-none z-[2]"
+          aria-hidden="true"
+        >
+          <motion.div
+            className="absolute rounded-full blur-[120px]"
+            style={{
+              width: 600,
+              height: 600,
+              top: "-10%",
+              left: "-5%",
+              background: "oklch(0.65 0.12 195)",
+            }}
+            animate={{
+              x: [0, 60, -30, 0],
+              y: [0, -40, 20, 0],
+              opacity: [0.12, 0.22, 0.14, 0.12],
+            }}
+            transition={{
+              repeat: Number.POSITIVE_INFINITY,
+              duration: 18,
+              ease: "easeInOut",
+            }}
+          />
+          <motion.div
+            className="absolute rounded-full blur-[100px]"
+            style={{
+              width: 500,
+              height: 500,
+              top: "30%",
+              right: "-5%",
+              background: "oklch(0.60 0.14 180)",
+            }}
+            animate={{
+              x: [0, -50, 20, 0],
+              y: [0, 30, -20, 0],
+              opacity: [0.1, 0.18, 0.12, 0.1],
+            }}
+            transition={{
+              repeat: Number.POSITIVE_INFINITY,
+              duration: 22,
+              ease: "easeInOut",
+              delay: 3,
+            }}
+          />
+          <motion.div
+            className="absolute rounded-full blur-[80px]"
+            style={{
+              width: 350,
+              height: 350,
+              bottom: "-5%",
+              left: "25%",
+              background: "oklch(0.58 0.13 160)",
+            }}
+            animate={{
+              x: [0, 40, -20, 0],
+              y: [0, -30, 15, 0],
+              opacity: [0.08, 0.15, 0.08, 0.08],
+            }}
+            transition={{
+              repeat: Number.POSITIVE_INFINITY,
+              duration: 26,
+              ease: "easeInOut",
+              delay: 7,
+            }}
+          />
+        </div>
+
+        {/* Dot grid */}
+        <div
+          className="absolute inset-0 opacity-[0.03] z-[2]"
           style={{
             backgroundImage:
-              "radial-gradient(circle, oklch(0.38 0.14 188) 1px, transparent 1px)",
+              "radial-gradient(circle, rgba(255,255,255,0.6) 1px, transparent 1px)",
             backgroundSize: "32px 32px",
           }}
           aria-hidden="true"
         />
 
-        {/* Animated gradient glow blobs */}
-        <motion.div
-          className="absolute top-1/4 right-1/3 w-[500px] h-[500px] rounded-full blur-[120px] pointer-events-none"
-          style={{ background: "oklch(0.55 0.16 200)" }}
-          animate={{ scale: [1, 1.2, 1], opacity: [0.08, 0.18, 0.08] }}
-          transition={{
-            repeat: Number.POSITIVE_INFINITY,
-            duration: 8,
-            ease: "easeInOut",
-          }}
-          aria-hidden="true"
-        />
-        <motion.div
-          className="absolute -bottom-20 -left-20 w-[400px] h-[400px] rounded-full blur-[100px] pointer-events-none"
-          style={{ background: "oklch(0.48 0.16 155)" }}
-          animate={{ scale: [1, 1.3, 1], opacity: [0.06, 0.12, 0.06] }}
-          transition={{
-            repeat: Number.POSITIVE_INFINITY,
-            duration: 12,
-            ease: "easeInOut",
-            delay: 3,
-          }}
-          aria-hidden="true"
-        />
-
-        {/* Floating particles */}
         <ParticleField />
 
         <div className="max-w-7xl mx-auto w-full relative z-10 pb-24">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Left: text */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            {/* Left: headline + CTAs + cert badges */}
             <div>
               <motion.div
                 initial={{ opacity: 0, y: -14 }}
@@ -1253,20 +1449,13 @@ export function HomeDashboard() {
                 <span
                   className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold mb-6 border"
                   style={{
-                    background: "oklch(0.92 0.06 188)",
-                    borderColor: "oklch(0.72 0.12 188)",
-                    color: "oklch(0.30 0.14 188)",
+                    background: "rgba(255,255,255,0.15)",
+                    borderColor: "rgba(255,255,255,0.4)",
+                    color: "rgba(255,255,255,0.95)",
                   }}
                 >
-                  <span
-                    className="w-1.5 h-1.5 rounded-full"
-                    style={{ background: "oklch(0.38 0.14 188)" }}
-                  />
-                  AI-Powered
-                  <span className="text-foreground/40">·</span>
-                  Healthcare
-                  <span className="text-foreground/40">·</span>
-                  Revenue Intelligence
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                  AI-Powered Healthcare Revenue Intelligence
                 </span>
               </motion.div>
 
@@ -1274,31 +1463,34 @@ export function HomeDashboard() {
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.1 }}
-                className="font-heading text-5xl sm:text-6xl lg:text-7xl font-black mb-6 leading-[1.05]"
-                style={{ color: "oklch(0.12 0.06 188)" }}
+                className="font-heading text-5xl sm:text-6xl lg:text-[4.5rem] font-black mb-4 leading-[1.03]"
+                style={{ color: "rgba(255,255,255,1)" }}
               >
-                AI Health Zon
+                We Focus on
                 <br />
                 <span
-                  className="relative inline-block"
-                  style={{ color: "oklch(0.38 0.14 188)" }}
+                  className="relative"
+                  style={{ color: "oklch(0.80 0.18 185)" }}
                 >
-                  Revenue Intelligence
+                  What Matters Most
                   <motion.span
-                    className="absolute -bottom-2 left-0 h-1 rounded-full"
-                    style={{ background: "oklch(0.55 0.18 200)" }}
+                    className="absolute -bottom-2 left-0 h-[3px] rounded-full"
+                    style={{
+                      background:
+                        "linear-gradient(90deg, oklch(0.80 0.18 185), oklch(0.90 0.14 200))",
+                    }}
                     initial={{ width: 0 }}
                     animate={{ width: "100%" }}
-                    transition={{ duration: 0.8, delay: 0.9 }}
+                    transition={{ duration: 1, delay: 0.9 }}
                     aria-hidden="true"
                   />
                 </span>
                 <br />
                 <span
-                  className="text-4xl sm:text-5xl lg:text-6xl font-bold"
-                  style={{ color: "oklch(0.25 0.1 188)" }}
+                  className="text-4xl sm:text-5xl font-bold"
+                  style={{ color: "rgba(255,255,255,0.9)" }}
                 >
-                  Platform
+                  for Hospitals
                 </span>
               </motion.h1>
 
@@ -1306,39 +1498,40 @@ export function HomeDashboard() {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
-                className="text-muted-foreground text-lg mb-5 leading-relaxed max-w-xl"
+                className="text-white/80 text-lg mb-5 leading-relaxed max-w-xl"
               >
                 Optimize hospital revenue cycle, reduce claim denials, and
-                manage healthcare operations through an intelligent command
-                center.
+                manage healthcare operations through an intelligent AI-powered
+                command center.
               </motion.p>
 
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.45 }}
-                className="space-y-2 mb-8"
+                transition={{ duration: 0.5, delay: 0.42 }}
+                className="space-y-1.5 mb-7"
               >
                 {[
-                  "We focus on what matters most to hospitals",
                   "Faster Claims. Better Revenue.",
-                  "Unlock future Healthcare Innovations & Opportunities",
-                ].map((tagline, i) => (
-                  <div
-                    key={tagline}
-                    className="flex items-center gap-2.5 text-sm"
-                  >
-                    <div
-                      className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                      style={{ background: "oklch(0.38 0.14 188)" }}
+                  "97% Clean Claim Rate — Proven Results.",
+                  "Unlock Future Healthcare Innovations & Opportunities.",
+                ].map((line, i) => (
+                  <div key={line} className="flex items-center gap-2.5 text-sm">
+                    <CheckCircle2
+                      className="w-4 h-4 flex-shrink-0"
+                      style={{ color: "oklch(0.80 0.18 185)" }}
                     />
                     <span
                       className={
-                        i === 1 ? "font-semibold" : "text-muted-foreground"
+                        i === 0 ? "font-semibold text-white" : "text-white/75"
                       }
-                      style={i === 1 ? { color: "oklch(0.30 0.14 188)" } : {}}
+                      style={
+                        i === 0
+                          ? { color: "rgba(255,255,255,1)" }
+                          : { color: "rgba(255,255,255,0.75)" }
+                      }
                     >
-                      {tagline}
+                      {line}
                     </span>
                   </div>
                 ))}
@@ -1348,7 +1541,7 @@ export function HomeDashboard() {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.55 }}
-                className="flex flex-col sm:flex-row gap-3"
+                className="flex flex-wrap gap-3"
               >
                 <Button
                   size="lg"
@@ -1361,14 +1554,14 @@ export function HomeDashboard() {
                   onClick={() => setIsDemoOpen(true)}
                   data-ocid="hero.primary_button"
                 >
-                  Book a Demo
+                  Book a Free Demo
                   <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
-                <a href="#ecosystem-section" data-ocid="hero.secondary_button">
+                <a href="#platform-tabs" data-ocid="hero.secondary_button">
                   <Button
                     size="lg"
                     variant="outline"
-                    className="border-border text-foreground hover:bg-muted px-8"
+                    className="border-white/40 text-white hover:bg-white/10 px-8 bg-transparent"
                   >
                     Explore Platform
                   </Button>
@@ -1376,34 +1569,35 @@ export function HomeDashboard() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-border text-foreground hover:bg-muted px-6 gap-2 font-semibold"
+                  className="border-white/40 text-white hover:bg-white/10 px-6 gap-2 bg-transparent"
                   onClick={() => generateAIHealthZonPPT()}
                   data-ocid="hero.download_ppt_button"
                 >
                   <Download className="w-4 h-4" />
-                  Download Presentation
+                  Download PPT
                 </Button>
               </motion.div>
 
-              {/* Floating stat badges */}
+              {/* Floating stat chips */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.75 }}
-                className="flex flex-wrap gap-3 mt-8"
+                className="flex flex-wrap gap-2.5 mt-7"
               >
                 {[
-                  "+127% Revenue Recovery",
+                  "+35% Claim Approvals",
                   "97% Clean Claim Rate",
                   "500+ Hospitals",
+                  "ABDM Ready",
                 ].map((stat) => (
                   <span
                     key={stat}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border"
                     style={{
-                      background: "oklch(0.92 0.06 188)",
-                      borderColor: "oklch(0.72 0.12 188)",
-                      color: "oklch(0.30 0.14 188)",
+                      background: "rgba(255,255,255,0.15)",
+                      borderColor: "rgba(255,255,255,0.35)",
+                      color: "rgba(255,255,255,0.95)",
                     }}
                   >
                     <CheckCircle2 className="w-3 h-3" />
@@ -1413,40 +1607,41 @@ export function HomeDashboard() {
               </motion.div>
             </div>
 
-            {/* Right: Mock dashboard */}
+            {/* Right: Glassmorphism KPI card */}
             <motion.div
-              initial={{ opacity: 0, x: 40 }}
+              initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.9, delay: 0.4 }}
+              transition={{ duration: 1, delay: 0.4 }}
               className="hidden lg:block"
+              whileHover={{
+                rotateY: 2,
+                rotateX: -1,
+                scale: 1.01,
+                transition: { duration: 0.3 },
+              }}
+              style={{ perspective: "1200px" }}
             >
-              <MockDashboardCard />
+              <GlassKPICard />
             </motion.div>
           </div>
         </div>
       </section>
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* 2. MARQUEE TICKER STRIP                                   */}
+      {/* 2. MAIN MARQUEE TICKER STRIP                              */}
       {/* ══════════════════════════════════════════════════════════ */}
       <div
         className="overflow-hidden py-3.5 relative z-10 border-y border-border"
         style={{ background: "oklch(0.96 0.04 188)" }}
         aria-hidden="true"
       >
-        <div className="flex whitespace-nowrap animate-marquee gap-0">
-          {/* Duplicated content for seamless loop */}
-          <span className="inline-flex gap-0 shrink-0">
+        <div className="flex whitespace-nowrap animate-marquee">
+          <span className="inline-flex shrink-0">
             <span
               className="text-sm font-medium tracking-wide"
               style={{ color: "oklch(0.30 0.12 188)" }}
             >
               {marqueeText}
-            </span>
-            <span
-              className="text-sm font-medium tracking-wide"
-              style={{ color: "oklch(0.30 0.12 188)" }}
-            >
               {marqueeText}
             </span>
           </span>
@@ -1454,9 +1649,51 @@ export function HomeDashboard() {
       </div>
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* 3. PROBLEM SECTION — Numbered cards with left borders     */}
+      {/* 3. PARTNER / SCHEME LOGOS MARQUEE                        */}
       {/* ══════════════════════════════════════════════════════════ */}
-      <section className="py-24 px-4 md:px-8 lg:px-16 bg-white">
+      <section className="py-12 px-4 bg-white border-b border-border overflow-hidden">
+        <div className="max-w-7xl mx-auto">
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center text-xs font-semibold uppercase tracking-widest mb-6"
+            style={{ color: "oklch(0.55 0.08 188)" }}
+          >
+            Trusted by India's Healthcare Ecosystem
+          </motion.p>
+          <div className="relative overflow-hidden">
+            <div className="flex whitespace-nowrap animate-marquee-slow">
+              <div className="flex items-center gap-4 shrink-0 mr-4">
+                {[
+                  ...partnerSchemes.map((s) => ({ s, k: `a-${s}` })),
+                  ...partnerSchemes.map((s) => ({ s, k: `b-${s}` })),
+                ].map(({ s: scheme, k }) => (
+                  <span
+                    key={k}
+                    className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold border whitespace-nowrap"
+                    style={{
+                      background: "oklch(0.95 0.03 188)",
+                      borderColor: "oklch(0.84 0.07 188)",
+                      color: "oklch(0.35 0.12 188)",
+                    }}
+                  >
+                    {scheme}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════ */}
+      {/* 4. PROBLEM SECTION                                        */}
+      {/* ══════════════════════════════════════════════════════════ */}
+      <section
+        className="py-24 px-4 md:px-8 lg:px-16"
+        style={{ background: "oklch(0.975 0.018 188)" }}
+      >
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -1471,7 +1708,6 @@ export function HomeDashboard() {
               center
             />
           </motion.div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {painPoints.map((pain, i) => {
               const Icon = pain.icon;
@@ -1482,11 +1718,14 @@ export function HomeDashboard() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
-                  whileHover={{ y: -6, transition: { duration: 0.2 } }}
-                  className={`relative bg-white rounded-xl border border-l-4 ${pain.borderColor} border-border shadow-sm hover:shadow-lg transition-all p-6 overflow-hidden`}
+                  whileHover={{
+                    y: -6,
+                    boxShadow: "0 0 30px oklch(0.38 0.14 188 / 0.15)",
+                    transition: { duration: 0.2 },
+                  }}
+                  className={`relative bg-white rounded-2xl border border-l-4 ${pain.borderColor} border-border shadow-sm p-6 overflow-hidden transition-all`}
                   data-ocid={`problem.item.${i + 1}`}
                 >
-                  {/* Faded background number */}
                   <span
                     className="absolute top-2 right-3 font-heading font-black text-7xl leading-none select-none pointer-events-none"
                     style={{ color: pain.accentColor, opacity: 0.07 }}
@@ -1494,20 +1733,15 @@ export function HomeDashboard() {
                   >
                     {pain.num}
                   </span>
-
-                  {/* Icon */}
                   <div
                     className="w-11 h-11 rounded-xl flex items-center justify-center mb-4"
-                    style={{
-                      background: `${pain.accentColor}18`,
-                    }}
+                    style={{ background: `${pain.accentColor}18` }}
                   >
                     <Icon
                       className="w-5 h-5"
                       style={{ color: pain.accentColor }}
                     />
                   </div>
-
                   <h3 className="font-heading font-bold text-foreground mb-2 text-base leading-tight">
                     {pain.title}
                   </h3>
@@ -1532,7 +1766,7 @@ export function HomeDashboard() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* 4. STATS COUNTER BAND — Light teal                       */}
+      {/* 5. STATS COUNTER BAND                                     */}
       {/* ══════════════════════════════════════════════════════════ */}
       <section
         className="py-16 px-4 relative overflow-hidden"
@@ -1553,10 +1787,30 @@ export function HomeDashboard() {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 divide-x divide-white/20">
             {[
-              { num: 500000, suffix: "+", label: "Claims Processed" },
-              { num: 97, suffix: "%", label: "Clean Claim Rate" },
-              { num: 500, suffix: "+", label: "Hospitals Connected" },
-              { num: 18, suffix: "", label: "Days Avg. Settlement" },
+              {
+                target: 500000,
+                suffix: "+",
+                label: "Claims Processed",
+                display: "5,00,000+",
+              },
+              {
+                target: 97,
+                suffix: "%",
+                label: "Clean Claim Rate",
+                display: null,
+              },
+              {
+                target: 500,
+                suffix: "+",
+                label: "Hospitals Connected",
+                display: null,
+              },
+              {
+                target: 18,
+                suffix: "",
+                label: "Days Avg. Settlement",
+                display: null,
+              },
             ].map((stat, i) => (
               <motion.div
                 key={stat.label}
@@ -1564,10 +1818,17 @@ export function HomeDashboard() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.12 }}
-                className="text-center px-6 py-4"
+                className="text-center px-6 py-5"
               >
                 <div className="font-heading text-4xl sm:text-5xl font-black mb-2 text-white">
-                  <AnimatedCounter target={stat.num} />
+                  {stat.display ? (
+                    stat.display
+                  ) : (
+                    <>
+                      <CountUp target={stat.target} />
+                      {stat.suffix}
+                    </>
+                  )}
                 </div>
                 <div className="text-sm font-medium text-white/75">
                   {stat.label}
@@ -1579,11 +1840,11 @@ export function HomeDashboard() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* 5. CORE MODULES — Numbered service cards                  */}
+      {/* 6. INTERACTIVE PLATFORM TABS                             */}
       {/* ══════════════════════════════════════════════════════════ */}
       <section
-        className="py-24 px-4 md:px-8 lg:px-16"
-        style={{ background: "oklch(0.975 0.018 188)" }}
+        id="platform-tabs"
+        className="py-24 px-4 md:px-8 lg:px-16 bg-white"
       >
         <div className="max-w-7xl mx-auto">
           <motion.div
@@ -1616,119 +1877,203 @@ export function HomeDashboard() {
                 />
               </span>
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto text-base">
+            <p className="text-muted-foreground max-w-2xl mx-auto">
               AI Health Zon connects hospital operations, billing teams, and
               patient services into one unified AI-driven ecosystem.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {coreModules.map((mod, i) => {
-              const Icon = mod.icon;
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList
+              className="grid w-full grid-cols-2 lg:grid-cols-4 mb-10 h-auto gap-1 p-1 rounded-2xl"
+              style={{ background: "oklch(0.95 0.03 188)" }}
+            >
+              {platformTabs.map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <TabsTrigger
+                    key={tab.id}
+                    value={tab.id}
+                    className="flex items-center gap-2 rounded-xl py-3 px-4 text-sm font-semibold data-[state=active]:shadow-md transition-all"
+                    style={
+                      activeTab === tab.id
+                        ? { background: "white", color: tab.color }
+                        : {}
+                    }
+                    data-ocid={"modules.tab"}
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span className="hidden sm:inline">{tab.label}</span>
+                  </TabsTrigger>
+                );
+              })}
+            </TabsList>
+
+            {platformTabs.map((tab) => {
+              const Icon = tab.icon;
               return (
-                <motion.div
-                  key={mod.title}
-                  initial={{ opacity: 0, y: 32 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  whileHover={{
-                    y: -6,
-                    boxShadow: "0 20px 48px oklch(0.38 0.14 188 / 0.12)",
-                    transition: { duration: 0.25 },
-                  }}
-                  className={`bg-white rounded-2xl border border-l-4 ${mod.borderColor} border-border shadow-sm p-7 flex flex-col relative overflow-hidden`}
-                  data-ocid={`modules.item.${i + 1}`}
-                >
-                  {/* Faded background number */}
-                  <span
-                    className="absolute top-3 right-4 font-heading font-black text-8xl leading-none select-none pointer-events-none"
-                    style={{ color: mod.accentColor, opacity: 0.06 }}
-                    aria-hidden="true"
-                  >
-                    {mod.num}
-                  </span>
-
-                  <div className="flex items-center gap-3 mb-4 relative z-10">
-                    <div
-                      className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                      style={{ background: `${mod.accentColor}18` }}
+                <TabsContent key={tab.id} value={tab.id} className="mt-0">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={tab.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.35 }}
+                      className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center"
+                      data-ocid={"modules.panel"}
                     >
-                      <Icon
-                        className="w-6 h-6"
-                        style={{ color: mod.accentColor }}
-                      />
-                    </div>
-                    <div>
-                      <h3 className="font-heading font-bold text-foreground text-base leading-tight">
-                        {mod.title}
-                      </h3>
-                      <p className="text-muted-foreground text-sm mt-0.5">
-                        {mod.description}
-                      </p>
-                    </div>
-                  </div>
+                      {/* Left: features */}
+                      <div>
+                        <div className="flex items-center gap-3 mb-4">
+                          <div
+                            className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-md"
+                            style={{
+                              background: `${tab.color}18`,
+                              border: `2px solid ${tab.color}30`,
+                            }}
+                          >
+                            <Icon
+                              className="w-6 h-6"
+                              style={{ color: tab.color }}
+                            />
+                          </div>
+                          <div>
+                            <h3 className="font-heading font-bold text-xl text-foreground">
+                              {tab.title}
+                            </h3>
+                            <Link
+                              to={tab.href}
+                              className="text-xs font-semibold flex items-center gap-1 mt-0.5"
+                              style={{ color: tab.color }}
+                              data-ocid="modules.link"
+                            >
+                              View full page <ArrowRight className="w-3 h-3" />
+                            </Link>
+                          </div>
+                        </div>
+                        <p className="text-muted-foreground mb-6 leading-relaxed">
+                          {tab.description}
+                        </p>
+                        <ul className="space-y-3">
+                          {tab.features.map((feat, fi) => (
+                            <motion.li
+                              key={feat}
+                              initial={{ opacity: 0, x: -16 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: fi * 0.08 }}
+                              className="flex items-center gap-3"
+                            >
+                              <div
+                                className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                                style={{ background: `${tab.color}18` }}
+                              >
+                                <CheckCircle2
+                                  className="w-3.5 h-3.5"
+                                  style={{ color: tab.color }}
+                                />
+                              </div>
+                              <span className="text-foreground text-sm font-medium">
+                                {feat}
+                              </span>
+                            </motion.li>
+                          ))}
+                        </ul>
+                        <div className="mt-8">
+                          <Button
+                            className="text-white font-semibold shadow-md"
+                            style={{ background: tab.color }}
+                            onClick={() => setIsDemoOpen(true)}
+                            data-ocid="modules.primary_button"
+                          >
+                            Book a Demo <ArrowRight className="ml-2 w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
 
-                  <ul className="space-y-2 mb-5 flex-1 relative z-10">
-                    {mod.features.map((feat) => (
-                      <li
-                        key={feat}
-                        className="flex items-center gap-2.5 text-sm text-foreground"
+                      {/* Right: mock metric preview */}
+                      <div
+                        className="rounded-2xl border border-border shadow-lg overflow-hidden"
+                        style={{ background: "oklch(0.98 0.015 188)" }}
                       >
-                        <CheckCircle2
-                          className="w-4 h-4 flex-shrink-0"
-                          style={{ color: mod.accentColor }}
-                        />
-                        {feat}
-                      </li>
-                    ))}
-                  </ul>
-
-                  <Link
-                    to={mod.href}
-                    className="inline-flex items-center gap-1.5 text-sm font-semibold mt-auto relative z-10"
-                    style={{ color: mod.accentColor }}
-                    data-ocid={`modules.link.${i + 1}`}
-                  >
-                    Learn More →
-                    <ChevronRight className="w-4 h-4" />
-                  </Link>
-                </motion.div>
+                        <div className="p-6">
+                          <div className="flex items-center justify-between mb-6">
+                            <span className="text-sm font-semibold text-foreground">
+                              Performance Overview
+                            </span>
+                            <span
+                              className="text-xs px-2 py-0.5 rounded-full"
+                              style={{
+                                background: `${tab.color}12`,
+                                color: tab.color,
+                              }}
+                            >
+                              Live
+                            </span>
+                          </div>
+                          {/* Mini bar chart */}
+                          <div className="flex items-end gap-2 h-24 mb-6">
+                            {tab.chartBars.map((bar, barPos) => (
+                              <motion.div
+                                key={bar.id}
+                                className="flex-1 rounded-t-sm"
+                                style={{
+                                  background:
+                                    barPos === tab.chartBars.length - 1
+                                      ? tab.color
+                                      : `${tab.color}40`,
+                                }}
+                                initial={{ height: 0 }}
+                                animate={{ height: `${bar.v}%` }}
+                                transition={{
+                                  delay: barPos * 0.08,
+                                  duration: 0.5,
+                                  ease: "easeOut",
+                                }}
+                              />
+                            ))}
+                          </div>
+                          {/* Key metric */}
+                          <div className="rounded-xl p-4 border border-border bg-white">
+                            <div className="text-xs text-muted-foreground mb-1">
+                              {tab.metric.label}
+                            </div>
+                            <div
+                              className="font-heading text-3xl font-black"
+                              style={{ color: tab.color }}
+                            >
+                              {tab.metric.value}
+                            </div>
+                            <div className="text-xs text-muted-foreground mt-1">
+                              {tab.metric.sub}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </AnimatePresence>
+                </TabsContent>
               );
             })}
-          </div>
+          </Tabs>
         </div>
       </section>
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* 6. FEATURE HIGHLIGHT — Asymmetric layout                  */}
+      {/* 7. PLATFORM DASHBOARD / KPI SECTION                     */}
       {/* ══════════════════════════════════════════════════════════ */}
-      <section className="py-24 px-4 md:px-8 lg:px-16 bg-white">
+      <section
+        className="py-24 px-4 md:px-8 lg:px-16"
+        style={{ background: "oklch(0.975 0.018 188)" }}
+      >
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
-            {/* Left: Mock dashboard with tilt hover */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-start">
+            {/* Left: KPI rows + progress bars */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              whileHover={{
-                rotateY: 3,
-                rotateX: -2,
-                scale: 1.02,
-                transition: { duration: 0.3 },
-              }}
-              style={{ perspective: "1000px" }}
-            >
-              <MockDashboardCard />
-            </motion.div>
-
-            {/* Right: Platform at a Glance */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.15 }}
             >
               <SectionHeading
                 badge="Platform Dashboard"
@@ -1736,15 +2081,13 @@ export function HomeDashboard() {
                 accentWord="Glance"
                 subtitle="Real-time metrics from the AI Health Zon command centre — powering smarter decisions across India's hospitals."
               />
-
-              {/* KPI rows */}
               <div className="space-y-3 mb-6">
                 {kpiData.map((kpi, i) => {
                   const Icon = kpi.icon;
                   return (
                     <motion.div
                       key={kpi.label}
-                      initial={{ opacity: 0, x: 20 }}
+                      initial={{ opacity: 0, x: -20 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: i * 0.08 }}
@@ -1767,15 +2110,15 @@ export function HomeDashboard() {
                         className="font-heading text-2xl font-bold"
                         style={{ color: kpi.color }}
                       >
-                        <AnimatedCounter target={kpi.target} />
+                        <CountUp target={kpi.target} />
                       </div>
                     </motion.div>
                   );
                 })}
               </div>
 
-              {/* Progress bars */}
-              <div className="bg-white rounded-xl border border-border shadow-sm p-5">
+              {/* Animated progress bars */}
+              <div className="bg-white rounded-2xl border border-border shadow-sm p-5">
                 <div className="text-sm font-semibold text-foreground mb-4">
                   Claim Status Distribution
                 </div>
@@ -1796,20 +2139,151 @@ export function HomeDashboard() {
                           initial={{ width: 0 }}
                           whileInView={{ width: `${bar.pct}%` }}
                           viewport={{ once: true }}
-                          transition={{ duration: 1, ease: "easeOut" }}
+                          transition={{
+                            duration: 1.2,
+                            ease: "easeOut",
+                            delay: 0.2,
+                          }}
                         />
                       </div>
                     </div>
                   ))}
                 </div>
-                <div className="mt-4 pt-4 border-t border-border flex items-center gap-3">
-                  <CleanClaimGauge pct={95} />
+                <div className="mt-5 pt-5 border-t border-border">
+                  <div className="text-xs text-muted-foreground mb-2 font-medium">
+                    Clean Claim Rate — Animated Progress
+                  </div>
+                  <div className="h-3 bg-muted rounded-full overflow-hidden mb-2">
+                    <motion.div
+                      className="h-full rounded-full"
+                      style={{
+                        background:
+                          "linear-gradient(90deg, oklch(0.38 0.14 188), oklch(0.55 0.18 200))",
+                      }}
+                      initial={{ width: 0 }}
+                      whileInView={{ width: "97%" }}
+                      viewport={{ once: true }}
+                      transition={{
+                        duration: 1.5,
+                        ease: "easeOut",
+                        delay: 0.4,
+                      }}
+                    />
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-muted-foreground">0%</span>
+                    <span
+                      className="font-bold"
+                      style={{ color: "oklch(0.38 0.14 188)" }}
+                    >
+                      97% — Industry Leading
+                    </span>
+                    <span className="text-muted-foreground">100%</span>
+                  </div>
+                </div>
+                <div className="mt-4 flex items-center gap-3">
+                  <CleanClaimGauge pct={97} />
                   <div className="text-xs text-muted-foreground leading-relaxed">
                     <div className="font-semibold text-foreground text-sm mb-1">
                       97% Clean Claim Rate
                     </div>
-                    5% above industry target of 90%
+                    7% above industry target of 90%
                   </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Right: Quick stats + ecosystem pillars */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.15 }}
+              className="flex flex-col gap-6"
+            >
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  {
+                    value: "99.9%",
+                    label: "Platform Uptime",
+                    color: "oklch(0.50 0.16 145)",
+                  },
+                  {
+                    value: "<2s",
+                    label: "Claim Validation",
+                    color: "oklch(0.38 0.14 188)",
+                  },
+                  {
+                    value: "97%",
+                    label: "Clean Claim Rate",
+                    color: "oklch(0.55 0.18 200)",
+                  },
+                  {
+                    value: "18 days",
+                    label: "Avg. Settlement",
+                    color: "oklch(0.45 0.18 295)",
+                  },
+                ].map((stat, i) => (
+                  <motion.div
+                    key={stat.label}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.09 }}
+                    whileHover={{
+                      y: -4,
+                      boxShadow: "0 0 24px oklch(0.38 0.14 188 / 0.12)",
+                      transition: { duration: 0.2 },
+                    }}
+                    className="bg-white rounded-xl border border-border shadow-sm p-5 text-center"
+                  >
+                    <div
+                      className="font-heading text-2xl font-bold mb-1"
+                      style={{ color: stat.color }}
+                    >
+                      {stat.value}
+                    </div>
+                    <div className="text-muted-foreground text-xs">
+                      {stat.label}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Seven Pillars */}
+              <div className="bg-white rounded-2xl border border-border shadow-sm p-6">
+                <div className="text-sm font-bold text-foreground mb-4 font-heading">
+                  Seven Pillars of Healthcare Intelligence
+                </div>
+                <div className="grid grid-cols-1 gap-2">
+                  {ecosystemPillars.map((pillar, i) => {
+                    const Icon = pillar.icon;
+                    return (
+                      <motion.div
+                        key={pillar.title}
+                        initial={{ opacity: 0, x: 16 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.06 }}
+                        className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-muted/50 transition-colors"
+                        data-ocid={`ecosystem.item.${i + 1}`}
+                      >
+                        <div
+                          className={`w-8 h-8 rounded-lg ${pillar.bg} flex items-center justify-center flex-shrink-0`}
+                        >
+                          <Icon className={`w-4 h-4 ${pillar.color}`} />
+                        </div>
+                        <div>
+                          <div className="text-xs font-semibold text-foreground">
+                            {pillar.title}
+                          </div>
+                          <div className="text-xs text-muted-foreground line-clamp-1">
+                            {pillar.description.split(":")[0]}
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
                 </div>
               </div>
             </motion.div>
@@ -1818,7 +2292,7 @@ export function HomeDashboard() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* 7. HOW IT WORKS — Workflow timeline                       */}
+      {/* 8. HOW IT WORKS — Workflow timeline                      */}
       {/* ══════════════════════════════════════════════════════════ */}
       <section
         className="py-24 px-4 md:px-8 lg:px-16"
@@ -1841,9 +2315,7 @@ export function HomeDashboard() {
               center
             />
           </motion.div>
-
           <div className="relative">
-            {/* Connecting line desktop */}
             <div
               className="hidden lg:block absolute top-8 left-[7%] right-[7%] h-0.5"
               style={{
@@ -1852,7 +2324,6 @@ export function HomeDashboard() {
               }}
               aria-hidden="true"
             />
-
             <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4">
               {workflowSteps.map((step, i) => {
                 const Icon = step.icon;
@@ -1904,7 +2375,7 @@ export function HomeDashboard() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* 8. HEALTHCARE ECOSYSTEM                                   */}
+      {/* 9. HEALTHCARE ECOSYSTEM                                  */}
       {/* ══════════════════════════════════════════════════════════ */}
       <section
         id="ecosystem-section"
@@ -1947,7 +2418,6 @@ export function HomeDashboard() {
                   stakeholder in India's healthcare value chain — hospitals,
                   insurers, government schemes, and patients.
                 </p>
-
                 <div className="flex flex-wrap gap-3 mb-8">
                   {[
                     { label: "500+ Hospitals", color: "oklch(0.38 0.14 188)" },
@@ -1972,7 +2442,6 @@ export function HomeDashboard() {
                     </span>
                   ))}
                 </div>
-
                 <motion.div
                   initial={{ opacity: 0, y: 16 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -1986,7 +2455,6 @@ export function HomeDashboard() {
                 </motion.div>
               </motion.div>
             </div>
-
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -1994,7 +2462,6 @@ export function HomeDashboard() {
               transition={{ duration: 0.7 }}
               className="flex flex-col gap-6"
             >
-              {/* Quick stats grid */}
               <div className="grid grid-cols-2 gap-4">
                 {[
                   {
@@ -2039,55 +2506,97 @@ export function HomeDashboard() {
                   </motion.div>
                 ))}
               </div>
-
-              {/* Seven Pillars compact list */}
-              <div className="bg-white rounded-2xl border border-border shadow-sm p-6">
-                <div className="text-sm font-bold text-foreground mb-4 font-heading">
-                  Seven Pillars of Healthcare Intelligence
-                </div>
-                <div className="grid grid-cols-1 gap-2">
-                  {ecosystemPillars.map((pillar, i) => {
-                    const Icon = pillar.icon;
-                    return (
-                      <motion.div
-                        key={pillar.title}
-                        initial={{ opacity: 0, x: 16 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: i * 0.06 }}
-                        className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-muted/50 transition-colors"
-                        data-ocid={`ecosystem.item.${i + 1}`}
-                      >
-                        <div
-                          className={`w-8 h-8 rounded-lg ${pillar.bg} flex items-center justify-center flex-shrink-0`}
-                        >
-                          <Icon className={`w-4 h-4 ${pillar.color}`} />
-                        </div>
-                        <div>
-                          <div className="text-xs font-semibold text-foreground">
-                            {pillar.title}
-                          </div>
-                          <div className="text-xs text-muted-foreground line-clamp-1">
-                            {pillar.description.split(":")[0]}
-                          </div>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-                </div>
-              </div>
             </motion.div>
           </div>
         </div>
       </section>
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* 9. WHO BENEFITS — Gradient hover cards                    */}
+      {/* 10. TESTIMONIALS                                          */}
       {/* ══════════════════════════════════════════════════════════ */}
       <section
         className="py-24 px-4 md:px-8 lg:px-16"
-        style={{ background: "oklch(0.975 0.018 188)" }}
+        style={{
+          background:
+            "linear-gradient(135deg, oklch(0.94 0.04 188) 0%, oklch(0.96 0.03 195) 60%, oklch(0.97 0.02 210) 100%)",
+        }}
       >
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <SectionHeading
+              badge="Client Results"
+              title="What Our Clients Achieve"
+              accentWord="Clients Achieve"
+              subtitle="Real-world outcomes from hospitals using AI Health Zon across India."
+              center
+            />
+          </motion.div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {testimonials.map((t, i) => (
+              <motion.div
+                key={t.name}
+                initial={{ opacity: 0, y: 32 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.12 }}
+                whileHover={{
+                  y: -6,
+                  boxShadow: "0 20px 40px oklch(0.38 0.14 188 / 0.12)",
+                  transition: { duration: 0.25 },
+                }}
+                className="bg-white rounded-2xl border border-border shadow-sm p-7 flex flex-col"
+                data-ocid={`testimonials.item.${i + 1}`}
+              >
+                <Quote
+                  className="w-8 h-8 mb-4 flex-shrink-0"
+                  style={{ color: "oklch(0.55 0.18 200)", opacity: 0.5 }}
+                  aria-hidden="true"
+                />
+                <p className="text-foreground text-sm leading-relaxed flex-1 mb-5 font-medium">
+                  "{t.quote}"
+                </p>
+                <div className="flex gap-0.5 mb-4">
+                  {[1, 2, 3, 4, 5].slice(0, t.stars).map((n) => (
+                    <Star
+                      key={n}
+                      className="w-4 h-4 text-amber-400 fill-amber-400"
+                    />
+                  ))}
+                </div>
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                    style={{ background: "oklch(0.92 0.05 188)" }}
+                  >
+                    <Users
+                      className="w-5 h-5"
+                      style={{ color: "oklch(0.38 0.14 188)" }}
+                    />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-foreground text-sm">
+                      {t.name}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {t.role}
+                    </div>
+                    <div className="text-xs text-muted-foreground">{t.org}</div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════ */}
+      {/* 11. WHO BENEFITS                                          */}
+      {/* ══════════════════════════════════════════════════════════ */}
+      <section className="py-24 px-4 md:px-8 lg:px-16 bg-white">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -2102,7 +2611,6 @@ export function HomeDashboard() {
               center
             />
           </motion.div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {beneficiaries.map((b, i) => {
               const Icon = b.icon;
@@ -2113,11 +2621,14 @@ export function HomeDashboard() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
-                  whileHover={{ y: -6, transition: { duration: 0.25 } }}
-                  className="bg-white rounded-2xl border border-border shadow-sm hover:shadow-lg transition-all p-6 text-center relative overflow-hidden group"
+                  whileHover={{
+                    y: -6,
+                    boxShadow: "0 0 30px oklch(0.38 0.14 188 / 0.12)",
+                    transition: { duration: 0.25 },
+                  }}
+                  className="bg-white rounded-2xl border border-border shadow-sm p-6 text-center relative overflow-hidden group transition-all"
                   data-ocid={`benefits.item.${i + 1}`}
                 >
-                  {/* Bottom gradient fill on hover */}
                   <div
                     className={`absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t ${b.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
                     aria-hidden="true"
@@ -2143,9 +2654,12 @@ export function HomeDashboard() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* 10. TRUST & SECURITY                                      */}
+      {/* 12. TRUST & SECURITY                                     */}
       {/* ══════════════════════════════════════════════════════════ */}
-      <section className="py-24 px-4 md:px-8 lg:px-16 bg-white">
+      <section
+        className="py-24 px-4 md:px-8 lg:px-16"
+        style={{ background: "oklch(0.975 0.018 188)" }}
+      >
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -2160,7 +2674,6 @@ export function HomeDashboard() {
               center
             />
           </motion.div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
             {securityCards.map((sec, i) => {
               const Icon = sec.icon;
@@ -2171,8 +2684,12 @@ export function HomeDashboard() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.09 }}
-                  whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                  className="bg-white rounded-2xl border border-border shadow-sm p-6 text-center hover:shadow-md transition-shadow"
+                  whileHover={{
+                    y: -5,
+                    boxShadow: "0 0 24px oklch(0.38 0.14 188 / 0.10)",
+                    transition: { duration: 0.2 },
+                  }}
+                  className="bg-white rounded-2xl border border-border shadow-sm p-6 text-center transition-shadow"
                   data-ocid={`security.item.${i + 1}`}
                 >
                   <div
@@ -2190,8 +2707,7 @@ export function HomeDashboard() {
               );
             })}
           </div>
-
-          {/* Compliance ticker strip */}
+          {/* Compliance ticker */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -2204,8 +2720,8 @@ export function HomeDashboard() {
               style={{ background: "oklch(0.95 0.04 188)" }}
               aria-hidden="true"
             >
-              <div className="flex whitespace-nowrap animate-marquee gap-0">
-                <span className="inline-flex gap-0 shrink-0">
+              <div className="flex whitespace-nowrap animate-marquee">
+                <span className="inline-flex shrink-0">
                   <span
                     className="text-sm font-semibold tracking-wide"
                     style={{ color: "oklch(0.30 0.14 188)" }}
@@ -2221,30 +2737,10 @@ export function HomeDashboard() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* 11. CASE STUDY                                            */}
+      {/* 13. CASE STUDY                                           */}
       {/* ══════════════════════════════════════════════════════════ */}
-      <section
-        className="py-24 px-4 md:px-8 lg:px-16"
-        style={{
-          background:
-            "linear-gradient(135deg, oklch(0.94 0.04 188) 0%, oklch(0.95 0.04 195) 50%, oklch(0.94 0.04 200) 100%)",
-        }}
-      >
+      <section className="py-24 px-4 md:px-8 lg:px-16 bg-white">
         <div className="max-w-5xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <SectionHeading
-              badge="Proven Results"
-              title="What Our Clients Achieve"
-              accentWord="Clients Achieve"
-              subtitle="Real-world outcomes from hospitals using AI Health Zon across India."
-              center
-            />
-          </motion.div>
-
           <motion.div
             initial={{ opacity: 0, y: 28 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -2258,7 +2754,6 @@ export function HomeDashboard() {
                   "linear-gradient(90deg, oklch(0.38 0.14 188) 0%, oklch(0.55 0.16 200) 100%)",
               }}
             />
-
             <div className="p-8 md:p-12">
               <div className="flex items-start gap-4 mb-8">
                 <Quote
@@ -2309,7 +2804,6 @@ export function HomeDashboard() {
                   </div>
                 </div>
               </div>
-
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {[
                   {
@@ -2361,9 +2855,12 @@ export function HomeDashboard() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* 12. SIMULATION LAB TEASER                                 */}
+      {/* 14. SIMULATION LAB TEASER                                */}
       {/* ══════════════════════════════════════════════════════════ */}
-      <section className="py-24 px-4 md:px-8 lg:px-16 bg-white">
+      <section
+        className="py-24 px-4 md:px-8 lg:px-16"
+        style={{ background: "oklch(0.975 0.018 188)" }}
+      >
         <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -2384,7 +2881,6 @@ export function HomeDashboard() {
               }}
               aria-hidden="true"
             />
-
             <div className="relative z-10 p-8 md:p-12">
               <div className="flex items-center gap-3 mb-5">
                 <span
@@ -2405,12 +2901,11 @@ export function HomeDashboard() {
                   Only Platform with a Training Simulation
                 </Badge>
               </div>
-
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                 <div>
                   <h2
                     className="font-heading text-3xl sm:text-4xl font-bold mb-4 leading-tight"
-                    style={{ color: "oklch(0.12 0.06 188)" }}
+                    style={{ color: "rgba(255,255,255,1)" }}
                   >
                     AI Health Zon
                     <span
@@ -2458,7 +2953,6 @@ export function HomeDashboard() {
                     </Button>
                   </Link>
                 </div>
-
                 <div className="hidden lg:grid grid-cols-2 gap-3">
                   {[
                     {
@@ -2519,7 +3013,7 @@ export function HomeDashboard() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* 13. FINAL CTA — Teal gradient                            */}
+      {/* 15. FINAL CTA                                            */}
       {/* ══════════════════════════════════════════════════════════ */}
       <section
         className="py-28 px-4 md:px-8 lg:px-16 relative overflow-hidden"
@@ -2528,10 +3022,7 @@ export function HomeDashboard() {
             "linear-gradient(135deg, oklch(0.35 0.14 188) 0%, oklch(0.45 0.16 195) 50%, oklch(0.50 0.18 210) 100%)",
         }}
       >
-        {/* Particles */}
         <ParticleField />
-
-        {/* Glow blob */}
         <motion.div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full blur-[140px] pointer-events-none"
           style={{ background: "oklch(0.60 0.18 200)" }}
@@ -2543,7 +3034,6 @@ export function HomeDashboard() {
           }}
           aria-hidden="true"
         />
-
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 28 }}
@@ -2553,7 +3043,6 @@ export function HomeDashboard() {
             <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full mb-5 uppercase tracking-wider border border-white/30 bg-white/15 text-white">
               Get Started
             </span>
-
             <h2 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-5 leading-tight">
               Transform Your Hospital
               <br />
@@ -2563,7 +3052,6 @@ export function HomeDashboard() {
               Join 500+ hospitals across India using AI Health Zon to achieve
               97%+ clean claim rates, reduce denials, and unlock revenue growth.
             </p>
-
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <Button
                 size="lg"
@@ -2585,8 +3073,6 @@ export function HomeDashboard() {
                 </Button>
               </Link>
             </div>
-
-            {/* Trust signals */}
             <div className="flex flex-wrap items-center justify-center gap-6 pt-8 border-t border-white/20">
               {[
                 { icon: Shield, text: "HIPAA Ready" },

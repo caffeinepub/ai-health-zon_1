@@ -247,6 +247,10 @@
   to   { transform: translateX(-50%); }
 }
 .animate-marquee {
+
+.animate-marquee-slow {
+  animation: marquee 45s linear infinite;
+}
   animation: marquee 30s linear infinite;
 }
 

@@ -1,37 +1,24 @@
 # AI Health Zon
 
 ## Current State
-The app has a Hospitals page with a "Healthcare Journey Story" section rendered as a simple alternating left-right timeline with 6 stages (Discovery, Registration, Pre-Authorization, Treatment, Claim Submission, Reconciliation). There is no dedicated cinematic film-style experience for this content.
+Homepage hero section uses an animated mesh gradient background with glassmorphism split layout. No video background present.
 
 ## Requested Changes (Diff)
 
 ### Add
-- A new page `/journey-film` — a full-screen cinematic "film experience" presenting the Healthcare Journey Story as a scrollable movie/film strip
-- Each of the 6 journey stages is presented as a cinematic scene with: scene number (clapperboard style), full-screen dark backdrop, dramatic title card, description, and animated badge tags
-- Film strip / reel aesthetic: sprocket holes on sides, scene transitions, film grain overlay, cinematic letterbox bars
-- Auto-play mode: scenes advance automatically every 4 seconds with a progress bar; can be paused/manually navigated
-- "Now Playing" header bar styled like a cinema screen with title
-- Stage progress indicator styled like film frames at the bottom
-- A "Play Film" button on the Hospitals page Journey Story section that links to this new page
-- Nav link added for the film page (or accessible via Hospitals page)
+- YouTube video background (`nlRl-V2lvSg`) in the hero section, absolutely positioned behind all content, autoplaying muted and looping
+- Semi-transparent dark overlay on top of the video to maintain text readability
 
 ### Modify
-- `Hospitals.tsx` — add a "Watch as Film" button to the Journey Story section that links to `/journey-film`
-- `App.tsx` — add the new `/journey-film` route
-- `Navigation.tsx` — no change needed (accessible via Hospitals page CTA)
+- Hero section: keep existing layout, text, buttons, and KPI card; add video as a background layer beneath all content
+- Reduce or remove the gradient blobs since the video provides the background visual
 
 ### Remove
 - Nothing removed
 
 ## Implementation Plan
-1. Create `src/frontend/src/pages/JourneyFilm.tsx` — cinematic film page with:
-   - Dark full-screen layout (no standard nav/footer, or minimal nav)
-   - Film strip sprocket holes using CSS
-   - Each stage is a "scene" with cinematic typography
-   - Auto-advance with progress bar, pause/play, previous/next controls
-   - Film reel bottom navigation showing all 6 scene frames
-   - Smooth fade/slide scene transitions using framer-motion
-   - Letterbox black bars top and bottom (cinema feel)
-   - Film grain texture overlay via CSS noise animation
-2. Add route `/journey-film` to `App.tsx`
-3. Add "Watch as Film 🎬" button/link to the Journey Story section in `Hospitals.tsx`
+1. Inside the hero `<section>` (line ~1330 in HomeDashboard.tsx), add an absolutely positioned `<div>` as the first child containing a YouTube iframe embed with params: `autoplay=1&mute=1&loop=1&controls=0&showinfo=0&rel=0&modestbranding=1&playlist=nlRl-V2lvSg`
+2. Style the iframe container: `absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0`, with the iframe scaled up (scale-150 or similar) to cover without letterboxing
+3. Add a semi-transparent overlay div (`absolute inset-0 bg-black/50 z-0`) for text contrast
+4. Ensure all existing content has `relative z-10` or higher z-index
+5. Adjust hero section background to transparent or minimal so video shows through
