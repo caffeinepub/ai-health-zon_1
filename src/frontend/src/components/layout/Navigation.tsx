@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 
 const navLinks = [
-  { href: "/", label: "Home" },
+  { href: "/", label: "Current Affairs" },
   { href: "/hospitals", label: "Hospital Revenue Management" },
   { href: "/command-centre", label: "Claim Command Centre" },
   { href: "/patient-support", label: "Patient Support" },
@@ -71,7 +71,7 @@ export function Navigation() {
 
             {/* Desktop Nav */}
             <div className="hidden lg:flex items-center gap-1">
-              {navLinks.slice(0, 8).map((link) => (
+              {navLinks.slice(0, 7).map((link) => (
                 <Link
                   key={link.href}
                   to={link.href}
@@ -85,6 +85,17 @@ export function Navigation() {
                   {link.label}
                 </Link>
               ))}
+              <Link
+                to="/insights"
+                data-ocid="nav.insights.link"
+                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
+                  currentPath === "/insights"
+                    ? "bg-health-blue-light text-health-blue"
+                    : "text-foreground hover:bg-muted hover:text-health-blue"
+                }`}
+              >
+                Insights
+              </Link>
               <Link
                 to="/join-network"
                 data-ocid="nav.join_network.link"

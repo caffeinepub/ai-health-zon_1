@@ -49,9 +49,9 @@ const insightData: InsightItem[] = [
   },
   {
     id: 4,
-    title: "How Apollo Reach Achieved 98% Clean Claim Rate",
+    title: "How a Leading Hospital Achieved 98% Clean Claim Rate",
     summary:
-      "Apollo Reach Hospital's transformation story: from 68% to 98% clean claim rate in 6 months using AI Health Zon's RCM automation platform.",
+      "A hospital's transformation story: from 68% to 98% clean claim rate in 6 months using AI Health Zon's RCM automation platform.",
     author: "Case Study Team",
     date: "Jan 20, 2026",
     category: "Case Study",

@@ -1,6 +1,18 @@
-import PptxGenJS from "pptxgenjs";
+// Dynamically loads pptxgenjs from CDN to avoid build-time dependency
+async function loadPptxGenJS(): Promise<any> {
+  if ((window as any).PptxGenJS) return (window as any).PptxGenJS;
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src =
+      "https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js";
+    script.onload = () => resolve((window as any).PptxGenJS);
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}
 
 export async function generateAIHealthZonPPT() {
+  const PptxGenJS = await loadPptxGenJS();
   const pptx = new PptxGenJS();
 
   // Theme colors
@@ -104,7 +116,7 @@ export async function generateAIHealthZonPPT() {
     );
   }
 
-  // ─── SLIDE 2: The Problem ──────────────────────────────────────────────────
+  // ─── SLIDE 2: The Problem ─────────────────────────────────────────────────
   {
     const slide = pptx.addSlide();
     slide.addShape(pptx.ShapeType.rect, {
@@ -179,7 +191,7 @@ export async function generateAIHealthZonPPT() {
     });
   }
 
-  // ─── SLIDE 3: About AI Health Zon ─────────────────────────────────────────
+  // ─── SLIDE 3: About ───────────────────────────────────────────────────────
   {
     const slide = pptx.addSlide();
     slide.addShape(pptx.ShapeType.rect, {
@@ -214,7 +226,7 @@ export async function generateAIHealthZonPPT() {
       line: { color: teal, width: 1.5 },
     });
     slide.addText(
-      "AI Health Zon is India's leading Hospital Revenue Intelligence Platform. We help hospitals, clinics, and healthcare providers maximize revenue, reduce claim rejections, and achieve full regulatory compliance — powered by AI and automation.",
+      "AI Health Zon is India's leading Hospital Revenue Intelligence Platform. We help hospitals maximize revenue, reduce claim rejections, and achieve full regulatory compliance.",
       {
         x: 0.5,
         y: 1.3,
@@ -223,7 +235,6 @@ export async function generateAIHealthZonPPT() {
         fontSize: 14,
         color: dark,
         fontFace: "Calibri",
-        align: "left",
       },
     );
     const points = [
@@ -246,7 +257,7 @@ export async function generateAIHealthZonPPT() {
     });
   }
 
-  // ─── SLIDE 4: Platform Overview ───────────────────────────────────────────
+  // ─── SLIDE 4: Platform Modules ────────────────────────────────────────────
   {
     const slide = pptx.addSlide();
     slide.addShape(pptx.ShapeType.rect, {
@@ -339,7 +350,7 @@ export async function generateAIHealthZonPPT() {
     });
   }
 
-  // ─── SLIDE 5: Hospital Revenue Management ─────────────────────────────────
+  // ─── SLIDE 5: Hospital Revenue Management ────────────────────────────────
   {
     const slide = pptx.addSlide();
     slide.addShape(pptx.ShapeType.rect, {
@@ -396,7 +407,7 @@ export async function generateAIHealthZonPPT() {
     });
   }
 
-  // ─── SLIDE 6: Claim Command Centre ────────────────────────────────────────
+  // ─── SLIDE 6: Claim Command Centre ───────────────────────────────────────
   {
     const slide = pptx.addSlide();
     slide.addShape(pptx.ShapeType.rect, {
@@ -430,18 +441,6 @@ export async function generateAIHealthZonPPT() {
       h: 0,
       line: { color: teal, width: 1.5 },
     });
-    slide.addText(
-      "AI-powered claim intelligence to reduce rejections and accelerate settlements",
-      {
-        x: 0.5,
-        y: 1.2,
-        w: 12,
-        h: 0.5,
-        fontSize: 14,
-        color: gray,
-        fontFace: "Calibri",
-      },
-    );
     const items = [
       [
         "AI Rejection Predictor",
@@ -495,7 +494,7 @@ export async function generateAIHealthZonPPT() {
     });
   }
 
-  // ─── SLIDE 7: NABH & Compliance ───────────────────────────────────────────
+  // ─── SLIDE 7: NABH ────────────────────────────────────────────────────────
   {
     const slide = pptx.addSlide();
     slide.addShape(pptx.ShapeType.rect, {
@@ -552,7 +551,7 @@ export async function generateAIHealthZonPPT() {
     });
   }
 
-  // ─── SLIDE 8: ABDM Integration ────────────────────────────────────────────
+  // ─── SLIDE 8: ABDM ────────────────────────────────────────────────────────
   {
     const slide = pptx.addSlide();
     slide.addShape(pptx.ShapeType.rect, {
@@ -586,18 +585,6 @@ export async function generateAIHealthZonPPT() {
       h: 0,
       line: { color: teal, width: 1.5 },
     });
-    slide.addText(
-      "Ayushman Bharat Digital Mission — Building India's Digital Health Backbone",
-      {
-        x: 0.5,
-        y: 1.2,
-        w: 12,
-        h: 0.5,
-        fontSize: 14,
-        color: gray,
-        fontFace: "Calibri",
-      },
-    );
     const abdmItems = [
       ["ABHA Creation", "Ayushman Bharat Health Account for every patient"],
       ["ABDM-HIP", "Hospital as Health Information Provider"],
@@ -639,7 +626,7 @@ export async function generateAIHealthZonPPT() {
     });
   }
 
-  // ─── SLIDE 9: NHCX Readiness ──────────────────────────────────────────────
+  // ─── SLIDE 9: NHCX ────────────────────────────────────────────────────────
   {
     const slide = pptx.addSlide();
     slide.addShape(pptx.ShapeType.rect, {
@@ -673,18 +660,6 @@ export async function generateAIHealthZonPPT() {
       h: 0,
       line: { color: teal, width: 1.5 },
     });
-    slide.addText(
-      'National Health Claims Exchange — "The UPI for Health Insurance Claims"',
-      {
-        x: 0.5,
-        y: 1.2,
-        w: 12,
-        h: 0.5,
-        fontSize: 14,
-        color: gray,
-        fontFace: "Calibri",
-      },
-    );
     const nhcxSteps = [
       "Digital Hospital Information System (HIS) integration",
       "Standardized claim data formats (FHIR/HL7)",
@@ -708,7 +683,7 @@ export async function generateAIHealthZonPPT() {
     });
   }
 
-  // ─── SLIDE 10: AI Course & Training ───────────────────────────────────────
+  // ─── SLIDE 10: Training ───────────────────────────────────────────────────
   {
     const slide = pptx.addSlide();
     slide.addShape(pptx.ShapeType.rect, {
@@ -742,19 +717,7 @@ export async function generateAIHealthZonPPT() {
       h: 0,
       line: { color: teal, width: 1.5 },
     });
-    slide.addText(
-      "Claim Protection & Show-Cause Prevention Masterclass for Hospital Teams",
-      {
-        x: 0.5,
-        y: 1.2,
-        w: 12,
-        h: 0.5,
-        fontSize: 14,
-        color: gray,
-        fontFace: "Calibri",
-      },
-    );
-    const modules = [
+    const mods = [
       "Claim lifecycle — from admission to settlement",
       "Pre-authorization best practices and pitfalls",
       "NABH documentation for claim protection",
@@ -766,7 +729,7 @@ export async function generateAIHealthZonPPT() {
       "Role-based training: billing, clinical, admin staff",
       "12-module AI Course for digital health transformation",
     ];
-    modules.forEach((m, i) => {
+    mods.forEach((m, i) => {
       slide.addText(`${i + 1}.  ${m}`, {
         x: 0.7,
         y: 1.8 + i * 0.54,
@@ -856,7 +819,7 @@ export async function generateAIHealthZonPPT() {
     });
   }
 
-  // ─── SLIDE 12: Why Choose AI Health Zon ──────────────────────────────────
+  // ─── SLIDE 12: Why Choose ─────────────────────────────────────────────────
   {
     const slide = pptx.addSlide();
     slide.addShape(pptx.ShapeType.rect, {
@@ -949,7 +912,7 @@ export async function generateAIHealthZonPPT() {
     });
   }
 
-  // ─── SLIDE 13: CTA / Contact ──────────────────────────────────────────────
+  // ─── SLIDE 13: CTA ────────────────────────────────────────────────────────
   {
     const slide = pptx.addSlide();
     slide.addShape(pptx.ShapeType.rect, {
@@ -1032,6 +995,5 @@ export async function generateAIHealthZonPPT() {
     });
   }
 
-  // ─── Download ──────────────────────────────────────────────────────────────
   await pptx.writeFile({ fileName: "AI_Health_Zon_Hospital_Platform.pptx" });
 }

@@ -9,6 +9,7 @@ const platformLinks = [
   { href: "/compliance", label: "NABH" },
   { href: "/digital-health", label: "ABDM" },
   { href: "/nhcx", label: "NHCX" },
+  { href: "/", label: "Current Affairs" },
   { href: "/insights", label: "Insights" },
   { href: "/join-network", label: "Join Network" },
   { href: "/ai-course", label: "AI Course" },

@@ -255,7 +255,7 @@ function GlassKPICard() {
           className="ml-3 text-xs font-mono"
           style={{ color: "oklch(0.45 0.10 188)" }}
         >
-          AI Health Zon — Command Centre
+          AI Health Zon Platform
         </span>
         <div className="ml-auto flex items-center gap-1.5">
           <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
@@ -1334,108 +1334,35 @@ export function HomeDashboard() {
           clipPath: "polygon(0 0, 100% 0, 100% 94%, 0 100%)",
         }}
       >
-        {/* YouTube Video Background */}
-        <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
-          <iframe
-            src="https://www.youtube.com/embed/nlRl-V2lvSg?autoplay=1&mute=1&loop=1&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&playlist=nlRl-V2lvSg"
-            allow="autoplay; fullscreen"
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
-            style={{
-              width: "177.78vh",
-              height: "56.25vw",
-              minWidth: "100%",
-              minHeight: "100%",
-            }}
-            title="Background video"
-          />
-        </div>
-        {/* Dark overlay for text readability */}
+        {/* YouTube video background */}
         <div
-          className="absolute inset-0 bg-black/60 z-[1]"
-          aria-hidden="true"
-        />
-
-        {/* Animated mesh gradient blobs */}
-        <div
-          className="absolute inset-0 overflow-hidden pointer-events-none z-[2]"
+          className="absolute inset-0 z-0 overflow-hidden pointer-events-none"
           aria-hidden="true"
         >
-          <motion.div
-            className="absolute rounded-full blur-[120px]"
+          <iframe
+            src="https://www.youtube.com/embed/nlRl-V2lvSg?autoplay=1&mute=1&loop=1&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&playlist=nlRl-V2lvSg"
+            allow="autoplay; encrypted-media"
+            allowFullScreen
+            title="Hero Background Video"
             style={{
-              width: 600,
-              height: 600,
-              top: "-10%",
-              left: "-5%",
-              background: "oklch(0.65 0.12 195)",
-            }}
-            animate={{
-              x: [0, 60, -30, 0],
-              y: [0, -40, 20, 0],
-              opacity: [0.12, 0.22, 0.14, 0.12],
-            }}
-            transition={{
-              repeat: Number.POSITIVE_INFINITY,
-              duration: 18,
-              ease: "easeInOut",
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              width: "177.78vh",
+              height: "100vh",
+              minWidth: "100%",
+              minHeight: "56.25vw",
+              transform: "translate(-50%, -50%)",
+              border: "none",
+              pointerEvents: "none",
             }}
           />
-          <motion.div
-            className="absolute rounded-full blur-[100px]"
-            style={{
-              width: 500,
-              height: 500,
-              top: "30%",
-              right: "-5%",
-              background: "oklch(0.60 0.14 180)",
-            }}
-            animate={{
-              x: [0, -50, 20, 0],
-              y: [0, 30, -20, 0],
-              opacity: [0.1, 0.18, 0.12, 0.1],
-            }}
-            transition={{
-              repeat: Number.POSITIVE_INFINITY,
-              duration: 22,
-              ease: "easeInOut",
-              delay: 3,
-            }}
-          />
-          <motion.div
-            className="absolute rounded-full blur-[80px]"
-            style={{
-              width: 350,
-              height: 350,
-              bottom: "-5%",
-              left: "25%",
-              background: "oklch(0.58 0.13 160)",
-            }}
-            animate={{
-              x: [0, 40, -20, 0],
-              y: [0, -30, 15, 0],
-              opacity: [0.08, 0.15, 0.08, 0.08],
-            }}
-            transition={{
-              repeat: Number.POSITIVE_INFINITY,
-              duration: 26,
-              ease: "easeInOut",
-              delay: 7,
-            }}
+          {/* Dark overlay so text stays readable */}
+          <div
+            className="absolute inset-0"
+            style={{ background: "rgba(0,0,0,0.45)" }}
           />
         </div>
-
-        {/* Dot grid */}
-        <div
-          className="absolute inset-0 opacity-[0.03] z-[2]"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle, rgba(255,255,255,0.6) 1px, transparent 1px)",
-            backgroundSize: "32px 32px",
-          }}
-          aria-hidden="true"
-        />
-
-        <ParticleField />
 
         <div className="max-w-7xl mx-auto w-full relative z-10 pb-24">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">

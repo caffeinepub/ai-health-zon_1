@@ -102,7 +102,7 @@ export function DemoBookingDialog({
               <Label htmlFor="org">Hospital / Organization *</Label>
               <Input
                 id="org"
-                placeholder="Apollo Hospital"
+                placeholder="City Hospital"
                 {...register("org", { required: "Organization is required" })}
               />
               {errors.org && (

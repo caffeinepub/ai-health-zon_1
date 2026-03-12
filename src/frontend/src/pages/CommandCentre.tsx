@@ -319,8 +319,28 @@ export function CommandCentre() {
   return (
     <Layout section="command-centre">
       {/* Hero */}
-      <section className="pt-20 health-gradient">
-        <div className="max-w-4xl mx-auto px-4 py-16 text-center">
+      <section className="pt-20 health-gradient relative overflow-hidden">
+        {/* YouTube Video Background */}
+        <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
+          <iframe
+            src="https://www.youtube.com/embed/nlRl-V2lvSg?autoplay=1&mute=1&loop=1&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&playlist=nlRl-V2lvSg"
+            allow="autoplay; fullscreen"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+            style={{
+              width: "177.78vh",
+              height: "56.25vw",
+              minWidth: "100%",
+              minHeight: "100%",
+            }}
+            title="Background video"
+          />
+        </div>
+        {/* Dark overlay for text readability */}
+        <div
+          className="absolute inset-0 bg-black/60 z-[1]"
+          aria-hidden="true"
+        />
+        <div className="max-w-4xl mx-auto px-4 py-16 text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

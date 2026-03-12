@@ -8,8 +8,8 @@ import {
 import { AICourse } from "./pages/AICourse";
 import { CommandCentre } from "./pages/CommandCentre";
 import { Compliance } from "./pages/Compliance";
+import { CurrentAffairs } from "./pages/CurrentAffairs";
 import { DigitalHealth } from "./pages/DigitalHealth";
-import { Home } from "./pages/Home";
 import { Hospitals } from "./pages/Hospitals";
 import { InsightDetail } from "./pages/InsightDetail";
 import { Insights } from "./pages/Insights";
@@ -25,10 +25,10 @@ const rootRoute = createRootRoute({
 });
 
 // All routes
-const homeRoute = createRoute({
+const currentAffairsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
-  component: Home,
+  component: CurrentAffairs,
 });
 const hospitalsRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -92,7 +92,7 @@ const nhcxRoute = createRoute({
 });
 
 const routeTree = rootRoute.addChildren([
-  homeRoute,
+  currentAffairsRoute,
   hospitalsRoute,
   commandCentreRoute,
   patientSupportRoute,
