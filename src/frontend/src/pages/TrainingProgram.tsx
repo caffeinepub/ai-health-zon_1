@@ -1,9 +1,11 @@
+import { Link } from "@tanstack/react-router";
 import {
   AlertTriangle,
   Award,
   BookOpen,
   CheckCircle,
   ChevronDown,
+  ChevronRight,
   ChevronUp,
   Clock,
   FileCheck,
@@ -538,6 +540,66 @@ function ModuleCard({ module }: { module: Module }) {
   );
 }
 
+// ── Training Material Card with Link ─────────────────────────────────────────
+
+type MaterialItem = {
+  title: string;
+  desc: string;
+  icon: React.ElementType;
+  color: string;
+  bg: string;
+  href: string;
+  hoverBorder: string;
+};
+
+const trainingMaterials: MaterialItem[] = [
+  {
+    title: "Claim Bible Manual",
+    desc: "Comprehensive reference guide covering all claim types, risk categories, and compliance rules",
+    icon: BookOpen,
+    color: "text-teal-600",
+    bg: "bg-teal-50",
+    href: "/training-materials/claim-bible",
+    hoverBorder: "hover:border-teal-400",
+  },
+  {
+    title: "Clean Claim Checklist",
+    desc: "Step-by-step pre-submission checklist covering all 5 validation categories",
+    icon: CheckCircle,
+    color: "text-green-600",
+    bg: "bg-green-50",
+    href: "/training-materials/clean-claim-checklist",
+    hoverBorder: "hover:border-green-400",
+  },
+  {
+    title: "Claim Audit Templates",
+    desc: "Ready-to-use audit forms for investigations, packages, billing, pharmacy, and documentation",
+    icon: FileText,
+    color: "text-blue-600",
+    bg: "bg-blue-50",
+    href: "/training-materials/claim-audit-templates",
+    hoverBorder: "hover:border-blue-400",
+  },
+  {
+    title: "Department Responsibility Matrix",
+    desc: "Assigns accountability for each claim stage across all hospital departments",
+    icon: Users,
+    color: "text-purple-600",
+    bg: "bg-purple-50",
+    href: "/training-materials/department-responsibility-matrix",
+    hoverBorder: "hover:border-purple-400",
+  },
+  {
+    title: "Investigation Justification Format",
+    desc: "Standardized format for documenting clinical indication and necessity for all investigations",
+    icon: FileCheck,
+    color: "text-amber-600",
+    bg: "bg-amber-50",
+    href: "/training-materials/investigation-justification",
+    hoverBorder: "hover:border-amber-400",
+  },
+];
+
 // ── Main Program Info Export ───────────────────────────────────────────────────
 
 export function TrainingProgramInfo() {
@@ -579,6 +641,16 @@ export function TrainingProgramInfo() {
           </motion.div>
         </div>
       </section>
+
+      {/* Hero Image */}
+      <div className="px-4 py-6 bg-white">
+        <img
+          src="/assets/generated/hero-training-ai-health-zon.dim_1200x600.jpg"
+          alt="Hospital staff training and masterclass program"
+          className="w-full max-w-5xl mx-auto rounded-2xl object-cover shadow-xl"
+          style={{ aspectRatio: "16/7" }}
+        />
+      </div>
 
       {/* Program Objective */}
       <section className="py-10 px-4 md:px-8 bg-gray-50">
@@ -900,7 +972,7 @@ export function TrainingProgramInfo() {
         </div>
       </section>
 
-      {/* Training Materials */}
+      {/* Training Materials — Clickable Cards */}
       <section className="py-10 px-4 md:px-8 bg-gray-50">
         <div className="max-w-5xl mx-auto">
           <motion.div
@@ -916,45 +988,12 @@ export function TrainingProgramInfo() {
             <h2 className="font-heading text-2xl font-bold text-gray-900">
               Resources Provided to Participants
             </h2>
+            <p className="text-sm text-gray-500 mt-2">
+              Click any resource below to view the full detailed guide
+            </p>
           </motion.div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              {
-                title: "Claim Bible Manual",
-                desc: "Comprehensive reference guide covering all claim types, risk categories, and compliance rules",
-                icon: BookOpen,
-                color: "text-teal-600",
-                bg: "bg-teal-50",
-              },
-              {
-                title: "Clean Claim Checklist",
-                desc: "Step-by-step pre-submission checklist covering all 5 validation categories",
-                icon: CheckCircle,
-                color: "text-green-600",
-                bg: "bg-green-50",
-              },
-              {
-                title: "Claim Audit Templates",
-                desc: "Ready-to-use audit forms for investigations, packages, billing, pharmacy, and documentation",
-                icon: FileText,
-                color: "text-blue-600",
-                bg: "bg-blue-50",
-              },
-              {
-                title: "Department Responsibility Matrix",
-                desc: "Assigns accountability for each claim stage across all hospital departments",
-                icon: Users,
-                color: "text-purple-600",
-                bg: "bg-purple-50",
-              },
-              {
-                title: "Investigation Justification Format",
-                desc: "Standardized format for documenting clinical indication and necessity for all investigations",
-                icon: FileCheck,
-                color: "text-amber-600",
-                bg: "bg-amber-50",
-              },
-            ].map((mat, i) => {
+            {trainingMaterials.map((mat, i) => {
               const Icon = mat.icon;
               return (
                 <motion.div
@@ -963,19 +1002,31 @@ export function TrainingProgramInfo() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: i * 0.08 }}
-                  className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5"
+                  whileHover={{ y: -3 }}
                 >
-                  <div
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${mat.bg}`}
+                  <Link
+                    to={mat.href}
+                    className={`group block bg-white rounded-2xl border border-gray-200 shadow-sm p-5 transition-all duration-200 ${mat.hoverBorder} hover:shadow-md`}
+                    data-ocid={`training.material.${i + 1}.link`}
                   >
-                    <Icon className={`w-5 h-5 ${mat.color}`} />
-                  </div>
-                  <h3 className="font-heading font-bold text-sm text-gray-900 mb-1">
-                    {mat.title}
-                  </h3>
-                  <p className="text-xs text-gray-500 leading-relaxed">
-                    {mat.desc}
-                  </p>
+                    <div
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${mat.bg}`}
+                    >
+                      <Icon className={`w-5 h-5 ${mat.color}`} />
+                    </div>
+                    <h3 className="font-heading font-bold text-sm text-gray-900 mb-1">
+                      {mat.title}
+                    </h3>
+                    <p className="text-xs text-gray-500 leading-relaxed mb-3">
+                      {mat.desc}
+                    </p>
+                    <div
+                      className={`flex items-center gap-1 text-xs font-semibold ${mat.color} group-hover:gap-2 transition-all`}
+                    >
+                      View Details
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </div>
+                  </Link>
                 </motion.div>
               );
             })}

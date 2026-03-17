@@ -1,1319 +1,778 @@
 import { Layout } from "@/components/layout/Layout";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Link } from "@tanstack/react-router";
 import {
   ArrowRight,
-  Building2,
   CheckCircle2,
-  ChevronDown,
-  CreditCard,
   Database,
   FileText,
-  Heart,
-  Hospital,
-  Key,
+  Globe,
   Lock,
   Network,
-  Server,
   Shield,
   Smartphone,
-  Star,
   Users,
   Zap,
 } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-// ─────────────────── Data ───────────────────
+function useCountUp(target: number, duration = 1800, start = false) {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    if (!start) return;
+    let startTime: number | null = null;
+    const step = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      const ease = 1 - (1 - progress) ** 3;
+      setValue(Math.floor(ease * target));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, [target, duration, start]);
+  return value;
+}
 
-const buildingBlocks = [
+function useVisible() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.15 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+  return { ref, visible };
+}
+
+function StatCard({
+  value,
+  suffix,
+  label,
+  started,
+}: {
+  value: number;
+  suffix: string;
+  label: string;
+  started: boolean;
+}) {
+  const count = useCountUp(value, 1800, started);
+  return (
+    <div className="text-center p-5 bg-white/10 rounded-2xl border border-white/20 hover:bg-white/15 transition-colors">
+      <div className="text-2xl md:text-3xl font-bold text-white tabular-nums">
+        {count}
+        {suffix}
+      </div>
+      <div className="text-xs text-teal-200 mt-1 leading-snug">{label}</div>
+    </div>
+  );
+}
+
+const pillars = [
   {
-    icon: CreditCard,
-    title: "Patient Identity Layer (ABHA)",
-    description:
-      "Use ABHA (Ayushman Bharat Health Account) for patient identification with secure OTP and biometric authentication.",
-    color: "text-blue-600",
+    num: "01",
+    color: "blue",
+    icon: <Smartphone className="w-6 h-6" />,
+    title: "ABHA Identity Layer",
+    desc: "Ayushman Bharat Health Account — a unique 14-digit health ID for every Indian citizen, enabling lifelong health record access.",
+    points: [
+      "14-digit unique health identifier",
+      "OTP & biometric authentication",
+      "PHR mobile app integration",
+      "Linked to Aadhaar & mobile",
+    ],
+    accent: "text-blue-600",
+    border: "border-blue-100",
     bg: "bg-blue-50",
-    border: "border-blue-200",
-    requirements: [
-      "ABHA creation",
-      "ABHA linking with hospital patient ID",
-      "ABHA authentication (OTP / biometrics)",
-    ],
-    workflow: [
-      "Patient arrives at registration desk",
-      "Enters mobile number in the system",
-      "System fetches or creates ABHA",
-      "Patient profile linked to hospital system",
-    ],
+    numColor: "text-blue-200",
   },
   {
-    icon: Shield,
-    title: "Digital Consent Management",
-    description:
-      "ABDM requires patient permission before sharing records. Hospitals must integrate with a Consent Manager to ensure privacy and control of data.",
-    color: "text-amber-600",
+    num: "02",
+    color: "amber",
+    icon: <Lock className="w-6 h-6" />,
+    title: "Consent Management",
+    desc: "Patient-controlled data sharing framework aligned with the Digital Personal Data Protection Act, giving individuals full sovereignty over health records.",
+    points: [
+      "Granular consent per record type",
+      "DPDP Act 2023 compliant",
+      "Complete audit trail",
+      "Time-bound access control",
+    ],
+    accent: "text-amber-600",
+    border: "border-amber-100",
     bg: "bg-amber-50",
-    border: "border-amber-200",
-    requirements: [
-      "Consent request workflows",
-      "Patient approval via mobile",
-      "Granular data sharing controls",
-    ],
-    workflow: [
-      "Hospital A wants to view reports from Hospital B",
-      "System sends consent request to patient",
-      "Patient approves via mobile",
-      "Records become accessible — privacy protected",
-    ],
+    numColor: "text-amber-200",
   },
   {
-    icon: ArrowRight,
-    title: "Health Information Exchange (HIE)",
-    description:
-      "Hospitals act as HIP (Health Information Provider) sharing records and HIU (Health Information User) requesting records from other providers.",
-    color: "text-teal-600",
+    num: "03",
+    color: "teal",
+    icon: <Network className="w-6 h-6" />,
+    title: "Health Information Exchange",
+    desc: "HIP/HIU architecture enabling seamless health data flow across facilities using globally interoperable FHIR R4 standards.",
+    points: [
+      "FHIR R4 & HL7 standards",
+      "HIP/HIU dual-role support",
+      "Real-time data fetch API",
+      "Cross-facility interoperability",
+    ],
+    accent: "text-teal-600",
+    border: "border-teal-100",
     bg: "bg-teal-50",
-    border: "border-teal-200",
-    requirements: [
-      "HIP — Health Information Provider: shares patient records",
-      "HIU — Health Information User: requests patient records",
-    ],
-    workflow: [
-      "Lab reports shared in real-time",
-      "Radiology reports exchanged digitally",
-      "Prescriptions transferred securely",
-      "Discharge summaries available across providers",
-    ],
+    numColor: "text-teal-200",
   },
   {
-    icon: Database,
-    title: "National Registries Integration",
-    description:
-      "Hospitals must register in national registries — HFR and HPR — to enable verified identification of facilities and healthcare professionals.",
-    color: "text-green-600",
-    bg: "bg-green-50",
-    border: "border-green-200",
-    requirements: [
+    num: "04",
+    color: "green",
+    icon: <Database className="w-6 h-6" />,
+    title: "National Health Registries",
+    desc: "Central registries for health facilities and professionals — the foundational infrastructure for India's digital health ecosystem.",
+    points: [
       "HFR — Health Facility Registry",
-      "HPR — Healthcare Professionals Registry",
+      "HPR — Health Professional Registry",
+      "Facility verification & NABH link",
+      "Real-time registry updates",
     ],
-    workflow: [
-      "Hospital registered and verified via HFR",
-      "Doctors registered and verified via HPR",
-      "Clinics and healthcare professionals verified",
-      "Credentialed network enables trusted data exchange",
-    ],
-  },
-  {
-    icon: Network,
-    title: "ABDM Gateway Integration",
-    description:
-      "The ABDM Gateway connects all digital health applications. Your platform communicates through ABDM APIs, secure authentication, and FHIR health data standards.",
-    color: "text-indigo-600",
-    bg: "bg-indigo-50",
-    border: "border-indigo-200",
-    requirements: [
-      "ABDM API integration",
-      "Secure token-based authentication",
-      "FHIR healthcare data standards",
-    ],
-    workflow: [
-      "Platform connects to ABDM Gateway",
-      "Authenticated via secure tokens",
-      "Health records exchanged in FHIR format",
-      "Full ecosystem interoperability achieved",
-    ],
-  },
-];
-
-const essentialModules = [
-  {
-    icon: Users,
-    title: "Patient Registration Module",
-    color: "text-blue-600",
-    bg: "bg-blue-50",
-    items: ["ABHA creation", "ABHA linking", "Demographic capture"],
-  },
-  {
-    icon: FileText,
-    title: "Electronic Health Record (EHR)",
-    color: "text-teal-600",
-    bg: "bg-teal-50",
-    items: [
-      "Consultation notes",
-      "Lab results",
-      "Prescriptions",
-      "Discharge summary",
-      "FHIR health data standards",
-    ],
-  },
-  {
-    icon: Shield,
-    title: "Consent Manager Integration",
-    color: "text-amber-600",
-    bg: "bg-amber-50",
-    items: [
-      "Consent requests",
-      "Approval workflows",
-      "Data sharing permissions",
-    ],
-  },
-  {
-    icon: ArrowRight,
-    title: "Health Record Sharing Engine",
-    color: "text-green-600",
+    accent: "text-green-600",
+    border: "border-green-100",
     bg: "bg-green-50",
-    items: ["Secure record transfer", "HIP/HIU communication"],
+    numColor: "text-green-200",
   },
   {
-    icon: Hospital,
-    title: "Doctor Registry Integration",
-    color: "text-indigo-600",
-    bg: "bg-indigo-50",
-    items: [
-      "Doctors verified through HPR",
-      "Professional credential checks",
-      "HPR registry synchronization",
+    num: "05",
+    color: "purple",
+    icon: <FileText className="w-6 h-6" />,
+    title: "NHCX Claims Integration",
+    desc: "National Health Claims Exchange integration for standardized, real-time insurance claim submission and adjudication.",
+    points: [
+      "Standardized claim formats",
+      "Real-time adjudication",
+      "Multi-insurer connectivity",
+      "PM-JAY & TPA compatible",
     ],
-  },
-  {
-    icon: Building2,
-    title: "Facility Registry Integration",
-    color: "text-purple-600",
+    accent: "text-purple-600",
+    border: "border-purple-100",
     bg: "bg-purple-50",
-    items: [
-      "Hospital verified through HFR",
-      "Facility credential management",
-      "HFR registry synchronization",
-    ],
+    numColor: "text-purple-200",
   },
 ];
 
-const techRequirements = [
+const timeline = [
   {
-    icon: Server,
-    title: "APIs",
-    color: "text-blue-600",
-    bg: "bg-blue-50",
-    items: [
-      "ABHA creation API",
-      "ABHA verification API",
-      "Consent management API",
-      "Health record exchange API",
-    ],
+    year: "2017",
+    title: "National Health Policy",
+    desc: "NHP 2017 laid the vision for universal health coverage and digital health infrastructure.",
   },
   {
-    icon: Lock,
-    title: "Security",
-    color: "text-amber-600",
-    bg: "bg-amber-50",
-    items: [
-      "End-to-end encryption",
-      "Token authentication",
-      "Patient consent logs",
-    ],
+    year: "2018",
+    title: "NDHB Draft Released",
+    desc: "National Digital Health Blueprint proposed ABHA, HIE, and national registries as core pillars.",
   },
   {
-    icon: Database,
-    title: "Data Standards (FHIR)",
-    color: "text-teal-600",
-    bg: "bg-teal-50",
-    items: [
-      "Patient resource",
-      "Encounter resource",
-      "Observation resource",
-      "Medication resource",
-      "DiagnosticReport resource",
-    ],
+    year: "2019",
+    title: "NDHM Announced",
+    desc: "PM Modi announced the National Digital Health Mission at Independence Day address.",
+  },
+  {
+    year: "2021",
+    title: "ABDM Official Launch",
+    desc: "Ayushman Bharat Digital Mission formally launched; ABHA ID generation begins at scale.",
+  },
+  {
+    year: "2022",
+    title: "ABHA Mass Rollout",
+    desc: "50 Cr+ ABHA IDs created; health facility and professional registries go live nationwide.",
+  },
+  {
+    year: "2023",
+    title: "NHCX Beta Launch",
+    desc: "National Health Claims Exchange beta launched; standardized claim formats adopted.",
+  },
+  {
+    year: "2024",
+    title: "FHIR Mandate",
+    desc: "NHA mandates FHIR R4 compliance for all healthcare providers integrating with ABDM.",
+  },
+  {
+    year: "2025",
+    title: "Full Interoperability",
+    desc: "Complete HIE network operational; real-time cross-facility health data exchange at scale.",
   },
 ];
 
-const roadmapPhases = [
+const phases = [
   {
     phase: "Phase 1",
-    title: "Foundation",
-    milestone: "M1 Milestone",
-    color: "bg-blue-600",
-    light: "bg-blue-50",
-    border: "border-blue-200",
-    text: "text-blue-600",
-    items: [
-      "Register hospital in HFR",
-      "Register doctors in HPR",
-      "Integrate ABHA creation",
+    timeline: "Month 1–3",
+    color: "teal",
+    steps: [
+      "Register on ABDM sandbox",
+      "Generate ABHA IDs for patients",
+      "Basic API integration",
+      "Staff training on consent flow",
     ],
   },
   {
     phase: "Phase 2",
-    title: "Data Sharing",
-    milestone: "M2 Milestone",
-    color: "bg-teal-600",
-    light: "bg-teal-50",
-    border: "border-teal-200",
-    text: "text-teal-600",
-    items: [
-      "Implement consent manager",
-      "Enable record sharing",
-      "HIP and HIU capability",
+    timeline: "Month 3–6",
+    color: "blue",
+    steps: [
+      "HIP/HIU dual-role setup",
+      "Consent workflow integration",
+      "EMR/HIS system linkage",
+      "FHIR R4 data mapping",
     ],
   },
   {
     phase: "Phase 3",
-    title: "Full Ecosystem",
-    milestone: "M3 Milestone",
-    color: "bg-indigo-600",
-    light: "bg-indigo-50",
-    border: "border-indigo-200",
-    text: "text-indigo-600",
-    items: [
-      "Digital prescriptions",
-      "Telemedicine",
-      "AI analytics",
-      "Automated insurance integration",
-    ],
-  },
-];
-
-const businessBenefits = [
-  {
-    icon: CreditCard,
-    title: "Revenue Cycle Management",
-    color: "text-blue-600",
-    bg: "bg-blue-50",
-    items: [
-      "Faster insurance claims",
-      "Fewer claim rejections",
-      "Verified patient identity",
-    ],
-  },
-  {
-    icon: Heart,
-    title: "Clinical Quality",
-    color: "text-teal-600",
-    bg: "bg-teal-50",
-    items: [
-      "Doctors get complete patient history",
-      "Better diagnosis accuracy",
-      "Improved care continuity",
-    ],
-  },
-  {
-    icon: Zap,
-    title: "Operational Efficiency",
-    color: "text-green-600",
-    bg: "bg-green-50",
-    items: [
-      "Reduces paperwork",
-      "Eliminates duplicate tests",
-      "No manual record transfers",
+    timeline: "Month 6–12",
+    color: "purple",
+    steps: [
+      "Full interoperability live",
+      "NHCX claims integration",
+      "HIE analytics dashboard",
+      "Go-live & audit compliance",
     ],
   },
 ];
 
 const benefits = [
   {
-    stakeholder: "Hospitals",
-    icon: Building2,
-    color: "text-blue-600",
-    bg: "bg-blue-50",
-    items: [
-      "Reduce redundant diagnostics by 30%",
-      "Faster patient registration",
-      "Paperless medical records",
-      "Improved care coordination",
-    ],
+    icon: <Zap className="w-5 h-5" />,
+    title: "Faster Claims",
+    desc: "Real-time NHCX integration cuts claim settlement from 45 days to under 7 days.",
   },
   {
-    stakeholder: "Patients",
-    icon: Heart,
-    color: "text-red-600",
-    bg: "bg-red-50",
-    items: [
-      "Own and control health data",
-      "Access records anywhere",
-      "Avoid repeated tests",
-      "Better continuity of care",
-    ],
+    icon: <FileText className="w-5 h-5" />,
+    title: "Zero Paperwork",
+    desc: "Digital consent and FHIR records eliminate manual documentation entirely.",
   },
   {
-    stakeholder: "Insurers",
-    icon: Shield,
-    color: "text-teal-600",
-    bg: "bg-teal-50",
-    items: [
-      "Faster claims processing",
-      "Reduced fraud with verified records",
-      "Pre-auth with digital records",
-      "Better risk profiling",
-    ],
+    icon: <Users className="w-5 h-5" />,
+    title: "Patient Trust",
+    desc: "Transparent consent management builds patient confidence in data privacy.",
+  },
+  {
+    icon: <Shield className="w-5 h-5" />,
+    title: "Regulatory Compliance",
+    desc: "DPDP Act, NABH, and NHA compliance in a single integrated platform.",
   },
 ];
 
-const commandCentreFeatures = [
-  "ABDM integration",
-  "Hospital revenue analytics",
-  "Claim automation",
-  "Patient support services",
-  "AI diagnosis assistance",
-];
-
-// ─────────────────── Accordion Block ───────────────────
-function BuildingBlockAccordion({
-  block,
-  index,
-}: {
-  block: (typeof buildingBlocks)[0];
-  index: number;
-}) {
-  const [open, setOpen] = useState(index === 0);
-  const Icon = block.icon;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: index * 0.08 }}
-      className={`rounded-xl border ${block.border} bg-white shadow-xs overflow-hidden`}
-    >
-      <button
-        type="button"
-        data-ocid={`abdm.block.${index + 1}.toggle`}
-        className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-gray-50 transition-colors"
-        onClick={() => setOpen((p) => !p)}
-        aria-expanded={open}
-      >
-        <div className="flex items-center gap-3">
-          <div
-            className={`w-10 h-10 rounded-xl ${block.bg} flex items-center justify-center shrink-0`}
-          >
-            <Icon className={`w-5 h-5 ${block.color}`} />
-          </div>
-          <div>
-            <span className="font-heading font-semibold text-foreground">
-              {block.title}
-            </span>
-            <p className="text-xs text-muted-foreground mt-0.5 hidden sm:block">
-              {block.description.slice(0, 60)}…
-            </p>
-          </div>
-        </div>
-        <ChevronDown
-          className={`w-5 h-5 text-muted-foreground transition-transform shrink-0 ${open ? "rotate-180" : ""}`}
-        />
-      </button>
-
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="overflow-hidden"
-          >
-            <div className="px-6 pb-6 pt-2 border-t border-border">
-              <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-                {block.description}
-              </p>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                    Requirements
-                  </p>
-                  <ul className="space-y-1.5">
-                    {block.requirements.map((r) => (
-                      <li key={r} className="flex items-start gap-2 text-sm">
-                        <CheckCircle2
-                          className={`w-4 h-4 ${block.color} mt-0.5 shrink-0`}
-                        />
-                        <span>{r}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                    Workflow Steps
-                  </p>
-                  <ol className="space-y-1.5">
-                    {block.workflow.map((step, si) => (
-                      <li key={step} className="flex items-start gap-2 text-sm">
-                        <span
-                          className={`w-5 h-5 rounded-full ${block.bg} ${block.color} text-xs font-bold flex items-center justify-center shrink-0`}
-                        >
-                          {si + 1}
-                        </span>
-                        <span>{step}</span>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
-  );
-}
-
-// ─────────────────── Page ───────────────────
 export function DigitalHealth() {
+  const heroVis = useVisible();
+  const statsVis = useVisible();
+  const pillarsVis = useVisible();
+  const archVis = useVisible();
+  const timelineVis = useVisible();
+  const roadmapVis = useVisible();
+  const benefitsVis = useVisible();
+  const ctaVis = useVisible();
+
   return (
-    <Layout section="digital-health">
-      {/* Hero */}
-      <section className="pt-20 health-gradient">
-        <div className="max-w-4xl mx-auto px-4 py-16 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+    <Layout>
+      {/* ── Hero ── */}
+      <section
+        ref={heroVis.ref}
+        className="relative min-h-[520px] flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-teal-900 to-blue-900"
+      >
+        <img
+          src="/assets/generated/hero-digital-health-ai-health-zon.dim_1200x600.jpg"
+          alt="AI Health Zon ABDM Digital Health"
+          className="absolute inset-0 w-full h-full object-cover opacity-40"
+        />
+        <div
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 30% 50%, oklch(0.65 0.18 195), transparent 55%), radial-gradient(circle at 75% 20%, oklch(0.55 0.15 240), transparent 50%)",
+          }}
+        />
+        <div
+          className={`relative z-10 max-w-4xl mx-auto px-6 py-24 text-center transition-all duration-700 ${
+            heroVis.visible
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-8"
+          }`}
+        >
+          <Badge className="mb-5 bg-teal-500/20 text-teal-300 border border-teal-500/40 text-xs tracking-widest uppercase px-4 py-1">
+            <span className="inline-block w-2 h-2 rounded-full bg-teal-400 mr-2 animate-pulse" />
+            ABDM Live 2025
+          </Badge>
+          <h1
+            className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight"
+            style={{ fontFamily: "Playfair Display, Georgia, serif" }}
           >
-            <span className="inline-block px-4 py-1.5 bg-white/10 border border-white/20 text-white/80 text-xs rounded-full mb-4 uppercase tracking-wider">
-              ABDM Compliant
-            </span>
-            <h1 className="font-heading text-4xl sm:text-5xl font-bold text-white mb-4">
-              ABDM
-            </h1>
-            <p className="text-white/70 text-lg max-w-2xl mx-auto">
-              Building an ABDM-ready hospital platform — connecting your HIS/RCM
-              to the Ayushman Bharat Digital Mission ecosystem for secure,
-              standards-based health data exchange.
-            </p>
-          </motion.div>
+            ABDM: India&apos;s Digital
+            <br />
+            <span className="text-teal-300">Health Revolution</span>
+          </h1>
+          <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed mb-10">
+            Ayushman Bharat Digital Mission is transforming 140 Crore Indians'
+            health records into a unified, secure, patient-controlled digital
+            ecosystem — powering the world's largest public health network.
+          </p>
+          <div className="flex flex-wrap gap-4 justify-center">
+            <Link to="/join-network">
+              <Button
+                data-ocid="abdm.primary_button"
+                size="lg"
+                className="bg-teal-500 hover:bg-teal-400 text-white rounded-full px-8"
+              >
+                Start ABDM Integration <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+            </Link>
+            <Link to="/">
+              <Button
+                data-ocid="abdm.secondary_button"
+                size="lg"
+                variant="outline"
+                className="border-white/30 text-white hover:bg-white/10 rounded-full px-8"
+              >
+                Explore Platform
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* Section 2 — 5 Core ABDM Building Blocks */}
-      <section className="section-padding bg-background">
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            className="text-center mb-10"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+      {/* ── Stats Band ── */}
+      <section
+        ref={statsVis.ref}
+        className="bg-gradient-to-r from-slate-900 to-teal-900 py-14"
+      >
+        <div className="max-w-5xl mx-auto px-6">
+          <div
+            className={`grid grid-cols-2 md:grid-cols-4 gap-4 transition-all duration-700 ${
+              statsVis.visible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-8"
+            }`}
           >
-            <Badge className="mb-3 bg-teal-50 text-teal-700 border-teal-200">
-              Core Architecture
-            </Badge>
-            <h2 className="font-heading text-3xl font-bold text-foreground mb-3">
+            <StatCard
+              value={64}
+              suffix=" Cr+"
+              label="ABHA IDs Created"
+              started={statsVis.visible}
+            />
+            <StatCard
+              value={170000}
+              suffix="+"
+              label="Health & Wellness Centres"
+              started={statsVis.visible}
+            />
+            <StatCard
+              value={300000}
+              suffix="+"
+              label="Registered Health Facilities"
+              started={statsVis.visible}
+            />
+            <StatCard
+              value={50}
+              suffix=" Cr+"
+              label="Consent Transactions"
+              started={statsVis.visible}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ── 5 ABDM Building Blocks ── */}
+      <section
+        ref={pillarsVis.ref}
+        className="py-20 bg-gradient-to-br from-slate-50 via-teal-50/30 to-blue-50/20"
+      >
+        <div className="max-w-6xl mx-auto px-6">
+          <div
+            className={`mb-12 transition-all duration-700 ${
+              pillarsVis.visible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-8"
+            }`}
+          >
+            <p className="text-xs font-semibold tracking-widest text-teal-600 uppercase mb-3">
+              Architecture
+            </p>
+            <h2
+              className="text-3xl md:text-4xl font-bold text-slate-900 mb-4"
+              style={{ fontFamily: "Playfair Display, Georgia, serif" }}
+            >
               5 Core ABDM Building Blocks
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Every ABDM-ready hospital platform must support these five main
-              building blocks to participate in India's National Digital Health
-              Mission.
+            <p className="text-slate-500 max-w-xl text-base">
+              The five foundational pillars that make India's digital health
+              infrastructure interoperable, secure, and patient-centric.
             </p>
-          </motion.div>
-          <div className="space-y-3">
-            {buildingBlocks.map((block, i) => (
-              <BuildingBlockAccordion
-                key={block.title}
-                block={block}
-                index={i}
-              />
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {pillars.map((p, i) => (
+              <div
+                key={p.num}
+                className={`relative bg-white rounded-2xl border ${p.border} p-6 hover:shadow-lg transition-all duration-500 ${
+                  pillarsVis.visible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-8"
+                }`}
+                style={{ transitionDelay: `${i * 80}ms` }}
+                data-ocid={`abdm.pillar.card.${i + 1}`}
+              >
+                <div
+                  className={`absolute top-4 right-4 text-6xl font-black leading-none ${p.numColor} select-none`}
+                >
+                  {p.num}
+                </div>
+                <div
+                  className={`inline-flex p-2 rounded-xl ${p.bg} ${p.accent} mb-4`}
+                >
+                  {p.icon}
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 mb-2">
+                  {p.title}
+                </h3>
+                <p className="text-sm text-slate-500 mb-4 leading-relaxed">
+                  {p.desc}
+                </p>
+                <ul className="space-y-1">
+                  {p.points.map((pt) => (
+                    <li
+                      key={pt}
+                      className="flex items-start gap-2 text-xs text-slate-600"
+                    >
+                      <CheckCircle2
+                        className={`w-3.5 h-3.5 mt-0.5 flex-shrink-0 ${p.accent}`}
+                      />
+                      {pt}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Section 3 — Recommended Platform Architecture */}
-      <section
-        className="section-padding"
-        style={{
-          background:
-            "linear-gradient(180deg, oklch(0.96 0.02 195) 0%, white 100%)",
-        }}
-      >
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            className="text-center mb-8"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+      {/* ── Architecture Visual ── */}
+      <section ref={archVis.ref} className="py-20 bg-white">
+        <div className="max-w-5xl mx-auto px-6">
+          <div
+            className={`transition-all duration-700 ${
+              archVis.visible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-8"
+            }`}
           >
-            <Badge className="mb-3 bg-blue-50 text-blue-700 border-blue-200">
-              Architecture
-            </Badge>
-            <h2 className="font-heading text-3xl font-bold text-foreground mb-3">
-              Recommended Platform Architecture
-            </h2>
-            <p className="text-muted-foreground">
-              A simplified three-tier architecture for an ABDM-ready hospital
-              platform.
+            <p className="text-xs font-semibold tracking-widest text-teal-600 uppercase mb-3">
+              System Design
             </p>
-          </motion.div>
-
-          {/* Layered Architecture Diagram */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="space-y-3"
-          >
-            {/* Tier 1 */}
-            <div className="rounded-xl border border-blue-200 bg-blue-600 p-4 text-center shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-wider text-blue-100 mb-1">
-                Tier 1 — Entry Layer
-              </p>
-              <p className="text-white font-heading font-bold text-lg">
-                Patient App / Registration Desk
-              </p>
-            </div>
-
-            {/* Arrow */}
-            <div className="flex items-center justify-center">
-              <div className="flex flex-col items-center gap-0.5">
-                <div className="w-0.5 h-4 bg-gray-300" />
-                <ChevronDown className="w-5 h-5 text-gray-400 -mt-1" />
-              </div>
-            </div>
-
-            {/* Tier 2 */}
-            <div className="rounded-xl border border-teal-200 bg-teal-600 p-4 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-wider text-teal-100 mb-2 text-center">
-                Tier 2 — Hospital Information System (HIS) Layer
-              </p>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {[
-                  "ABHA Management Module",
-                  "Consent Manager Integration",
-                  "Health Records Module (EHR)",
-                  "ABDM API Gateway",
-                ].map((m) => (
-                  <div
-                    key={m}
-                    className="bg-white/15 rounded-lg px-3 py-2 text-center"
-                  >
-                    <p className="text-white text-xs font-medium">{m}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Arrow */}
-            <div className="flex items-center justify-center">
-              <div className="flex flex-col items-center gap-0.5">
-                <div className="w-0.5 h-4 bg-gray-300" />
-                <ChevronDown className="w-5 h-5 text-gray-400 -mt-1" />
-              </div>
-            </div>
-
-            {/* Tier 3 */}
-            <div className="rounded-xl border border-indigo-200 bg-indigo-600 p-4 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-wider text-indigo-100 mb-2 text-center">
-                Tier 3 — ABDM Network Layer
-              </p>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {[
-                  "HIE — Health Information Exchange",
-                  "HFR Registry",
-                  "HPR Registry",
-                  "Consent Manager",
-                ].map((m) => (
-                  <div
-                    key={m}
-                    className="bg-white/15 rounded-lg px-3 py-2 text-center"
-                  >
-                    <p className="text-white text-xs font-medium">{m}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Existing SVG Diagram */}
-          <div className="mt-10 bg-white rounded-2xl border border-border shadow-sm overflow-hidden">
-            <div className="px-6 pt-5 pb-2 border-b border-border">
-              <h3 className="font-heading font-semibold text-foreground">
-                Integration Architecture
-              </h3>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                AI Health Zon's ABDM integration layer bridging all healthcare
-                participants.
-              </p>
-            </div>
-            <svg
-              viewBox="0 0 800 400"
-              className="w-full"
-              role="img"
-              aria-label="ABDM integration architecture diagram"
+            <h2
+              className="text-3xl md:text-4xl font-bold text-slate-900 mb-10"
+              style={{ fontFamily: "Playfair Display, Georgia, serif" }}
             >
-              <title>ABDM Integration Architecture</title>
-              <defs>
-                <linearGradient id="abdmBg" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#eff6ff" />
-                  <stop offset="100%" stopColor="#ecfdf5" />
-                </linearGradient>
-              </defs>
-              <rect width="800" height="400" fill="url(#abdmBg)" />
-
-              {/* NHA Central Box */}
-              <rect
-                x="300"
-                y="30"
-                width="200"
-                height="60"
-                rx="10"
-                fill="#1e40af"
-              />
-              <text
-                x="400"
-                y="55"
-                textAnchor="middle"
-                fill="white"
-                fontSize="12"
-                fontWeight="700"
-              >
-                NHA / ABDM Gateway
-              </text>
-              <text
-                x="400"
-                y="72"
-                textAnchor="middle"
-                fill="rgba(255,255,255,0.7)"
-                fontSize="9"
-              >
-                National Health Authority
-              </text>
-
-              {/* AI Health Zon Central */}
-              <rect
-                x="275"
-                y="160"
-                width="250"
-                height="70"
-                rx="12"
-                fill="#0d9488"
-              />
-              <text
-                x="400"
-                y="190"
-                textAnchor="middle"
-                fill="white"
-                fontSize="13"
-                fontWeight="800"
-              >
-                AI Health Zon Platform
-              </text>
-              <text
-                x="400"
-                y="207"
-                textAnchor="middle"
-                fill="rgba(255,255,255,0.7)"
-                fontSize="9"
-              >
-                HIP + HIU + Consent Manager
-              </text>
-              <text
-                x="400"
-                y="220"
-                textAnchor="middle"
-                fill="rgba(255,255,255,0.6)"
-                fontSize="8"
-              >
-                FHIR R4 • HL7 • ABDM Compliant
-              </text>
-
-              {/* Connecting line NHA to Platform */}
-              <line
-                x1="400"
-                y1="90"
-                x2="400"
-                y2="160"
-                stroke="#1e40af"
-                strokeWidth="2"
-                strokeDasharray="5 3"
-              />
-
-              {/* Stakeholder Boxes */}
-              {[
-                {
-                  x: 30,
-                  y: 280,
-                  label: "Hospitals",
-                  sub: "HIS/EMR",
-                  color: "#1e40af",
-                },
-                {
-                  x: 170,
-                  y: 280,
-                  label: "Labs",
-                  sub: "LIMS",
-                  color: "#0d9488",
-                },
-                {
-                  x: 310,
-                  y: 280,
-                  label: "Pharmacies",
-                  sub: "PMS",
-                  color: "#059669",
-                },
-                {
-                  x: 450,
-                  y: 280,
-                  label: "Insurers",
-                  sub: "Claims",
-                  color: "#d97706",
-                },
-                {
-                  x: 590,
-                  y: 280,
-                  label: "Patients",
-                  sub: "PHR App",
-                  color: "#dc2626",
-                },
-                {
-                  x: 700,
-                  y: 280,
-                  label: "Govt",
-                  sub: "PM-JAY",
-                  color: "#7c3aed",
-                },
-              ].map((box) => (
-                <g key={box.label}>
-                  <rect
-                    x={box.x}
-                    y={box.y}
-                    width="100"
-                    height="60"
-                    rx="8"
-                    fill="white"
-                    stroke={box.color}
-                    strokeWidth="1.5"
-                  />
-                  <text
-                    x={box.x + 50}
-                    y={box.y + 28}
-                    textAnchor="middle"
-                    fontSize="11"
-                    fontWeight="700"
-                    fill={box.color}
-                  >
-                    {box.label}
-                  </text>
-                  <text
-                    x={box.x + 50}
-                    y={box.y + 44}
-                    textAnchor="middle"
-                    fontSize="8"
-                    fill="#6b7280"
-                  >
-                    {box.sub}
-                  </text>
-                  <line
-                    x1={box.x + 50}
-                    y1={box.y}
-                    x2={400}
-                    y2={230}
-                    stroke={box.color}
-                    strokeWidth="1"
-                    strokeDasharray="4 3"
-                    opacity="0.6"
-                  />
-                </g>
-              ))}
-
-              {/* ABHA Badge */}
-              <rect
-                x="30"
-                y="160"
-                width="120"
-                height="50"
-                rx="8"
-                fill="#f0fdf4"
-                stroke="#16a34a"
-                strokeWidth="1.5"
-              />
-              <text
-                x="90"
-                y="182"
-                textAnchor="middle"
-                fontSize="10"
-                fontWeight="700"
-                fill="#16a34a"
-              >
-                ABHA Registry
-              </text>
-              <text
-                x="90"
-                y="198"
-                textAnchor="middle"
-                fontSize="8"
-                fill="#6b7280"
-              >
-                14-digit Health ID
-              </text>
-              <line
-                x1="150"
-                y1="185"
-                x2="275"
-                y2="195"
-                stroke="#16a34a"
-                strokeWidth="1.5"
-                strokeDasharray="4 3"
-              />
-
-              {/* HFR + HPR */}
-              <rect
-                x="650"
-                y="160"
-                width="120"
-                height="50"
-                rx="8"
-                fill="#fffbeb"
-                stroke="#d97706"
-                strokeWidth="1.5"
-              />
-              <text
-                x="710"
-                y="180"
-                textAnchor="middle"
-                fontSize="9"
-                fontWeight="700"
-                fill="#d97706"
-              >
-                HFR + HPR
-              </text>
-              <text
-                x="710"
-                y="196"
-                textAnchor="middle"
-                fontSize="7.5"
-                fill="#6b7280"
-              >
-                Facility & Professional Registry
-              </text>
-              <line
-                x1="650"
-                y1="185"
-                x2="525"
-                y2="195"
-                stroke="#d97706"
-                strokeWidth="1.5"
-                strokeDasharray="4 3"
-              />
-            </svg>
-          </div>
-        </div>
-      </section>
-
-      {/* Section 4 — 6 Essential Modules */}
-      <section className="section-padding bg-white">
-        <div className="max-w-6xl mx-auto">
-          <motion.div
-            className="text-center mb-10"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <Badge className="mb-3 bg-green-50 text-green-700 border-green-200">
-              Platform Modules
-            </Badge>
-            <h2 className="font-heading text-3xl font-bold text-foreground mb-3">
-              6 Essential Modules
+              ABDM Architecture: 3-Tier Stack
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              To be ABDM compliant, your hospital system should include these
-              core modules covering every aspect of digital health integration.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {essentialModules.map((mod, i) => {
-              const Icon = mod.icon;
-              return (
-                <motion.div
-                  key={mod.title}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="bg-white rounded-xl p-6 border border-border shadow-xs hover:shadow-md transition-shadow"
+            <div className="grid md:grid-cols-3 gap-0 rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
+              <div className="bg-teal-900 text-white p-8">
+                <div className="text-xs tracking-widest text-teal-300 uppercase mb-3">
+                  Layer 1
+                </div>
+                <div
+                  className="text-xl font-bold mb-3"
+                  style={{ fontFamily: "Playfair Display, Georgia, serif" }}
                 >
-                  <div
-                    className={`w-11 h-11 rounded-xl ${mod.bg} flex items-center justify-center mb-4`}
-                  >
-                    <Icon className={`w-5 h-5 ${mod.color}`} />
-                  </div>
-                  <h3 className="font-heading font-bold text-foreground mb-3">
-                    {mod.title}
-                  </h3>
-                  <ul className="space-y-1.5">
-                    {mod.items.map((item) => (
-                      <li
-                        key={item}
-                        className="flex items-center gap-2 text-sm"
-                      >
-                        <CheckCircle2
-                          className={`w-3.5 h-3.5 ${mod.color} shrink-0`}
-                        />
-                        <span className="text-foreground">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Section 5 — Technical Requirements */}
-      <section
-        className="section-padding"
-        style={{
-          background:
-            "linear-gradient(135deg, oklch(0.97 0.015 240) 0%, oklch(0.97 0.015 195) 100%)",
-        }}
-      >
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            className="text-center mb-10"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <Badge className="mb-3 bg-amber-50 text-amber-700 border-amber-200">
-              Technical
-            </Badge>
-            <h2 className="font-heading text-3xl font-bold text-foreground mb-3">
-              Technical Requirements
-            </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Developers must support these APIs, security protocols, and data
-              standards to build a fully ABDM-compliant platform.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {techRequirements.map((req, i) => {
-              const Icon = req.icon;
-              return (
-                <motion.div
-                  key={req.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="bg-white rounded-xl p-6 border border-border shadow-xs"
+                  Hospital Systems
+                </div>
+                <ul className="space-y-2 text-sm text-teal-100">
+                  {[
+                    "HIS / EMR",
+                    "Laboratory Systems",
+                    "Pharmacy Mgmt",
+                    "PACS / Radiology",
+                    "Billing & Claims",
+                  ].map((i) => (
+                    <li key={i} className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-teal-400" />
+                      {i}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="bg-blue-800 text-white p-8 border-x border-blue-700">
+                <div className="text-xs tracking-widest text-blue-300 uppercase mb-3">
+                  Layer 2
+                </div>
+                <div
+                  className="text-xl font-bold mb-3"
+                  style={{ fontFamily: "Playfair Display, Georgia, serif" }}
                 >
-                  <div
-                    className={`w-12 h-12 rounded-xl ${req.bg} flex items-center justify-center mb-4`}
-                  >
-                    <Icon className={`w-6 h-6 ${req.color}`} />
-                  </div>
-                  <h3
-                    className={`font-heading font-bold text-lg mb-4 ${req.color}`}
-                  >
-                    {req.title}
-                  </h3>
-                  <ul className="space-y-2">
-                    {req.items.map((item) => (
-                      <li key={item} className="flex items-start gap-2 text-sm">
-                        <CheckCircle2
-                          className={`w-4 h-4 ${req.color} mt-0.5 shrink-0`}
-                        />
-                        <span className="text-foreground">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  {req.title === "Data Standards (FHIR)" && (
-                    <div className="mt-4 p-3 bg-teal-50 rounded-lg border border-teal-100">
-                      <p className="text-xs font-semibold text-teal-700 mb-1">
-                        FHIR Record Structure
-                      </p>
-                      <code className="text-xs text-teal-600 font-mono block">
-                        Patient → Encounter → Observation → Medication →
-                        DiagnosticReport
-                      </code>
-                    </div>
-                  )}
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Section 6 — Implementation Roadmap */}
-      <section className="section-padding bg-white">
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            className="text-center mb-10"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <Badge className="mb-3 bg-indigo-50 text-indigo-700 border-indigo-200">
-              Roadmap
-            </Badge>
-            <h2 className="font-heading text-3xl font-bold text-foreground mb-3">
-              Implementation Roadmap
-            </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              A phased approach to ABDM integration — from foundation to full
-              digital health ecosystem.
-            </p>
-          </motion.div>
-
-          {/* Phase timeline */}
-          <div className="relative">
-            {/* Connector line */}
-            <div className="hidden md:block absolute top-8 left-[16.66%] right-[16.66%] h-0.5 bg-gradient-to-r from-blue-300 via-teal-300 to-indigo-300" />
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {roadmapPhases.map((phase, i) => (
-                <motion.div
-                  key={phase.phase}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.15 }}
-                  className={`bg-white rounded-xl border ${phase.border} p-6 shadow-xs relative`}
+                  ABDM Gateway
+                </div>
+                <ul className="space-y-2 text-sm text-blue-100">
+                  {[
+                    "ABHA Identity API",
+                    "Consent Manager",
+                    "HIE-CM Bridge",
+                    "FHIR Translator",
+                    "Audit & Logging",
+                  ].map((i) => (
+                    <li key={i} className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                      {i}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="bg-slate-800 text-white p-8">
+                <div className="text-xs tracking-widest text-slate-300 uppercase mb-3">
+                  Layer 3
+                </div>
+                <div
+                  className="text-xl font-bold mb-3"
+                  style={{ fontFamily: "Playfair Display, Georgia, serif" }}
                 >
-                  {/* Phase badge */}
-                  <div className="flex items-center gap-3 mb-4">
-                    <div
-                      className={`w-10 h-10 rounded-full ${phase.color} text-white text-sm font-bold flex items-center justify-center shadow-sm`}
-                    >
-                      {i + 1}
-                    </div>
-                    <div>
-                      <p className={`text-xs font-semibold ${phase.text}`}>
-                        {phase.phase}
-                      </p>
-                      <p className="font-heading font-bold text-foreground">
-                        {phase.title}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Milestone badge */}
-                  <span
-                    className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${phase.light} ${phase.text} border ${phase.border} mb-4`}
-                  >
-                    {phase.milestone}
-                  </span>
-
-                  <ul className="space-y-2">
-                    {phase.items.map((item) => (
-                      <li key={item} className="flex items-start gap-2 text-sm">
-                        <CheckCircle2
-                          className={`w-4 h-4 ${phase.text} mt-0.5 shrink-0`}
-                        />
-                        <span className="text-foreground">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </motion.div>
-              ))}
+                  National Services
+                </div>
+                <ul className="space-y-2 text-sm text-slate-200">
+                  {[
+                    "NHA ABDM Platform",
+                    "NHCX Exchange",
+                    "HFR / HPR Registries",
+                    "PHR App Ecosystem",
+                    "NHA Analytics",
+                  ].map((i) => (
+                    <li key={i} className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                      {i}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Section 7 — Business Benefits */}
+      {/* ── Policy Timeline ── */}
       <section
-        className="section-padding"
-        style={{
-          background:
-            "linear-gradient(180deg, oklch(0.96 0.02 195) 0%, white 100%)",
-        }}
+        ref={timelineVis.ref}
+        className="py-20 bg-gradient-to-br from-slate-50 to-teal-50/20"
       >
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            className="text-center mb-10"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+        <div className="max-w-4xl mx-auto px-6">
+          <div
+            className={`transition-all duration-700 ${
+              timelineVis.visible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-8"
+            }`}
           >
-            <Badge className="mb-3 bg-teal-50 text-teal-700 border-teal-200">
-              Business Impact
-            </Badge>
-            <h2 className="font-heading text-3xl font-bold text-foreground mb-3">
-              Business Benefits
-            </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              ABDM integration delivers measurable improvements across revenue,
-              clinical quality, and operational efficiency.
+            <p className="text-xs font-semibold tracking-widest text-teal-600 uppercase mb-3">
+              Policy Journey
             </p>
-          </motion.div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {businessBenefits.map((b, i) => {
-              const Icon = b.icon;
-              return (
-                <motion.div
-                  key={b.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="bg-white rounded-xl p-6 border border-border shadow-xs"
-                >
+            <h2
+              className="text-3xl md:text-4xl font-bold text-slate-900 mb-12"
+              style={{ fontFamily: "Playfair Display, Georgia, serif" }}
+            >
+              India&apos;s Digital Health Timeline
+            </h2>
+            <div className="relative">
+              <div className="absolute left-16 top-0 bottom-0 w-px bg-teal-200" />
+              <div className="space-y-8">
+                {timeline.map((item, i) => (
                   <div
-                    className={`w-12 h-12 rounded-xl ${b.bg} flex items-center justify-center mb-4`}
+                    key={item.year}
+                    className={`flex gap-6 transition-all duration-500 ${
+                      timelineVis.visible
+                        ? "opacity-100 translate-x-0"
+                        : "opacity-0 -translate-x-4"
+                    }`}
+                    style={{ transitionDelay: `${i * 80}ms` }}
                   >
-                    <Icon className={`w-6 h-6 ${b.color}`} />
-                  </div>
-                  <h3 className="font-heading font-bold text-foreground mb-3">
-                    {b.title}
-                  </h3>
-                  <ul className="space-y-2">
-                    {b.items.map((item) => (
-                      <li key={item} className="flex items-start gap-2 text-sm">
-                        <CheckCircle2
-                          className={`w-4 h-4 ${b.color} mt-0.5 shrink-0`}
-                        />
-                        <span className="text-foreground">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Section 8 — Opportunity: Digital Health Command Centre */}
-      <section className="section-padding bg-white">
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="rounded-2xl overflow-hidden border border-teal-200 shadow-md"
-            style={{
-              background: "linear-gradient(135deg, #0d9488 0%, #0ea5e9 100%)",
-            }}
-          >
-            <div className="p-8 sm:p-10">
-              <div className="flex items-start gap-4 mb-6">
-                <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
-                  <Star className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <span className="inline-block px-3 py-1 bg-white/20 rounded-full text-white/80 text-xs font-semibold uppercase tracking-wider mb-2">
-                    Opportunity
-                  </span>
-                  <h2 className="font-heading text-2xl sm:text-3xl font-bold text-white">
-                    Your AI Health Zon Platform as a Digital Health Command
-                    Centre
-                  </h2>
-                </div>
-              </div>
-
-              <p className="text-white/80 text-base mb-6 leading-relaxed">
-                Your platform could become a{" "}
-                <strong className="text-white">
-                  Digital Health Command Centre
-                </strong>{" "}
-                — a national healthcare infrastructure platform for hospitals,
-                providing end-to-end digital health services.
-              </p>
-
-              <div className="grid sm:grid-cols-2 gap-3 mb-8">
-                {commandCentreFeatures.map((f) => (
-                  <div
-                    key={f}
-                    className="flex items-center gap-2.5 bg-white/10 rounded-lg px-4 py-2.5"
-                  >
-                    <CheckCircle2 className="w-4 h-4 text-white/80 shrink-0" />
-                    <span className="text-white text-sm font-medium">{f}</span>
+                    <div className="w-14 flex-shrink-0 text-right">
+                      <span className="text-sm font-bold text-teal-600">
+                        {item.year}
+                      </span>
+                    </div>
+                    <div className="relative flex-shrink-0 mt-1">
+                      <div className="w-3 h-3 rounded-full bg-teal-500 ring-4 ring-teal-100" />
+                    </div>
+                    <div className="pb-2">
+                      <div className="font-semibold text-slate-900 text-sm mb-1">
+                        {item.title}
+                      </div>
+                      <div className="text-slate-500 text-sm leading-relaxed">
+                        {item.desc}
+                      </div>
+                      <div className="border-t border-slate-100 mt-4" />
+                    </div>
                   </div>
                 ))}
               </div>
-
-              <div className="bg-white/15 rounded-xl p-4 border border-white/20">
-                <p className="text-white font-semibold text-sm">
-                  🚀 This could become a national healthcare infrastructure
-                  platform for hospitals — combining ABDM compliance with
-                  AI-powered revenue intelligence.
-                </p>
-              </div>
-
-              <div className="flex flex-wrap gap-3 mt-6">
-                <a
-                  href="/join-network"
-                  data-ocid="abdm.command_centre.primary_button"
-                  className="inline-flex items-center gap-2 bg-white text-teal-700 font-semibold px-6 py-2.5 rounded-xl hover:bg-teal-50 transition-colors text-sm"
-                >
-                  Get Started
-                  <ArrowRight className="w-4 h-4" />
-                </a>
-                <a
-                  href="/claim-command-centre"
-                  data-ocid="abdm.command_centre.secondary_button"
-                  className="inline-flex items-center gap-2 bg-white/20 text-white font-semibold px-6 py-2.5 rounded-xl hover:bg-white/30 transition-colors text-sm border border-white/30"
-                >
-                  Explore Command Centre
-                  <Key className="w-4 h-4" />
-                </a>
-              </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* Section 9 — Benefits by Stakeholder (existing) */}
-      <section
-        className="section-padding"
-        style={{
-          background:
-            "linear-gradient(180deg, oklch(0.96 0.02 240) 0%, white 100%)",
-        }}
-      >
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            className="text-center mb-8"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+      {/* ── Integration Roadmap ── */}
+      <section ref={roadmapVis.ref} className="py-20 bg-white">
+        <div className="max-w-5xl mx-auto px-6">
+          <div
+            className={`mb-12 transition-all duration-700 ${
+              roadmapVis.visible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-8"
+            }`}
           >
-            <h2 className="font-heading text-3xl font-bold text-foreground mb-3">
-              ABDM Benefits by Stakeholder
-            </h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">
-              How ABDM integration delivers value across the entire healthcare
-              ecosystem.
+            <p className="text-xs font-semibold tracking-widest text-teal-600 uppercase mb-3">
+              Implementation Guide
             </p>
-          </motion.div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {benefits.map((b, i) => {
-              const Icon = b.icon;
-              return (
-                <motion.div
-                  key={b.stakeholder}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="bg-white rounded-xl p-6 border border-border shadow-xs"
+            <h2
+              className="text-3xl md:text-4xl font-bold text-slate-900 mb-4"
+              style={{ fontFamily: "Playfair Display, Georgia, serif" }}
+            >
+              Hospital Integration Roadmap
+            </h2>
+            <p className="text-slate-500 max-w-xl">
+              A phased approach designed for minimal disruption while achieving
+              full ABDM compliance within 12 months.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {phases.map((ph, i) => (
+              <div
+                key={ph.phase}
+                className={`bg-gradient-to-br from-slate-50 to-${ph.color}-50/50 rounded-2xl border border-${ph.color}-100 p-6 transition-all duration-500 ${
+                  roadmapVis.visible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-8"
+                }`}
+                style={{ transitionDelay: `${i * 100}ms` }}
+                data-ocid={`abdm.roadmap.card.${i + 1}`}
+              >
+                <div
+                  className={`text-xs font-bold tracking-widest text-${ph.color}-600 uppercase mb-1`}
                 >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div
-                      className={`w-10 h-10 rounded-xl ${b.bg} flex items-center justify-center`}
+                  {ph.phase}
+                </div>
+                <div
+                  className="text-xl font-bold text-slate-900 mb-1"
+                  style={{ fontFamily: "Playfair Display, Georgia, serif" }}
+                >
+                  {ph.timeline}
+                </div>
+                <div className="border-t border-slate-200 my-4" />
+                <ul className="space-y-2">
+                  {ph.steps.map((s) => (
+                    <li
+                      key={s}
+                      className="flex items-start gap-2 text-sm text-slate-600"
                     >
-                      <Icon className={`w-5 h-5 ${b.color}`} />
-                    </div>
-                    <h3 className="font-heading font-bold text-foreground">
-                      {b.stakeholder}
-                    </h3>
+                      <CheckCircle2
+                        className={`w-4 h-4 flex-shrink-0 mt-0.5 text-${ph.color}-500`}
+                      />
+                      {s}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Business Benefits Band ── */}
+      <section
+        ref={benefitsVis.ref}
+        className="py-20 bg-gradient-to-r from-slate-900 to-teal-900"
+      >
+        <div className="max-w-5xl mx-auto px-6">
+          <div
+            className={`transition-all duration-700 ${
+              benefitsVis.visible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-8"
+            }`}
+          >
+            <p className="text-xs font-semibold tracking-widest text-teal-300 uppercase mb-3">
+              Why It Matters
+            </p>
+            <h2
+              className="text-3xl md:text-4xl font-bold text-white mb-12"
+              style={{ fontFamily: "Playfair Display, Georgia, serif" }}
+            >
+              Business Benefits for Hospitals
+            </h2>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {benefits.map((b, i) => (
+                <div
+                  key={b.title}
+                  className={`bg-white/10 rounded-2xl border border-white/20 p-6 transition-all duration-500 ${
+                    benefitsVis.visible
+                      ? "opacity-100 translate-y-0"
+                      : "opacity-0 translate-y-8"
+                  }`}
+                  style={{ transitionDelay: `${i * 80}ms` }}
+                >
+                  <div className="text-teal-300 mb-3">{b.icon}</div>
+                  <div className="font-bold text-white mb-2">{b.title}</div>
+                  <div className="text-sm text-slate-300 leading-relaxed">
+                    {b.desc}
                   </div>
-                  <ul className="space-y-2">
-                    {b.items.map((item) => (
-                      <li key={item} className="flex items-start gap-2 text-sm">
-                        <CheckCircle2
-                          className={`w-4 h-4 ${b.color} mt-0.5 shrink-0`}
-                        />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </motion.div>
-              );
-            })}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA ── */}
+      <section ref={ctaVis.ref} className="py-24 bg-white">
+        <div
+          className={`max-w-3xl mx-auto px-6 text-center transition-all duration-700 ${
+            ctaVis.visible
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-8"
+          }`}
+        >
+          <Globe className="w-12 h-12 text-teal-500 mx-auto mb-5" />
+          <h2
+            className="text-3xl md:text-4xl font-bold text-slate-900 mb-4"
+            style={{ fontFamily: "Playfair Display, Georgia, serif" }}
+          >
+            Start Your ABDM Integration Journey
+          </h2>
+          <p className="text-slate-500 mb-8 text-lg">
+            Join 3,00,000+ registered facilities on India's national digital
+            health backbone. Our certified team handles end-to-end ABDM
+            compliance.
+          </p>
+          <div className="flex flex-wrap gap-4 justify-center">
+            <Link to="/join-network">
+              <Button
+                data-ocid="abdm.cta.primary_button"
+                size="lg"
+                className="bg-teal-600 hover:bg-teal-500 text-white rounded-full px-8"
+              >
+                Book a Free Demo <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+            </Link>
+            <Link to="/nhcx">
+              <Button
+                data-ocid="abdm.cta.secondary_button"
+                size="lg"
+                variant="outline"
+                className="rounded-full px-8 border-slate-300 text-slate-700 hover:bg-slate-50"
+              >
+                Explore NHCX Page
+              </Button>
+            </Link>
           </div>
         </div>
       </section>

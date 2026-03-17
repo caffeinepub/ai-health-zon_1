@@ -359,6 +359,16 @@ export function CommandCentre() {
         </div>
       </section>
 
+      {/* Hero Image */}
+      <div className="bg-slate-900 px-4 pb-8">
+        <img
+          src="/assets/generated/hero-command-centre-ai-health-zon.dim_1200x600.jpg"
+          alt="Claim Command Centre real-time dashboard"
+          className="w-full max-w-4xl mx-auto rounded-2xl object-cover shadow-2xl"
+          style={{ aspectRatio: "16/7" }}
+        />
+      </div>
+
       {/* KPI Cards */}
       <section className="section-padding bg-background">
         <div className="max-w-7xl mx-auto">

@@ -175,6 +175,18 @@ export function InsightDetail() {
         </div>
       </section>
 
+      {/* Hero Image */}
+      {article.heroImage && (
+        <div className="max-w-3xl mx-auto px-4 -mt-6 pb-2">
+          <img
+            src={article.heroImage}
+            alt={article.title}
+            className="w-full rounded-xl object-cover shadow-lg"
+            style={{ maxHeight: "320px" }}
+          />
+        </div>
+      )}
+
       {/* Article Body */}
       <section className="py-12 bg-background">
         <div className="max-w-3xl mx-auto px-4">

@@ -8,6 +8,7 @@ export interface InsightArticle {
   readTime: string;
   content: ArticleSection[];
   tags: string[];
+  heroImage?: string;
 }
 
 export interface ArticleSection {
@@ -302,18 +303,19 @@ export const insightArticles: InsightArticle[] = [
   },
   {
     id: 4,
-    title: "How Apollo Reach Achieved 98% Clean Claim Rate",
+    title: "How AI Hospital Achieved 98% Clean Claim Rate",
     summary:
-      "Apollo Reach Hospital's transformation story: from 68% to 98% clean claim rate in 6 months using AI Health Zon's RCM automation platform.",
+      "AI Hospital's transformation story: from 68% to 98% clean claim rate in 6 months using AI Health Zon's RCM automation platform.",
     author: "Case Study Team",
     date: "Jan 20, 2026",
     category: "Case Study",
     readTime: "10 min read",
-    tags: ["Apollo Reach", "Clean Claims", "RCM Automation", "Success Story"],
+    tags: ["AI Hospital", "Clean Claims", "RCM Automation", "Success Story"],
+    heroImage: "/assets/generated/ai-hospital-hero.dim_1200x600.jpg",
     content: [
       {
         type: "paragraph",
-        text: "Apollo Reach Hospitals, a network of 13 secondary care hospitals focused on Tier 2 and Tier 3 cities, faced a critical revenue cycle crisis in early 2025. Despite strong clinical outcomes and high patient volumes, their insurance billing performance was severely hampering financial sustainability.",
+        text: "AI Hospital Network, a network of 13 secondary care hospitals focused on Tier 2 and Tier 3 cities, faced a critical revenue cycle crisis in early 2025. Despite strong clinical outcomes and high patient volumes, their insurance billing performance was severely hampering financial sustainability.",
       },
       {
         type: "heading",
@@ -321,7 +323,7 @@ export const insightArticles: InsightArticle[] = [
       },
       {
         type: "paragraph",
-        text: "Before engaging AI Health Zon, Apollo Reach's RCM metrics were alarming. The billing team was processing 4,500 insurance claims monthly across 13 hospitals, with a clean claim rate of just 68% — meaning nearly one in three claims required rework before payment.",
+        text: "Before engaging AI Health Zon, AI Hospital's RCM metrics were alarming. The billing team was processing 4,500 insurance claims monthly across 13 hospitals, with a clean claim rate of just 68% — meaning nearly one in three claims required rework before payment.",
       },
       {
         type: "stat-grid",
@@ -338,7 +340,7 @@ export const insightArticles: InsightArticle[] = [
       },
       {
         type: "paragraph",
-        text: "AI Health Zon's implementation team conducted a comprehensive 3-week RCM audit across all 13 Apollo Reach hospitals. The root causes were identified across four key areas:",
+        text: "AI Health Zon's implementation team conducted a comprehensive 3-week RCM audit across all 13 AI Hospital hospitals. The root causes were identified across four key areas:",
       },
       {
         type: "bullet-list",
@@ -356,7 +358,7 @@ export const insightArticles: InsightArticle[] = [
       },
       {
         type: "paragraph",
-        text: "Over 6 months, AI Health Zon deployed its full RCM automation suite across all 13 Apollo Reach hospitals. The implementation was phased to minimize operational disruption.",
+        text: "Over 6 months, AI Health Zon deployed its full RCM automation suite across all 13 AI Hospital hospitals. The implementation was phased to minimize operational disruption.",
       },
       {
         type: "numbered-list",
@@ -383,7 +385,7 @@ export const insightArticles: InsightArticle[] = [
       },
       {
         type: "highlight-box",
-        text: '"AI Health Zon transformed our RCM in ways we didn\'t think were possible in just 6 months. The 98% clean claim rate has fundamentally changed our cash flow and financial stability." — CFO, Apollo Reach Hospitals',
+        text: '"AI Health Zon transformed our RCM in ways we didn\'t think were possible in just 6 months. The 98% clean claim rate has fundamentally changed our cash flow and financial stability." — CFO, AI Hospital Network',
       },
     ],
   },

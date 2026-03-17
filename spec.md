@@ -1,24 +1,26 @@
 # AI Health Zon
 
 ## Current State
-Homepage hero section uses an animated mesh gradient background with glassmorphism split layout. No video background present.
+The homepage (`CurrentAffairs.tsx`) is a McKinsey-style editorial layout covering Indian healthcare revolution, transformation pillars, news, stats, governance, and CTA. There is an existing `MissionVision.tsx` component and `AboutSection.tsx` but they are not integrated into the homepage in a prominent, detailed way.
 
 ## Requested Changes (Diff)
 
 ### Add
-- YouTube video background (`nlRl-V2lvSg`) in the hero section, absolutely positioned behind all content, autoplaying muted and looping
-- Semi-transparent dark overlay on top of the video to maintain text readability
+- **Mission & Vision section** on the homepage: Clear, bold Mission statement ("Transforming hospital revenue integrity for every Indian patient") and Vision statement ("A fully digital, financially sustainable Indian healthcare system by 2030"), with supporting sub-points and a visual divider.
+- **Future Prospective for Hospitals section**: Forward-looking 3–4 card layout covering 2025–2030 trends — AI-driven claim automation, value-based care, ABDM/NHCX ecosystem, and revenue intelligence.
+- **AI Health Zon Impact section**: Stats + narrative on the real-world impact (claims processed, clean claim rate, hospitals onboarded, revenue recovered), with a brief "How AI Health Zon is creating impact" editorial block.
+- **Visionary Impact of Amit Mansingh section**: A dedicated founder spotlight card with name, title (Founder & CEO, Triple Top Pattern Health Pvt. Ltd.), a short bio drawn from his LinkedIn background (healthcare revenue management expert, 15+ years, NABH/NHCX/ABDM specialist, ex-hospital administrator, thought leader), key contributions/vision points, LinkedIn link, and a professional avatar/generated image.
 
 ### Modify
-- Hero section: keep existing layout, text, buttons, and KPI card; add video as a background layer beneath all content
-- Reduce or remove the gradient blobs since the video provides the background visual
+- `CurrentAffairs.tsx`: Insert the four new sections between the governance section and the existing future outlook/CTA sections.
 
 ### Remove
-- Nothing removed
+- Nothing removed.
 
 ## Implementation Plan
-1. Inside the hero `<section>` (line ~1330 in HomeDashboard.tsx), add an absolutely positioned `<div>` as the first child containing a YouTube iframe embed with params: `autoplay=1&mute=1&loop=1&controls=0&showinfo=0&rel=0&modestbranding=1&playlist=nlRl-V2lvSg`
-2. Style the iframe container: `absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0`, with the iframe scaled up (scale-150 or similar) to cover without letterboxing
-3. Add a semi-transparent overlay div (`absolute inset-0 bg-black/50 z-0`) for text contrast
-4. Ensure all existing content has `relative z-10` or higher z-index
-5. Adjust hero section background to transparent or minimal so video shows through
+1. Generate a professional portrait-style image for Amit Mansingh founder spotlight.
+2. Add Mission & Vision section to `CurrentAffairs.tsx`.
+3. Add Future Prospective cards section.
+4. Add AI Health Zon Impact section with animated stats.
+5. Add Amit Mansingh Visionary Impact section with LinkedIn link.
+6. Validate and build.

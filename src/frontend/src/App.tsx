@@ -18,6 +18,11 @@ import { JourneyFilm } from "./pages/JourneyFilm";
 import { NHCX } from "./pages/NHCX";
 import { PatientSupport } from "./pages/PatientSupport";
 import { TrainingGame } from "./pages/TrainingGame";
+import { ClaimAuditTemplates } from "./pages/training/ClaimAuditTemplates";
+import { ClaimBibleManual } from "./pages/training/ClaimBibleManual";
+import { CleanClaimChecklist } from "./pages/training/CleanClaimChecklist";
+import { DepartmentMatrix } from "./pages/training/DepartmentMatrix";
+import { InvestigationJustification } from "./pages/training/InvestigationJustification";
 
 // Root route
 const rootRoute = createRootRoute({
@@ -91,6 +96,33 @@ const nhcxRoute = createRoute({
   component: NHCX,
 });
 
+// Training Materials routes
+const claimBibleRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/training-materials/claim-bible",
+  component: ClaimBibleManual,
+});
+const cleanClaimChecklistRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/training-materials/clean-claim-checklist",
+  component: CleanClaimChecklist,
+});
+const claimAuditTemplatesRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/training-materials/claim-audit-templates",
+  component: ClaimAuditTemplates,
+});
+const departmentMatrixRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/training-materials/department-responsibility-matrix",
+  component: DepartmentMatrix,
+});
+const investigationJustificationRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/training-materials/investigation-justification",
+  component: InvestigationJustification,
+});
+
 const routeTree = rootRoute.addChildren([
   currentAffairsRoute,
   hospitalsRoute,
@@ -105,6 +137,11 @@ const routeTree = rootRoute.addChildren([
   aiCourseRoute,
   journeyFilmRoute,
   nhcxRoute,
+  claimBibleRoute,
+  cleanClaimChecklistRoute,
+  claimAuditTemplatesRoute,
+  departmentMatrixRoute,
+  investigationJustificationRoute,
 ]);
 
 const router = createRouter({ routeTree });

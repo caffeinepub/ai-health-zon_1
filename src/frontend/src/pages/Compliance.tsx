@@ -205,6 +205,15 @@ export function Compliance() {
               ))}
             </div>
           </motion.div>
+          {/* Hero Image */}
+          <div className="mt-8 px-4 pb-8">
+            <img
+              src="/assets/generated/hero-compliance-ai-health-zon.dim_1200x600.jpg"
+              alt="NABH compliance and hospital accreditation"
+              className="w-full max-w-4xl mx-auto rounded-2xl object-cover shadow-2xl"
+              style={{ aspectRatio: "16/7" }}
+            />
+          </div>
         </div>
       </section>
 

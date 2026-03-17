@@ -424,6 +424,11 @@ export function AICourse() {
       >
         {/* Gradient background */}
         <div className="absolute inset-0 health-gradient" />
+        <img
+          src="/assets/generated/hero-ai-technology-ai-health-zon.dim_1200x600.jpg"
+          alt="AI Health Zon AI Course"
+          className="absolute inset-0 w-full h-full object-cover opacity-30"
+        />
         <div
           className="absolute inset-0 opacity-20"
           style={{

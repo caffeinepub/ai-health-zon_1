@@ -1,821 +1,746 @@
 import { Layout } from "@/components/layout/Layout";
-import { DemoBookingDialog } from "@/components/shared/DemoBookingDialog";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Link } from "@tanstack/react-router";
 import {
-  Activity,
-  AlertCircle,
-  AlertTriangle,
   ArrowRight,
+  BarChart3,
   CheckCircle2,
-  ClipboardList,
-  DollarSign,
-  FileText,
-  type Heart,
-  Layers,
+  Clock,
+  CreditCard,
+  FileSearch,
+  LineChart,
   Shield,
-  Stethoscope,
-  Syringe,
-  UserCheck,
+  TrendingDown,
+  TrendingUp,
   Zap,
 } from "lucide-react";
-import { motion } from "motion/react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-const painPoints = [
-  {
-    icon: AlertCircle,
-    title: "Delayed Claim Settlements",
-    description:
-      "Average 45-90 days settlement cycle causing severe cash flow issues for hospitals.",
-    color: "text-red-600",
-    bg: "bg-red-50",
-  },
-  {
-    icon: Layers,
-    title: "Manual Processes",
-    description:
-      "Paper-based billing, manual data entry, and redundant workflows consuming staff time.",
-    color: "text-orange-600",
-    bg: "bg-orange-50",
-  },
-  {
-    icon: Shield,
-    title: "NABH Compliance Burden",
-    description:
-      "Complex NABH 6th edition requirements with constant audit pressure and documentation needs.",
-    color: "text-amber-600",
-    bg: "bg-amber-50",
-  },
-  {
-    icon: DollarSign,
-    title: "Cash Flow Issues",
-    description:
-      "High pending receivables, unbilled services, and delayed reconciliation impacting operations.",
-    color: "text-yellow-600",
-    bg: "bg-yellow-50",
-  },
-  {
-    icon: FileText,
-    title: "Documentation Errors",
-    description:
-      "ICD coding mistakes, missing documents, and incomplete discharge summaries causing rejections.",
-    color: "text-blue-600",
-    bg: "bg-blue-50",
-  },
-  {
-    icon: AlertTriangle,
-    title: "Insurance Complexities",
-    description:
-      "Multiple insurer protocols, varying pre-auth requirements, and unpredictable rejection patterns.",
-    color: "text-purple-600",
-    bg: "bg-purple-50",
-  },
-];
-
-const solutions = [
-  {
-    icon: Activity,
-    title: "RCM Automation",
-    description:
-      "Automated billing, coding, and claims submission with AI-powered error detection.",
-    color: "text-blue-600",
-    bg: "bg-blue-50",
-  },
-  {
-    icon: UserCheck,
-    title: "Pre-Auth Management",
-    description:
-      "Streamlined pre-authorization workflows with insurer-specific templates and auto-follow ups.",
-    color: "text-teal-600",
-    bg: "bg-teal-50",
-  },
-  {
-    icon: Activity,
-    title: "Real-time Claim Tracking",
-    description:
-      "Live claim status dashboard with instant notifications on approvals, pending, and rejections.",
-    color: "text-green-600",
-    bg: "bg-green-50",
-  },
-  {
-    icon: Shield,
-    title: "NABH Compliance Tools",
-    description:
-      "Digital checklists, audit preparation workflows, and quality indicators monitoring.",
-    color: "text-amber-600",
-    bg: "bg-amber-50",
-  },
-  {
-    icon: DollarSign,
-    title: "Financial Analytics",
-    description:
-      "Revenue forecasting, denial trend analysis, and department-wise financial performance.",
-    color: "text-indigo-600",
-    bg: "bg-indigo-50",
-  },
-  {
-    icon: ClipboardList,
-    title: "Staff Training",
-    description:
-      "Regular training modules on coding, documentation standards, and insurance protocols.",
-    color: "text-purple-600",
-    bg: "bg-purple-50",
-  },
-];
-
-const beforeAfter = [
-  { area: "Claim Settlement Time", before: "45-90 days", after: "15-21 days" },
-  { area: "Clean Claim Rate", before: "65-70%", after: "93-97%" },
-  { area: "Denial Rate", before: "18-25%", after: "3-7%" },
-  {
-    area: "Pre-Auth Processing",
-    before: "3-5 business days",
-    after: "Same day",
-  },
-  {
-    area: "Documentation Errors",
-    before: "High (manual)",
-    after: "Near-zero (automated)",
-  },
-  {
-    area: "NABH Audit Readiness",
-    before: "Reactive",
-    after: "Continuous (real-time)",
-  },
-  {
-    area: "Revenue Recovery",
-    before: "Manual follow-up",
-    after: "Automated escalation",
-  },
-  { area: "Staff Productivity", before: "Baseline", after: "+40% efficiency" },
-];
-
-const journeyStages = [
-  {
-    icon: UserCheck,
-    title: "Discovery",
-    description:
-      "Identifying the right healthcare provider and verifying insurance coverage.",
-    tags: ["Provider Search", "Insurance Check", "Eligibility"],
-    side: "left",
-  },
-  {
-    icon: FileText,
-    title: "Registration",
-    description:
-      "ABHA enrollment, demographic capture, and insurance verification at admission.",
-    tags: ["ABHA Enrollment", "KYC", "Insurance Verify"],
-    side: "right",
-  },
-  {
-    icon: Shield,
-    title: "Pre-Authorization",
-    description:
-      "Clinical documentation submission and insurance pre-approval for treatment.",
-    tags: ["Clinical Docs", "Pre-auth Request", "Approval"],
-    side: "left",
-  },
-  {
-    icon: Stethoscope,
-    title: "Treatment",
-    description:
-      "Clinical care delivery with real-time documentation and coding support.",
-    tags: ["ICD Coding", "CPT Coding", "Documentation"],
-    side: "right",
-  },
-  {
-    icon: FileText,
-    title: "Claim Submission",
-    description:
-      "Seamless digital claim submission with automated validation and tracking.",
-    tags: ["UB-04/CMS-1500", "E-Submission", "Acknowledgment"],
-    side: "left",
-  },
-  {
-    icon: DollarSign,
-    title: "Reconciliation",
-    description:
-      "Payment posting, denial management, and financial reconciliation.",
-    tags: ["Payment Posting", "Denial Mgmt", "Reconciliation"],
-    side: "right",
-  },
-];
-
-interface TreatmentCard {
-  icon: typeof Heart;
-  title: string;
-  description: string;
-  points: string[];
-  checklist: string[];
+function useCountUp(target: number, duration = 1800, start = false) {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    if (!start) return;
+    let startTime: number | null = null;
+    const step = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      const ease = 1 - (1 - progress) ** 3;
+      setValue(Math.floor(ease * target));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, [target, duration, start]);
+  return value;
 }
 
-const treatmentCards: TreatmentCard[] = [
+function useVisible() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.15 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+  return { ref, visible };
+}
+
+function StatCard({
+  prefix,
+  value,
+  suffix,
+  label,
+  started,
+}: {
+  prefix?: string;
+  value: number;
+  suffix: string;
+  label: string;
+  started: boolean;
+}) {
+  const count = useCountUp(value, 1800, started);
+  return (
+    <div className="text-center p-5 bg-white/10 rounded-2xl border border-white/20 hover:bg-white/15 transition-colors">
+      <div className="text-2xl md:text-3xl font-bold text-white tabular-nums">
+        {prefix}
+        {count}
+        {suffix}
+      </div>
+      <div className="text-xs text-blue-200 mt-1 leading-snug">{label}</div>
+    </div>
+  );
+}
+
+const pillars = [
   {
-    icon: Activity,
-    title: "ICU Care",
-    description:
-      "Critical care validation protocols ensuring comprehensive ICU documentation.",
+    num: "01",
+    icon: <Zap className="w-6 h-6" />,
+    title: "Pre-Authorization Intelligence",
+    desc: "AI-driven pre-authorization with real-time insurer connect, eligibility verification, and instant approval status tracking.",
     points: [
-      "Daily progress notes",
-      "Ventilator management records",
-      "Critical care billing codes",
+      "AI pre-auth submission",
+      "Real-time eligibility check",
+      "Insurer API integration",
+      "Auto-approval tracking",
     ],
-    checklist: [
-      "ICU admission criteria met",
-      "Ventilator support documented",
-      "Daily SOAP notes",
-      "Specialist consultations recorded",
-      "Nursing care plans updated",
-      "Lab & imaging reports linked",
-      "Medication administration records",
-      "ICU scoring (APACHE/SOFA)",
-      "Family counseling documented",
-      "Discharge planning notes",
-    ],
+    accent: "text-blue-600",
+    border: "border-blue-100",
+    bg: "bg-blue-50",
+    numColor: "text-blue-200",
   },
   {
-    icon: Syringe,
-    title: "Surgical Procedures",
-    description:
-      "Pre-operative, intraoperative, and post-operative documentation validation.",
+    num: "02",
+    icon: <FileSearch className="w-6 h-6" />,
+    title: "Claim Submission Engine",
+    desc: "Automated ICD-10/DRG coding with zero-error claim generation, NHCX-ready formats, and multi-payer connectivity.",
     points: [
-      "Surgical safety checklist",
-      "Anesthesia records",
-      "Post-op monitoring",
+      "Auto ICD-10 & DRG coding",
+      "Error-free NHCX formats",
+      "Batch & real-time submission",
+      "Multi-TPA integration",
     ],
-    checklist: [
-      "Surgical consent obtained",
-      "Pre-op assessment completed",
-      "Anesthesia risk assessment",
-      "Surgical safety checklist signed",
-      "Intraoperative notes complete",
-      "Implant details documented",
-      "Post-op monitoring recorded",
-      "Discharge summary with surgeon notes",
-      "Pathology reports if applicable",
-      "Follow-up instructions given",
-    ],
+    accent: "text-teal-600",
+    border: "border-teal-100",
+    bg: "bg-teal-50",
+    numColor: "text-teal-200",
   },
   {
-    icon: Stethoscope,
-    title: "Medical Management",
-    description:
-      "Conservative treatment validation with clinical reasoning documentation.",
+    num: "03",
+    icon: <TrendingDown className="w-6 h-6" />,
+    title: "Denial Management",
+    desc: "AI root-cause analysis of every denial, automated appeal generation, and pattern tracking to prevent future rejections.",
     points: [
-      "Clinical reasoning records",
-      "Treatment response notes",
-      "Medication protocols",
+      "AI denial root-cause",
+      "Automated appeal letters",
+      "Denial pattern analytics",
+      "90-day AR follow-up",
     ],
-    checklist: [
-      "Admitting diagnosis justified",
-      "Clinical examination documented",
-      "Investigation reports linked",
-      "Treatment plan documented",
-      "Daily progress notes",
-      "Medication administration records",
-      "Response to treatment noted",
-      "Discharge criteria met",
-      "Discharge summary complete",
-      "Follow-up plan documented",
-    ],
+    accent: "text-red-600",
+    border: "border-red-100",
+    bg: "bg-red-50",
+    numColor: "text-red-200",
   },
   {
-    icon: Zap,
-    title: "Daycare Procedures",
-    description:
-      "Same-day procedure documentation requirements for clean claim submission.",
+    num: "04",
+    icon: <CreditCard className="w-6 h-6" />,
+    title: "Payment Posting & Reconciliation",
+    desc: "Automated ERA/EFT processing with variance detection, real-time bank reconciliation, and zero-touch payment posting.",
     points: [
-      "Pre-procedure assessment",
-      "Day surgery records",
-      "Post-procedure monitoring",
+      "ERA/EFT auto-processing",
+      "Variance detection AI",
+      "Bank reconciliation",
+      "Patient balance posting",
     ],
-    checklist: [
-      "Daycare eligibility confirmed",
-      "Pre-procedure assessment done",
-      "Consent forms signed",
-      "Anesthesia type documented",
-      "Procedure notes complete",
-      "Post-procedure monitoring",
-      "Patient recovery documented",
-      "Discharge criteria met",
-      "Post-care instructions given",
-      "Follow-up appointment noted",
-    ],
+    accent: "text-green-600",
+    border: "border-green-100",
+    bg: "bg-green-50",
+    numColor: "text-green-200",
   },
   {
-    icon: AlertCircle,
-    title: "Emergency Services",
-    description:
-      "Emergency documentation requirements from triage to admission.",
+    num: "05",
+    icon: <BarChart3 className="w-6 h-6" />,
+    title: "Revenue Analytics Dashboard",
+    desc: "Department-wise P&L, payer mix analysis, AR aging reports, and predictive revenue forecasting in real time.",
     points: [
-      "Triage documentation",
-      "Emergency treatment records",
-      "Stabilization notes",
+      "Dept-wise P&L reports",
+      "Payer mix analytics",
+      "AR aging & follow-up",
+      "Revenue forecasting",
     ],
-    checklist: [
-      "Triage level documented",
-      "Chief complaint recorded",
-      "Emergency examination notes",
-      "Vital signs monitoring",
-      "Emergency treatment given",
-      "Diagnostic workup ordered",
-      "Specialist consultation if needed",
-      "Admission/discharge decision",
-      "Emergency billing codes",
-      "Follow-up instructions",
+    accent: "text-purple-600",
+    border: "border-purple-100",
+    bg: "bg-purple-50",
+    numColor: "text-purple-200",
+  },
+  {
+    num: "06",
+    icon: <Shield className="w-6 h-6" />,
+    title: "Compliance & Audit Shield",
+    desc: "NABH documentation automation, IRDAI compliance monitoring, and AI-powered fraud detection across all payer channels.",
+    points: [
+      "NABH auto-documentation",
+      "IRDAI compliance alerts",
+      "Fraud detection AI",
+      "Audit trail & export",
     ],
+    accent: "text-amber-600",
+    border: "border-amber-100",
+    bg: "bg-amber-50",
+    numColor: "text-amber-200",
   },
 ];
 
-const surgicalProcedures = [
-  "Cardiology",
-  "Orthopedics",
-  "Neurology",
-  "Oncology",
-  "Gynecology",
-  "Urology",
-  "Gastroenterology",
-  "Ophthalmology",
-  "ENT",
-  "Pulmonology",
-  "Nephrology",
-  "Endocrinology",
-  "Dermatology",
-  "Psychiatry",
-  "Pediatrics",
+const challenges = [
+  {
+    category: "Cash Flow",
+    color: "red",
+    title: "Delayed Claim Settlements",
+    desc: "Insurers take 45–90 days to settle claims, creating severe working capital shortfalls for hospitals of all sizes.",
+    stat: "45–90 days avg",
+  },
+  {
+    category: "Coding",
+    color: "amber",
+    title: "Manual Coding Errors",
+    desc: "15–25% of claims require rework due to ICD coding mistakes, leading to delays, denials, and compliance risk.",
+    stat: "15–25% rework rate",
+  },
+  {
+    category: "Liquidity",
+    color: "orange",
+    title: "Cash Flow Gaps",
+    desc: "Average hospital carries ₹50L+ in pending receivables, tying up capital that could fund operations and expansion.",
+    stat: "₹50L+ avg pending",
+  },
+  {
+    category: "Operations",
+    color: "blue",
+    title: "Multi-Payer Complexity",
+    desc: "Managing 20+ insurance TPAs, government schemes, and corporate health plans with different formats and portals.",
+    stat: "20+ payer formats",
+  },
+  {
+    category: "Compliance",
+    color: "purple",
+    title: "NABH Documentation Burden",
+    desc: "Manual NABH documentation consumes 30–40% of billing staff time, diverting resources from revenue-generating tasks.",
+    stat: "30–40% staff time",
+  },
 ];
 
-const claimPhases = [
+const comparison = [
   {
-    id: "phase-1",
-    title: "Phase 1: Patient Registration",
-    content:
-      "ABHA ID verification, demographic data capture, insurance eligibility check, pre-admission authorization tracking, document collection (ID proof, insurance card, referral), and digital consent management.",
+    label: "Claim Submission",
+    traditional: "3–5 days manual",
+    ai: "< 4 hours automated",
   },
   {
-    id: "phase-2",
-    title: "Phase 2: Pre-Authorization",
-    content:
-      "Clinical documentation preparation, medical necessity justification, ICD-10 provisional diagnosis coding, insurer-specific pre-auth form submission, real-time status tracking, and escalation workflows for delayed approvals.",
+    label: "Coding Accuracy",
+    traditional: "75–85% manual",
+    ai: "99.2% AI-assisted",
+  },
+  { label: "Denial Rate", traditional: "18–25%", ai: "< 2% (1.8%)" },
+  { label: "Settlement Time", traditional: "45–90 days", ai: "7–14 days NHCX" },
+  { label: "Staff Required", traditional: "15–25 FTEs", ai: "4–6 FTEs" },
+  {
+    label: "Revenue Recovery",
+    traditional: "Reactive",
+    ai: "₹2Cr+ annual AI recovery",
+  },
+];
+
+const outlook = [
+  {
+    year: "2025",
+    title: "NHCX Full Mandate",
+    desc: "All insurance claims routed via National Health Claims Exchange for standardized processing.",
   },
   {
-    id: "phase-3",
-    title: "Phase 3: Treatment & Documentation",
-    content:
-      "Real-time ICD-10/CPT procedure coding, nursing care documentation, daily progress notes, specialist consultation records, investigation & lab report linking, implant and consumable tracking, and discharge summary preparation.",
+    year: "2026",
+    title: "AI Underwriting",
+    desc: "Real-time AI risk assessment enables dynamic premium pricing and instant pre-authorization.",
   },
   {
-    id: "phase-4",
-    title: "Phase 4: Claim Submission",
-    content:
-      "UB-04/CMS-1500 claim form generation, electronic claim submission, acknowledgment and tracking number capture, supporting document packet compilation, digital signature and encryption, and submission audit trail.",
+    year: "2027",
+    title: "Value-Based Care",
+    desc: "Outcome-linked payment models replace fee-for-service; hospitals paid for health outcomes.",
   },
   {
-    id: "phase-5",
-    title: "Phase 5: Review & Settlement",
-    content:
-      "Claim adjudication monitoring, partial approval management, denial response and appeal filing, payment posting and reconciliation, outstanding balance management, and final settlement reporting with financial analytics.",
+    year: "2028",
+    title: "Unified Patient Wallet",
+    desc: "ABHA-linked patient health wallet consolidates insurance, PM-JAY, and OOP payments.",
+  },
+  {
+    year: "2030",
+    title: "Blockchain Claims",
+    desc: "Immutable blockchain audit trails eliminate claim fraud and enable instant multi-party settlement.",
   },
 ];
 
 export function Hospitals() {
-  const [checklistDialog, setChecklistDialog] = useState<TreatmentCard | null>(
-    null,
-  );
-  const [isDemoOpen, setIsDemoOpen] = useState(false);
+  const heroVis = useVisible();
+  const statsVis = useVisible();
+  const pillarsVis = useVisible();
+  const challengesVis = useVisible();
+  const aiVis = useVisible();
+  const roiVis = useVisible();
+  const outlookVis = useVisible();
+  const ctaVis = useVisible();
 
   return (
-    <Layout section="hospitals">
-      {/* Hero */}
-      <section className="pt-20 health-gradient">
-        <div className="max-w-5xl mx-auto px-4 py-16 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+    <Layout>
+      {/* ── Hero ── */}
+      <section
+        ref={heroVis.ref}
+        className="relative min-h-[520px] flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900"
+      >
+        <img
+          src="/assets/generated/hero-hospital-ai-health-zon.dim_1200x600.jpg"
+          alt="AI Health Zon Hospital Revenue Management"
+          className="absolute inset-0 w-full h-full object-cover opacity-40"
+        />
+        <div
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 25% 50%, oklch(0.55 0.18 240), transparent 55%), radial-gradient(circle at 80% 25%, oklch(0.45 0.15 275), transparent 50%)",
+          }}
+        />
+        <div
+          className={`relative z-10 max-w-4xl mx-auto px-6 py-24 text-center transition-all duration-700 ${
+            heroVis.visible
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-8"
+          }`}
+        >
+          <Badge className="mb-5 bg-blue-500/20 text-blue-300 border border-blue-500/40 text-xs tracking-widest uppercase px-4 py-1">
+            <span className="inline-block w-2 h-2 rounded-full bg-blue-400 mr-2 animate-pulse" />
+            RCM Intelligence 2025
+          </Badge>
+          <h1
+            className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight"
+            style={{ fontFamily: "Playfair Display, Georgia, serif" }}
           >
-            <span className="inline-block px-4 py-1.5 bg-white/10 border border-white/20 text-white/80 text-xs rounded-full mb-4 uppercase tracking-wider">
-              Hospital Revenue Management
-            </span>
-            <h1 className="font-heading text-4xl sm:text-5xl font-bold text-white mb-5">
-              Transform Your Hospital's
-              <br />
-              Revenue Operations
-            </h1>
-            <p className="text-white/70 text-lg max-w-2xl mx-auto mb-8">
-              End-to-end RCM automation, NABH compliance support, and real-time
-              claims management designed specifically for Indian hospitals.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4 text-white/80 text-sm">
-              {[
-                "500+ Hospitals",
-                "95% Clean Claim Rate",
-                "40% Less Denials",
-                "NABH Certified",
-              ].map((s) => (
-                <span key={s} className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-green-400" />
-                  {s}
-                </span>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Pain Points */}
-      <section className="section-padding bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-10">
-            <h2 className="font-heading text-3xl font-bold text-foreground mb-3">
-              Challenges Hospitals Face
-            </h2>
-            <p className="text-muted-foreground">
-              We understand your pain points — because we've helped 100+
-              hospitals overcome them.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {painPoints.map((p, i) => {
-              const Icon = p.icon;
-              return (
-                <motion.div
-                  key={p.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.07 }}
-                  className="bg-white rounded-xl p-6 border border-border shadow-xs"
-                >
-                  <div
-                    className={`w-10 h-10 rounded-lg ${p.bg} flex items-center justify-center mb-3`}
-                  >
-                    <Icon className={`w-5 h-5 ${p.color}`} />
-                  </div>
-                  <h3 className="font-heading font-bold text-foreground mb-2">
-                    {p.title}
-                  </h3>
-                  <p className="text-muted-foreground text-sm">
-                    {p.description}
-                  </p>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Solutions */}
-      <section
-        className="section-padding"
-        style={{
-          background:
-            "linear-gradient(180deg, oklch(0.96 0.02 240) 0%, white 100%)",
-        }}
-      >
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-10">
-            <h2 className="font-heading text-3xl font-bold text-foreground mb-3">
-              Our Solution Modules
-            </h2>
-            <p className="text-muted-foreground">
-              Comprehensive digital tools that address every challenge in your
-              revenue cycle and compliance journey.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {solutions.map((s, i) => {
-              const Icon = s.icon;
-              return (
-                <motion.div
-                  key={s.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.07 }}
-                  className="bg-white rounded-xl p-6 border border-border shadow-xs card-hover"
-                >
-                  <div
-                    className={`w-10 h-10 rounded-lg ${s.bg} flex items-center justify-center mb-3`}
-                  >
-                    <Icon className={`w-5 h-5 ${s.color}`} />
-                  </div>
-                  <h3 className="font-heading font-bold text-foreground mb-2">
-                    {s.title}
-                  </h3>
-                  <p className="text-muted-foreground text-sm">
-                    {s.description}
-                  </p>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Before/After */}
-      <section className="section-padding bg-white">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="font-heading text-3xl font-bold text-foreground mb-3">
-              Before & After AI Health Zon
-            </h2>
-            <p className="text-muted-foreground">
-              Real transformation metrics from our partner hospitals.
-            </p>
-          </div>
-          <div className="overflow-hidden rounded-2xl border border-border shadow-sm">
-            <div className="grid grid-cols-3 bg-health-blue text-white">
-              <div className="p-4 font-semibold text-sm">Area</div>
-              <div className="p-4 font-semibold text-sm text-center bg-red-500/20">
-                Before
-              </div>
-              <div className="p-4 font-semibold text-sm text-center bg-green-500/20">
-                After
-              </div>
-            </div>
-            {beforeAfter.map((row, i) => (
-              <div
-                key={row.area}
-                className={`grid grid-cols-3 border-t border-border ${i % 2 === 0 ? "bg-white" : "bg-muted/30"}`}
-              >
-                <div className="p-4 text-sm font-medium">{row.area}</div>
-                <div className="p-4 text-sm text-center text-red-600">
-                  {row.before}
-                </div>
-                <div className="p-4 text-sm text-center text-green-600 font-semibold">
-                  {row.after}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Journey Story */}
-      <section
-        className="section-padding"
-        style={{
-          background:
-            "linear-gradient(180deg, oklch(0.96 0.02 240) 0%, white 100%)",
-        }}
-      >
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-10">
-            <h2 className="font-heading text-3xl font-bold text-foreground mb-3">
-              Healthcare Journey Story
-            </h2>
-            <p className="text-muted-foreground mb-4">
-              Follow a patient's complete journey through our integrated
-              ecosystem.
-            </p>
-            <Link to="/journey-film">
+            Revenue Cycle Management:
+            <br />
+            <span className="text-blue-300">Transforming Hospital Finance</span>
+          </h1>
+          <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed mb-10">
+            AI Health Zon's RCM Intelligence platform reduces claim denials by
+            35%, accelerates settlements by 40%, and recovers ₹2Cr+ in annual
+            revenue for Indian hospitals.
+          </p>
+          <div className="flex flex-wrap gap-4 justify-center">
+            <Link to="/join-network">
               <Button
-                variant="outline"
-                data-ocid="hospitals.watch_film.button"
-                className="gap-2 border-primary text-primary hover:bg-primary/10"
+                data-ocid="rcm.primary_button"
+                size="lg"
+                className="bg-blue-500 hover:bg-blue-400 text-white rounded-full px-8"
               >
-                🎬 Watch as Film
+                Start RCM Transformation <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+            </Link>
+            <Link to="/">
+              <Button
+                data-ocid="rcm.secondary_button"
+                size="lg"
+                variant="outline"
+                className="border-white/30 text-white hover:bg-white/10 rounded-full px-8"
+              >
+                Explore Platform
               </Button>
             </Link>
           </div>
-          <div className="relative">
-            <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-border hidden md:block -translate-x-1/2" />
-            <div className="space-y-8">
-              {journeyStages.map((stage, i) => {
-                const Icon = stage.icon;
-                const isLeft = stage.side === "left";
-                return (
-                  <motion.div
-                    key={stage.title}
-                    initial={{ opacity: 0, x: isLeft ? -30 : 30 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.1 }}
-                    className={`flex gap-4 md:gap-8 items-center ${isLeft ? "md:flex-row" : "md:flex-row-reverse"}`}
-                  >
-                    <div
-                      className={`flex-1 bg-white rounded-xl p-6 border border-border shadow-xs ${isLeft ? "md:text-right" : ""}`}
+        </div>
+      </section>
+
+      {/* ── Stats Band ── */}
+      <section
+        ref={statsVis.ref}
+        className="bg-gradient-to-r from-slate-900 to-blue-900 py-14"
+      >
+        <div className="max-w-5xl mx-auto px-6">
+          <div
+            className={`grid grid-cols-2 md:grid-cols-4 gap-4 transition-all duration-700 ${
+              statsVis.visible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-8"
+            }`}
+          >
+            <StatCard
+              prefix="₹"
+              value={25}
+              suffix=" L Cr+"
+              label="Health Insurance Market"
+              started={statsVis.visible}
+            />
+            <StatCard
+              value={500000}
+              suffix="+"
+              label="Claims Processed"
+              started={statsVis.visible}
+            />
+            <StatCard
+              value={97}
+              suffix="%"
+              label="Clean Claim Rate"
+              started={statsVis.visible}
+            />
+            <StatCard
+              value={2}
+              suffix="%"
+              label="Rejection Rate (Industry Low)"
+              started={statsVis.visible}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ── 6 Revenue Pillars ── */}
+      <section
+        ref={pillarsVis.ref}
+        className="py-20 bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20"
+      >
+        <div className="max-w-6xl mx-auto px-6">
+          <div
+            className={`mb-12 transition-all duration-700 ${
+              pillarsVis.visible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-8"
+            }`}
+          >
+            <p className="text-xs font-semibold tracking-widest text-blue-600 uppercase mb-3">
+              Core Modules
+            </p>
+            <h2
+              className="text-3xl md:text-4xl font-bold text-slate-900 mb-4"
+              style={{ fontFamily: "Playfair Display, Georgia, serif" }}
+            >
+              6 Revenue Cycle Pillars
+            </h2>
+            <p className="text-slate-500 max-w-xl">
+              End-to-end revenue intelligence from pre-authorization to final
+              settlement, powered by AI at every step.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {pillars.map((p, i) => (
+              <div
+                key={p.num}
+                className={`relative bg-white rounded-2xl border ${p.border} p-6 hover:shadow-lg transition-all duration-500 ${
+                  pillarsVis.visible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-8"
+                }`}
+                style={{ transitionDelay: `${i * 80}ms` }}
+                data-ocid={`rcm.pillar.card.${i + 1}`}
+              >
+                <div
+                  className={`absolute top-4 right-4 text-6xl font-black leading-none ${p.numColor} select-none`}
+                >
+                  {p.num}
+                </div>
+                <div
+                  className={`inline-flex p-2 rounded-xl ${p.bg} ${p.accent} mb-4`}
+                >
+                  {p.icon}
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 mb-2">
+                  {p.title}
+                </h3>
+                <p className="text-sm text-slate-500 mb-4 leading-relaxed">
+                  {p.desc}
+                </p>
+                <ul className="space-y-1">
+                  {p.points.map((pt) => (
+                    <li
+                      key={pt}
+                      className="flex items-start gap-2 text-xs text-slate-600"
                     >
-                      <h3 className="font-heading font-bold text-foreground mb-2">
-                        {stage.title}
-                      </h3>
-                      <p className="text-muted-foreground text-sm mb-3">
-                        {stage.description}
-                      </p>
-                      <div
-                        className={`flex flex-wrap gap-2 ${isLeft ? "md:justify-end" : ""}`}
-                      >
-                        {stage.tags.map((tag) => (
-                          <Badge
-                            key={tag}
-                            variant="secondary"
-                            className="text-xs"
-                          >
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
+                      <CheckCircle2
+                        className={`w-3.5 h-3.5 mt-0.5 flex-shrink-0 ${p.accent}`}
+                      />
+                      {pt}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Hospital Challenges ── */}
+      <section ref={challengesVis.ref} className="py-20 bg-white">
+        <div className="max-w-4xl mx-auto px-6">
+          <div
+            className={`transition-all duration-700 ${
+              challengesVis.visible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-8"
+            }`}
+          >
+            <p className="text-xs font-semibold tracking-widest text-blue-600 uppercase mb-3">
+              Industry Pain Points
+            </p>
+            <h2
+              className="text-3xl md:text-4xl font-bold text-slate-900 mb-12"
+              style={{ fontFamily: "Playfair Display, Georgia, serif" }}
+            >
+              Challenges Hospitals Face Today
+            </h2>
+            <div className="divide-y divide-slate-100">
+              {challenges.map((c, i) => (
+                <div
+                  key={c.title}
+                  className={`py-6 flex flex-col sm:flex-row sm:items-center gap-4 transition-all duration-500 ${
+                    challengesVis.visible
+                      ? "opacity-100 translate-x-0"
+                      : "opacity-0 -translate-x-4"
+                  }`}
+                  style={{ transitionDelay: `${i * 80}ms` }}
+                >
+                  <div className="sm:w-28 flex-shrink-0">
+                    <Badge
+                      className={`text-xs bg-${c.color}-50 text-${c.color}-700 border border-${c.color}-200`}
+                    >
+                      {c.category}
+                    </Badge>
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-semibold text-slate-900 mb-1">
+                      {c.title}
                     </div>
-                    <div className="w-12 h-12 rounded-full bg-health-blue flex items-center justify-center shrink-0 z-10 shadow-health">
-                      <Icon className="w-5 h-5 text-white" />
-                    </div>
-                    <div className="flex-1 hidden md:block" />
-                  </motion.div>
-                );
-              })}
+                    <div className="text-sm text-slate-500">{c.desc}</div>
+                  </div>
+                  <div className="sm:w-36 text-right">
+                    <span className="text-sm font-bold text-slate-700 bg-slate-100 rounded-full px-3 py-1">
+                      {c.stat}
+                    </span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Treatment Validation Cards */}
-      <section className="section-padding bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-10">
-            <h2 className="font-heading text-3xl font-bold text-foreground mb-3">
-              Treatment Validation Checklists
-            </h2>
-            <p className="text-muted-foreground">
-              Comprehensive documentation requirements for every treatment type
-              — ensuring clean claims every time.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {treatmentCards.map((card, i) => {
-              const Icon = card.icon;
-              return (
-                <motion.div
-                  key={card.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="bg-white rounded-xl p-6 border border-border shadow-xs card-hover"
-                >
-                  <div className="w-10 h-10 rounded-lg bg-health-blue-light flex items-center justify-center mb-4">
-                    <Icon className="w-5 h-5 text-health-blue" />
-                  </div>
-                  <h3 className="font-heading font-bold text-foreground mb-2">
-                    {card.title}
-                  </h3>
-                  <p className="text-muted-foreground text-sm mb-4">
-                    {card.description}
-                  </p>
-                  <ul className="space-y-1.5 mb-5">
-                    {card.points.map((pt) => (
-                      <li
-                        key={pt}
-                        className="flex items-center gap-2 text-xs text-foreground"
-                      >
-                        <CheckCircle2 className="w-3.5 h-3.5 text-health-green shrink-0" />
-                        {pt}
-                      </li>
-                    ))}
-                  </ul>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="w-full border-health-blue text-health-blue hover:bg-health-blue-light"
-                    onClick={() => setChecklistDialog(card)}
-                  >
-                    View Full Checklist
-                    <ArrowRight className="ml-2 w-3.5 h-3.5" />
-                  </Button>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Surgical Procedures */}
+      {/* ── AI Transformation Before/After ── */}
       <section
-        className="section-padding"
-        style={{
-          background:
-            "linear-gradient(180deg, oklch(0.96 0.02 240) 0%, white 100%)",
-        }}
+        ref={aiVis.ref}
+        className="py-20 bg-gradient-to-br from-slate-50 to-blue-50/20"
       >
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="font-heading text-3xl font-bold text-foreground mb-3">
-              Surgical Procedure Categories
-            </h2>
-            <p className="text-muted-foreground">
-              Specialized validation protocols for 15+ surgical specialties.
-            </p>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-            {surgicalProcedures.map((proc, i) => (
-              <motion.div
-                key={proc}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.04 }}
-                className="bg-white rounded-xl p-3 border border-border text-center text-sm font-medium text-foreground hover:bg-health-blue-light hover:text-health-blue transition-colors cursor-pointer shadow-xs"
-              >
-                {proc}
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Claim Protocols */}
-      <section className="section-padding bg-white">
-        <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="font-heading text-3xl font-bold text-foreground mb-3">
-              Claim Protocols
-            </h2>
-            <p className="text-muted-foreground">
-              A structured 5-phase claim lifecycle ensuring maximum claim
-              acceptance.
-            </p>
-          </div>
-          <Accordion type="single" collapsible className="space-y-3">
-            {claimPhases.map((phase) => (
-              <AccordionItem
-                key={phase.id}
-                value={phase.id}
-                className="border border-border rounded-xl px-5 shadow-xs"
-              >
-                <AccordionTrigger className="font-heading font-semibold text-foreground hover:no-underline">
-                  {phase.title}
-                </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground text-sm leading-relaxed pb-4">
-                  {phase.content}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
-      </section>
-
-      {/* Demo CTA */}
-      <section className="py-16 health-gradient">
-        <div className="max-w-3xl mx-auto text-center px-4">
-          <h2 className="font-heading text-2xl sm:text-3xl font-bold text-white mb-4">
-            Ready to Transform Your Hospital?
-          </h2>
-          <p className="text-white/70 mb-6">
-            Schedule a free personalized demo and see how AI Health Zon can
-            transform your revenue cycle operations.
-          </p>
-          <Button
-            onClick={() => setIsDemoOpen(true)}
-            size="lg"
-            className="bg-white text-health-blue hover:bg-white/90 font-semibold shadow-xl px-8"
+        <div className="max-w-5xl mx-auto px-6">
+          <div
+            className={`transition-all duration-700 ${
+              aiVis.visible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-8"
+            }`}
           >
-            Book Free Demo
-            <ArrowRight className="ml-2 w-4 h-4" />
-          </Button>
+            <p className="text-xs font-semibold tracking-widest text-blue-600 uppercase mb-3">
+              Transformation
+            </p>
+            <h2
+              className="text-3xl md:text-4xl font-bold text-slate-900 mb-10"
+              style={{ fontFamily: "Playfair Display, Georgia, serif" }}
+            >
+              Traditional vs AI-Powered RCM
+            </h2>
+            <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
+              <div className="grid grid-cols-3 bg-slate-800 text-white text-sm font-semibold">
+                <div className="p-4">Metric</div>
+                <div className="p-4 border-x border-slate-700 text-center text-red-300">
+                  Traditional RCM
+                </div>
+                <div className="p-4 text-center text-green-300">
+                  AI Health Zon
+                </div>
+              </div>
+              {comparison.map((row, i) => (
+                <div
+                  key={row.label}
+                  className={`grid grid-cols-3 text-sm border-t border-slate-100 ${
+                    i % 2 === 0 ? "bg-white" : "bg-slate-50"
+                  } transition-all duration-500 ${
+                    aiVis.visible ? "opacity-100" : "opacity-0"
+                  }`}
+                  style={{ transitionDelay: `${i * 60}ms` }}
+                >
+                  <div className="p-4 font-medium text-slate-700">
+                    {row.label}
+                  </div>
+                  <div className="p-4 border-x border-slate-100 text-center text-red-600">
+                    {row.traditional}
+                  </div>
+                  <div className="p-4 text-center text-green-700 font-semibold">
+                    {row.ai}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Checklist Dialog */}
-      <Dialog
-        open={!!checklistDialog}
-        onOpenChange={() => setChecklistDialog(null)}
+      {/* ── ROI Band ── */}
+      <section
+        ref={roiVis.ref}
+        className="py-20 bg-gradient-to-r from-slate-900 to-blue-900"
       >
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="font-heading">
-              {checklistDialog?.title} — Documentation Checklist
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-2 max-h-80 overflow-y-auto">
-            {checklistDialog?.checklist.map((item, i) => (
+        <div
+          className={`max-w-4xl mx-auto px-6 text-center transition-all duration-700 ${
+            roiVis.visible
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-8"
+          }`}
+        >
+          <TrendingUp className="w-12 h-12 text-blue-300 mx-auto mb-5" />
+          <h2
+            className="text-3xl md:text-4xl font-bold text-white mb-4"
+            style={{ fontFamily: "Playfair Display, Georgia, serif" }}
+          >
+            Measurable ROI from Day One
+          </h2>
+          <p className="text-xl text-blue-200 mb-10 max-w-2xl mx-auto">
+            Hospitals see{" "}
+            <span className="text-white font-bold">
+              35% reduction in denials
+            </span>
+            ,{" "}
+            <span className="text-white font-bold">40% faster settlements</span>
+            , and{" "}
+            <span className="text-white font-bold">
+              ₹2Cr+ annual revenue recovery
+            </span>{" "}
+            within 6 months of going live.
+          </p>
+          <div className="grid sm:grid-cols-3 gap-6">
+            {[
+              {
+                icon: <TrendingDown className="w-6 h-6" />,
+                stat: "35%",
+                label: "Fewer Claim Denials",
+              },
+              {
+                icon: <Clock className="w-6 h-6" />,
+                stat: "40%",
+                label: "Faster Settlements",
+              },
+              {
+                icon: <LineChart className="w-6 h-6" />,
+                stat: "₹2Cr+",
+                label: "Annual Recovery",
+              },
+            ].map((r) => (
               <div
-                key={item}
-                className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50"
+                key={r.stat}
+                className="bg-white/10 rounded-2xl border border-white/20 p-6"
               >
-                <div className="w-6 h-6 rounded-full bg-health-green flex items-center justify-center text-white text-xs shrink-0">
-                  {i + 1}
+                <div className="text-blue-300 mb-3">{r.icon}</div>
+                <div className="text-3xl font-bold text-white mb-1">
+                  {r.stat}
                 </div>
-                <span className="text-sm">{item}</span>
+                <div className="text-sm text-blue-200">{r.label}</div>
               </div>
             ))}
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+      </section>
 
-      <DemoBookingDialog open={isDemoOpen} onOpenChange={setIsDemoOpen} />
+      {/* ── 2025–2030 Future Outlook ── */}
+      <section
+        ref={outlookVis.ref}
+        className="py-20 bg-gradient-to-br from-slate-50 to-blue-50/20"
+      >
+        <div className="max-w-4xl mx-auto px-6">
+          <div
+            className={`transition-all duration-700 ${
+              outlookVis.visible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-8"
+            }`}
+          >
+            <p className="text-xs font-semibold tracking-widest text-blue-600 uppercase mb-3">
+              What&apos;s Next
+            </p>
+            <h2
+              className="text-3xl md:text-4xl font-bold text-slate-900 mb-12"
+              style={{ fontFamily: "Playfair Display, Georgia, serif" }}
+            >
+              Future Outlook 2025–2030
+            </h2>
+            <div className="relative">
+              <div className="absolute left-16 top-0 bottom-0 w-px bg-blue-200" />
+              <div className="space-y-8">
+                {outlook.map((item, i) => (
+                  <div
+                    key={item.year}
+                    className={`flex gap-6 transition-all duration-500 ${
+                      outlookVis.visible
+                        ? "opacity-100 translate-x-0"
+                        : "opacity-0 -translate-x-4"
+                    }`}
+                    style={{ transitionDelay: `${i * 80}ms` }}
+                  >
+                    <div className="w-14 flex-shrink-0 text-right">
+                      <span className="text-sm font-bold text-blue-600">
+                        {item.year}
+                      </span>
+                    </div>
+                    <div className="relative flex-shrink-0 mt-1">
+                      <div className="w-3 h-3 rounded-full bg-blue-500 ring-4 ring-blue-100" />
+                    </div>
+                    <div className="pb-2">
+                      <div className="font-semibold text-slate-900 text-sm mb-1">
+                        {item.title}
+                      </div>
+                      <div className="text-slate-500 text-sm leading-relaxed">
+                        {item.desc}
+                      </div>
+                      <div className="border-t border-slate-100 mt-4" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA ── */}
+      <section ref={ctaVis.ref} className="py-24 bg-white">
+        <div
+          className={`max-w-3xl mx-auto px-6 text-center transition-all duration-700 ${
+            ctaVis.visible
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-8"
+          }`}
+        >
+          <TrendingUp className="w-12 h-12 text-blue-500 mx-auto mb-5" />
+          <h2
+            className="text-3xl md:text-4xl font-bold text-slate-900 mb-4"
+            style={{ fontFamily: "Playfair Display, Georgia, serif" }}
+          >
+            Transform Your Revenue Cycle
+          </h2>
+          <p className="text-slate-500 mb-8 text-lg">
+            Join 500+ hospitals already running on AI Health Zon's RCM
+            Intelligence. Schedule a free 30-minute revenue audit today.
+          </p>
+          <div className="flex flex-wrap gap-4 justify-center">
+            <Link to="/join-network">
+              <Button
+                data-ocid="rcm.cta.primary_button"
+                size="lg"
+                className="bg-blue-600 hover:bg-blue-500 text-white rounded-full px-8"
+              >
+                Book Free Revenue Audit <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+            </Link>
+            <Link to="/nhcx">
+              <Button
+                data-ocid="rcm.cta.secondary_button"
+                size="lg"
+                variant="outline"
+                className="rounded-full px-8 border-slate-300 text-slate-700 hover:bg-slate-50"
+              >
+                Explore NHCX Integration
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
     </Layout>
   );
 }

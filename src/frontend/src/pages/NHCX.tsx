@@ -451,6 +451,16 @@ export function NHCX() {
         </div>
       </section>
 
+      {/* Hero Image */}
+      <div className="bg-gradient-to-b from-teal-900 to-teal-800 px-4 pb-10">
+        <img
+          src="/assets/generated/hero-nhcx-ai-health-zon.dim_1200x600.jpg"
+          alt="National Health Claims Exchange digital infrastructure"
+          className="w-full max-w-4xl mx-auto rounded-2xl object-cover shadow-2xl"
+          style={{ aspectRatio: "16/7" }}
+        />
+      </div>
+
       {/* ── What is NHCX ── */}
       <section id="what-is-nhcx" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-8">

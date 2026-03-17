@@ -169,6 +169,14 @@ export function JoinNetwork() {
               together.
             </p>
           </motion.div>
+          {/* Hero Image */}
+          <div className="mt-8 px-4 pb-8">
+            <img
+              src="/assets/generated/hero-vendors-ai-health-zon.dim_1200x600.jpg"
+              alt="AI Health Zon vendor network and ecosystem"
+              className="w-full max-w-4xl mx-auto rounded-2xl object-contain shadow-2xl bg-white/5"
+            />
+          </div>
         </div>
       </section>
 
