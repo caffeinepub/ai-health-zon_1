@@ -13,10 +13,14 @@ const navLinks = [
   { href: "/compliance", label: "NABH" },
   { href: "/digital-health", label: "ABDM" },
   { href: "/nhcx", label: "NHCX" },
+  { href: "/abdm-compliance", label: "ABDM Compliance" },
   { href: "/insights", label: "Insights" },
   { href: "/join-network", label: "Join Network" },
   { href: "/training-game", label: "Training" },
   { href: "/ai-course", label: "AI Course" },
+  { href: "/patient-kiosk", label: "🏥 Patient Kiosk" },
+  { href: "/investor-pitch", label: "📊 Investor Pitch" },
+  { href: "/pricing", label: "💰 Pricing" },
 ];
 
 export function Navigation() {
@@ -128,6 +132,28 @@ export function Navigation() {
                 }`}
               >
                 🎓 AI Course
+              </Link>
+              <Link
+                data-ocid="nav.patient_kiosk.link"
+                to="/patient-kiosk"
+                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
+                  currentPath === "/patient-kiosk"
+                    ? "bg-health-blue-light text-health-blue"
+                    : "text-foreground hover:bg-muted hover:text-health-blue"
+                }`}
+              >
+                🏥 Patient Kiosk
+              </Link>
+              <Link
+                data-ocid="nav.investor_pitch.link"
+                to="/investor-pitch"
+                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
+                  currentPath === "/investor-pitch"
+                    ? "bg-health-blue-light text-health-blue"
+                    : "text-foreground hover:bg-muted hover:text-health-blue"
+                }`}
+              >
+                📊 Investor Pitch
               </Link>
             </div>
 

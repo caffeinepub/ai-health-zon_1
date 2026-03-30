@@ -10,12 +10,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useSubmitNetworkJoinRequest } from "@/hooks/useQueries";
 import {
   Ambulance,
   Building2,
   CheckCircle2,
-  Loader2,
+  MessageCircle,
   Package,
   ShieldCheck,
   Stethoscope,
@@ -24,7 +23,6 @@ import {
 import { motion } from "motion/react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 
 const stakeholderTypes = [
   {
@@ -100,6 +98,8 @@ const stats = [
   { value: "24/7", label: "Support" },
 ];
 
+const WHATSAPP_NUMBER = "918696766966";
+
 interface JoinFormData {
   name: string;
   orgName: string;
@@ -112,7 +112,6 @@ interface JoinFormData {
 
 export function JoinNetwork() {
   const [selectedType, setSelectedType] = useState<string>("");
-  const mutation = useSubmitNetworkJoinRequest();
 
   const {
     register,
@@ -127,25 +126,25 @@ export function JoinNetwork() {
     setValue("orgType", typeId);
   };
 
-  const onSubmit = async (data: JoinFormData) => {
-    try {
-      await mutation.mutateAsync({
-        name: data.name,
-        orgType: data.orgType,
-        orgName: data.orgName,
-        contact: data.contact,
-        msg: data.msg,
-      });
-      toast.success(
-        "Registration submitted! Our team will contact you within 48 hours.",
-      );
-      reset();
-      setSelectedType("");
-    } catch {
-      toast.error(
-        "Submission failed. Please try again or contact us directly.",
-      );
-    }
+  const onSubmit = (data: JoinFormData) => {
+    const message = [
+      "🏥 *Join AI Health Zon Network Request*",
+      "",
+      `👤 *Name:* ${data.name}`,
+      `🏢 *Organization:* ${data.orgName}`,
+      `🔖 *Type:* ${data.orgType}`,
+      `📞 *Contact:* ${data.contact}`,
+      `📧 *Email:* ${data.email}`,
+      `📍 *City:* ${data.city}`,
+      data.msg ? `💬 *Message:* ${data.msg}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+    window.open(url, "_blank");
+    reset();
+    setSelectedType("");
   };
 
   return (
@@ -199,6 +198,17 @@ export function JoinNetwork() {
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* WhatsApp Banner */}
+      <section className="py-4 bg-green-50 border-b border-green-200">
+        <div className="max-w-5xl mx-auto px-4 flex items-center justify-center gap-3">
+          <MessageCircle className="w-5 h-5 text-green-600" />
+          <p className="text-sm text-green-800 font-medium">
+            Fill the form below and your details will be sent directly to our
+            team via WhatsApp for instant response.
+          </p>
         </div>
       </section>
 
@@ -272,6 +282,7 @@ export function JoinNetwork() {
                     <Input
                       id="name"
                       placeholder="Dr. Rajesh Kumar"
+                      data-ocid="join.name.input"
                       {...register("name", { required: "Name is required" })}
                     />
                     {errors.name && (
@@ -285,6 +296,7 @@ export function JoinNetwork() {
                     <Input
                       id="orgName"
                       placeholder="City Hospital"
+                      data-ocid="join.orgname.input"
                       {...register("orgName", {
                         required: "Organization name is required",
                       })}
@@ -305,7 +317,7 @@ export function JoinNetwork() {
                       setValue("orgType", v);
                     }}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger data-ocid="join.orgtype.select">
                       <SelectValue
                         placeholder={selectedType || "Select organization type"}
                       />
@@ -337,6 +349,7 @@ export function JoinNetwork() {
                     <Input
                       id="contact"
                       placeholder="+91 98765 43210"
+                      data-ocid="join.contact.input"
                       {...register("contact", {
                         required: "Contact is required",
                         pattern: {
@@ -357,6 +370,7 @@ export function JoinNetwork() {
                       id="email"
                       type="email"
                       placeholder="admin@hospital.com"
+                      data-ocid="join.email.input"
                       {...register("email", {
                         required: "Email is required",
                         pattern: {
@@ -378,6 +392,7 @@ export function JoinNetwork() {
                   <Input
                     id="city"
                     placeholder="Bengaluru"
+                    data-ocid="join.city.input"
                     {...register("city", { required: "City is required" })}
                   />
                   {errors.city && (
@@ -395,25 +410,23 @@ export function JoinNetwork() {
                     id="msg"
                     placeholder="Tell us about your organization and what you're looking for..."
                     rows={3}
+                    data-ocid="join.msg.textarea"
                     {...register("msg")}
                   />
                 </div>
 
                 <Button
                   type="submit"
-                  disabled={mutation.isPending}
-                  className="w-full mt-6 bg-health-blue hover:bg-health-blue/90 text-white font-semibold"
+                  className="w-full mt-6 bg-green-600 hover:bg-green-700 text-white font-semibold flex items-center justify-center gap-2"
                   size="lg"
+                  data-ocid="join.submit_button"
                 >
-                  {mutation.isPending ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Submitting...
-                    </>
-                  ) : (
-                    "Join the Network"
-                  )}
+                  <MessageCircle className="w-5 h-5" />
+                  Send via WhatsApp
                 </Button>
+                <p className="text-center text-xs text-muted-foreground mt-2">
+                  Clicking will open WhatsApp with your details pre-filled
+                </p>
               </form>
             </div>
 
@@ -440,6 +453,22 @@ export function JoinNetwork() {
                 </ul>
               </div>
 
+              <div className="bg-green-50 rounded-xl p-5 border border-green-200">
+                <div className="flex items-center gap-2 mb-2">
+                  <MessageCircle className="w-5 h-5 text-green-600" />
+                  <h4 className="font-heading font-semibold text-green-800">
+                    WhatsApp Support
+                  </h4>
+                </div>
+                <p className="text-sm text-green-700">
+                  Our team responds on WhatsApp within minutes during business
+                  hours. Submit the form and connect instantly.
+                </p>
+                <p className="text-sm font-bold text-green-800 mt-2">
+                  +91-8696766966
+                </p>
+              </div>
+
               <div className="bg-health-blue-light rounded-xl p-5 border border-health-blue/20">
                 <h4 className="font-heading font-semibold text-health-blue mb-2">
                   Fast Onboarding
@@ -448,23 +477,6 @@ export function JoinNetwork() {
                   Get onboarded in 48 hours with dedicated support from our
                   partnership team. Zero joining fees, no lock-in period.
                 </p>
-              </div>
-
-              <div className="bg-white rounded-xl p-5 border border-border shadow-xs">
-                <h4 className="font-heading font-semibold text-foreground mb-3 text-sm">
-                  Already a Member?
-                </h4>
-                <p className="text-xs text-muted-foreground mb-3">
-                  Login to your dashboard to access your network account and
-                  analytics.
-                </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full border-health-blue text-health-blue"
-                >
-                  Member Login
-                </Button>
               </div>
             </div>
           </div>

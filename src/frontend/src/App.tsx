@@ -5,6 +5,7 @@ import {
   createRoute,
   createRouter,
 } from "@tanstack/react-router";
+import { ABDMCompliance } from "./pages/ABDMCompliance";
 import { AICourse } from "./pages/AICourse";
 import { CommandCentre } from "./pages/CommandCentre";
 import { Compliance } from "./pages/Compliance";
@@ -13,10 +14,13 @@ import { DigitalHealth } from "./pages/DigitalHealth";
 import { Hospitals } from "./pages/Hospitals";
 import { InsightDetail } from "./pages/InsightDetail";
 import { Insights } from "./pages/Insights";
+import { InvestorPitch } from "./pages/InvestorPitch";
 import { JoinNetwork } from "./pages/JoinNetwork";
 import { JourneyFilm } from "./pages/JourneyFilm";
 import { NHCX } from "./pages/NHCX";
+import { PatientKiosk } from "./pages/PatientKiosk";
 import { PatientSupport } from "./pages/PatientSupport";
+import { Pricing } from "./pages/Pricing";
 import { TrainingGame } from "./pages/TrainingGame";
 import { ClaimAuditTemplates } from "./pages/training/ClaimAuditTemplates";
 import { ClaimBibleManual } from "./pages/training/ClaimBibleManual";
@@ -90,10 +94,25 @@ const journeyFilmRoute = createRoute({
   path: "/journey-film",
   component: JourneyFilm,
 });
+const abdmComplianceRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/abdm-compliance",
+  component: ABDMCompliance,
+});
 const nhcxRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/nhcx",
   component: NHCX,
+});
+const investorPitchRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/investor-pitch",
+  component: InvestorPitch,
+});
+const patientKioskRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/patient-kiosk",
+  component: PatientKiosk,
 });
 
 // Training Materials routes
@@ -123,6 +142,12 @@ const investigationJustificationRoute = createRoute({
   component: InvestigationJustification,
 });
 
+const pricingRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/pricing",
+  component: Pricing,
+});
+
 const routeTree = rootRoute.addChildren([
   currentAffairsRoute,
   hospitalsRoute,
@@ -137,11 +162,15 @@ const routeTree = rootRoute.addChildren([
   aiCourseRoute,
   journeyFilmRoute,
   nhcxRoute,
+  abdmComplianceRoute,
+  investorPitchRoute,
+  patientKioskRoute,
   claimBibleRoute,
   cleanClaimChecklistRoute,
   claimAuditTemplatesRoute,
   departmentMatrixRoute,
   investigationJustificationRoute,
+  pricingRoute,
 ]);
 
 const router = createRouter({ routeTree });

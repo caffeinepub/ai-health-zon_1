@@ -9,10 +9,14 @@ const platformLinks = [
   { href: "/compliance", label: "NABH" },
   { href: "/digital-health", label: "ABDM" },
   { href: "/nhcx", label: "NHCX" },
+  { href: "/abdm-compliance", label: "ABDM Compliance" },
   { href: "/", label: "Current Affairs" },
   { href: "/insights", label: "Insights" },
   { href: "/join-network", label: "Join Network" },
   { href: "/ai-course", label: "AI Course" },
+  { href: "/patient-kiosk", label: "Patient Kiosk" },
+  { href: "/investor-pitch", label: "Investor Pitch" },
+  { href: "/pricing", label: "Pricing" },
 ];
 
 export function Footer() {
