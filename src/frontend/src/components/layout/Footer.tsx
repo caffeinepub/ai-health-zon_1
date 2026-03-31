@@ -17,6 +17,7 @@ const platformLinks = [
   { href: "/patient-kiosk", label: "Patient Kiosk" },
   { href: "/investor-pitch", label: "Investor Pitch" },
   { href: "/pricing", label: "Pricing" },
+  { href: "/future-innovation", label: "Future Innovation" },
 ];
 
 export function Footer() {
@@ -128,6 +129,7 @@ export function Footer() {
                 "Network Management",
                 "Analytics & Reports",
                 "Staff Training",
+                "Future Innovation",
               ].map((item) => (
                 <li key={item}>
                   <span className="text-slate-400 text-sm">{item}</span>

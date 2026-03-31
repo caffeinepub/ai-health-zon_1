@@ -1372,6 +1372,319 @@ function InvestorPitchContent() {
         </div>
       </section>
 
+      {/* GROWTH ROADMAP */}
+      <section className="py-20 px-6 bg-white" data-ocid="investor.section">
+        <div className="max-w-5xl mx-auto">
+          <Reveal>
+            <p className="text-[#0D7377] text-xs tracking-widest uppercase mb-3">
+              Expansion Strategy
+            </p>
+            <h2
+              className="font-serif text-3xl md:text-4xl font-bold mb-4"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              Growth Roadmap
+            </h2>
+            <p className="text-slate-500 text-lg mb-12 max-w-2xl">
+              A state-by-state expansion blueprint backed by government scheme
+              penetration, AI-powered onboarding, and a proven Rajasthan base.
+            </p>
+          </Reveal>
+
+          {/* KPI Strip */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-14">
+            {[
+              { val: "1,230+", lbl: "Hospitals by 2026" },
+              { val: "5 States", lbl: "Initial Coverage" },
+              { val: "3,000+", lbl: "Hospitals by 2027" },
+              { val: "₹150 Cr", lbl: "ARR Target 2028" },
+            ].map((k) => (
+              <Reveal key={k.lbl}>
+                <div className="bg-[#f0fdfd] border border-[#0D7377]/20 rounded-xl p-5 text-center">
+                  <div className="text-2xl font-black text-[#0D7377] mb-1">
+                    {k.val}
+                  </div>
+                  <div className="text-xs text-slate-500 font-medium">
+                    {k.lbl}
+                  </div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+
+          {/* State Cards */}
+          <Reveal>
+            <h3 className="font-bold text-lg mb-6 text-slate-800">
+              State-Wise Expansion Plan
+            </h3>
+          </Reveal>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 mb-14">
+            {[
+              {
+                name: "Rajasthan",
+                status: "Launched",
+                statusColor: "bg-green-100 text-green-700",
+                quarter: "Q1 2026",
+                target: "200+ Hospitals",
+                schemes: ["RGHS", "MAA Yojana", "PMJAY"],
+                cities: "Jaipur · Jodhpur · Udaipur",
+                accent: "border-l-green-500",
+                bg: "bg-green-50",
+              },
+              {
+                name: "Madhya Pradesh",
+                status: "Expanding",
+                statusColor: "bg-amber-100 text-amber-700",
+                quarter: "Q2 2026",
+                target: "180+ Hospitals",
+                schemes: ["Ayushman Bharat", "MP CM Health Insurance"],
+                cities: "Bhopal · Indore · Gwalior",
+                accent: "border-l-amber-500",
+                bg: "bg-amber-50",
+              },
+              {
+                name: "Punjab",
+                status: "Planned",
+                statusColor: "bg-blue-100 text-blue-700",
+                quarter: "Q3 2026",
+                target: "150+ Hospitals",
+                schemes: ["Sarbat Sehat Bima", "PMJAY"],
+                cities: "Chandigarh · Ludhiana · Amritsar",
+                accent: "border-l-blue-500",
+                bg: "bg-blue-50",
+              },
+              {
+                name: "Uttar Pradesh",
+                status: "Planned",
+                statusColor: "bg-red-100 text-red-700",
+                quarter: "Q3 2026",
+                target: "400+ Hospitals",
+                schemes: ["PMJAY", "AB-PMJAY", "UP Mukhyamantri Jan Arogya"],
+                cities: "Lucknow · Noida · Varanasi",
+                accent: "border-l-red-500",
+                bg: "bg-red-50",
+                highlight: "Highest Priority",
+              },
+              {
+                name: "Maharashtra",
+                status: "Planned",
+                statusColor: "bg-purple-100 text-purple-700",
+                quarter: "Q4 2026",
+                target: "300+ Hospitals",
+                schemes: ["MH MJPJAY", "PMJAY", "Corporate TPA Networks"],
+                cities: "Mumbai · Pune · Nagpur",
+                accent: "border-l-purple-500",
+                bg: "bg-purple-50",
+              },
+            ].map((state, i) => (
+              <Reveal key={state.name} delay={i * 60}>
+                <div
+                  className={`${state.bg} border-l-4 ${state.accent} rounded-xl p-5 h-full`}
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <h4 className="font-bold text-slate-900 text-base">
+                        {state.name}
+                      </h4>
+                      <p className="text-xs text-slate-500">{state.quarter}</p>
+                    </div>
+                    <div className="flex flex-col items-end gap-1">
+                      <span
+                        className={`text-xs font-semibold px-2 py-0.5 rounded-full ${state.statusColor}`}
+                      >
+                        {state.status}
+                      </span>
+                      {(state as { highlight?: string }).highlight && (
+                        <span className="text-xs font-bold text-red-600 bg-red-100 px-2 py-0.5 rounded-full">
+                          {(state as { highlight?: string }).highlight}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-sm font-bold text-[#0D7377] mb-2">
+                    {state.target}
+                  </div>
+                  <p className="text-xs text-slate-500 mb-3">{state.cities}</p>
+                  <div className="flex flex-wrap gap-1">
+                    {state.schemes.map((s) => (
+                      <span
+                        key={s}
+                        className="text-xs bg-white/70 border border-slate-200 rounded px-2 py-0.5 text-slate-600"
+                      >
+                        {s}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+
+          {/* Timeline */}
+          <Reveal>
+            <h3 className="font-bold text-lg mb-8 text-slate-800">
+              2026 – 2031 Strategic Timeline
+            </h3>
+          </Reveal>
+          <div className="relative">
+            <div className="absolute left-5 top-0 bottom-0 w-0.5 bg-gradient-to-b from-[#0D7377] via-[#14BDEB] to-slate-200 hidden md:block" />
+            <div className="space-y-6">
+              {[
+                {
+                  period: "Q1–Q2 2026",
+                  title: "5-State Base Established",
+                  desc: "1,230+ hospitals live across Rajasthan, MP, Punjab, UP & Maharashtra. Full NHCX + ABDM integration operational.",
+                  type: "active",
+                },
+                {
+                  period: "Q3–Q4 2026",
+                  title: "South India Entry",
+                  desc: "Karnataka, Tamil Nadu, Telangana — 1,000+ new hospitals. RSBY & state scheme integration.",
+                  type: "upcoming",
+                },
+                {
+                  period: "2027",
+                  title: "Pan-India Presence",
+                  desc: "3,000+ hospitals across all major Indian states. Full NHCX ecosystem coverage. Series B target.",
+                  type: "planned",
+                },
+                {
+                  period: "2028",
+                  title: "AI Platform 2.0 + ASEAN Entry",
+                  desc: "Advanced AI claims engine, voice documentation, IoT integration. Singapore & Malaysia market entry.",
+                  type: "planned",
+                },
+                {
+                  period: "2029–2031",
+                  title: "Global Healthcare AI Leader",
+                  desc: "10,000+ hospitals globally. India's first healthcare revenue AI platform with international footprint.",
+                  type: "vision",
+                },
+              ].map((t, i) => (
+                <Reveal key={t.period} delay={i * 70}>
+                  <div className="flex gap-6 md:pl-12 relative">
+                    <div
+                      className={`absolute left-3.5 top-2 w-3 h-3 rounded-full border-2 hidden md:block -translate-x-1/2 ${
+                        t.type === "active"
+                          ? "bg-[#0D7377] border-[#0D7377]"
+                          : t.type === "upcoming"
+                            ? "bg-[#14BDEB] border-[#14BDEB]"
+                            : t.type === "planned"
+                              ? "bg-slate-300 border-slate-400"
+                              : "bg-gradient-to-br from-[#0D7377] to-[#14BDEB] border-[#0D7377]"
+                      }`}
+                    />
+                    <div className="flex-1 border border-slate-200 rounded-xl p-5 hover:shadow-md transition-shadow bg-white">
+                      <div className="flex items-start justify-between gap-3 mb-2">
+                        <div>
+                          <span className="text-xs font-black text-[#0D7377] tracking-wide uppercase">
+                            {t.period}
+                          </span>
+                          <h4 className="font-bold text-slate-900 mt-0.5">
+                            {t.title}
+                          </h4>
+                        </div>
+                        <span
+                          className={`shrink-0 text-xs px-2 py-0.5 rounded-full font-semibold ${
+                            t.type === "active"
+                              ? "bg-green-100 text-green-700"
+                              : t.type === "upcoming"
+                                ? "bg-blue-100 text-blue-700"
+                                : t.type === "vision"
+                                  ? "bg-gradient-to-r from-[#0D7377] to-[#14BDEB] text-white"
+                                  : "bg-slate-100 text-slate-600"
+                          }`}
+                        >
+                          {t.type === "active"
+                            ? "In Progress"
+                            : t.type === "upcoming"
+                              ? "Next"
+                              : t.type === "vision"
+                                ? "Vision"
+                                : "Planned"}
+                        </span>
+                      </div>
+                      <p className="text-sm text-slate-500 leading-relaxed">
+                        {t.desc}
+                      </p>
+                    </div>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+
+          {/* Innovation snapshot */}
+          <Reveal>
+            <div className="mt-14 bg-[#0F1923] rounded-2xl p-8 text-white">
+              <p className="text-[#14BDEB] text-xs tracking-widest uppercase mb-3">
+                Technology Edge
+              </p>
+              <h3
+                className="font-serif text-2xl font-bold mb-6"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
+                Future Innovation Pipeline
+              </h3>
+              <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {[
+                  {
+                    icon: "🧠",
+                    title: "HIMS Powered by AI",
+                    desc: "Full hospital information management with predictive analytics & automated billing",
+                  },
+                  {
+                    icon: "📡",
+                    title: "IoT Infrastructure",
+                    desc: "Smart sensors, real-time vitals monitoring, predictive maintenance for hospitals",
+                  },
+                  {
+                    icon: "⚡",
+                    title: "Claims AI Engine",
+                    desc: "Auto-adjudication, fraud detection, and sub-24h NHCX claim pipeline",
+                  },
+                  {
+                    icon: "📊",
+                    title: "Revenue Analytics",
+                    desc: "ML-based denial scoring, revenue forecasting, and leakage heat maps",
+                  },
+                  {
+                    icon: "🎙️",
+                    title: "Voice Documentation",
+                    desc: "AI dictation integrated with ABDM-compliant EMR records",
+                  },
+                  {
+                    icon: "🏥",
+                    title: "Telemedicine+",
+                    desc: "Remote monitoring with IoT wearables extending rural healthcare reach",
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.title}
+                    className="bg-white/5 border border-white/10 rounded-xl p-4"
+                  >
+                    <div className="text-2xl mb-2">{item.icon}</div>
+                    <div className="font-bold text-sm mb-1">{item.title}</div>
+                    <div className="text-xs text-white/60 leading-relaxed">
+                      {item.desc}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-6 text-center">
+                <a
+                  href="/future-innovation"
+                  className="inline-flex items-center gap-2 text-[#14BDEB] hover:text-white text-sm font-semibold transition-colors"
+                  data-ocid="investor.link"
+                >
+                  Explore Full Innovation Roadmap →
+                </a>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
       {/* CTA BAND */}
       <section className="bg-[#0F1923] py-20 px-6" data-ocid="investor.section">
         <div className="max-w-3xl mx-auto text-center">

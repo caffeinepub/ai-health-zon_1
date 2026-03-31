@@ -21,6 +21,7 @@ const navLinks = [
   { href: "/patient-kiosk", label: "🏥 Patient Kiosk" },
   { href: "/investor-pitch", label: "📊 Investor Pitch" },
   { href: "/pricing", label: "💰 Pricing" },
+  { href: "/future-innovation", label: "🚀 Future Innovation" },
 ];
 
 export function Navigation() {
@@ -154,6 +155,17 @@ export function Navigation() {
                 }`}
               >
                 📊 Investor Pitch
+              </Link>
+              <Link
+                data-ocid="nav.future_innovation.link"
+                to="/future-innovation"
+                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
+                  currentPath === "/future-innovation"
+                    ? "bg-health-blue-light text-health-blue"
+                    : "text-foreground hover:bg-muted hover:text-health-blue"
+                }`}
+              >
+                🚀 Future
               </Link>
             </div>
 

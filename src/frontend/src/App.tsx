@@ -11,6 +11,7 @@ import { CommandCentre } from "./pages/CommandCentre";
 import { Compliance } from "./pages/Compliance";
 import { CurrentAffairs } from "./pages/CurrentAffairs";
 import { DigitalHealth } from "./pages/DigitalHealth";
+import { FutureInnovation } from "./pages/FutureInnovation";
 import { Hospitals } from "./pages/Hospitals";
 import { InsightDetail } from "./pages/InsightDetail";
 import { Insights } from "./pages/Insights";
@@ -114,6 +115,11 @@ const patientKioskRoute = createRoute({
   path: "/patient-kiosk",
   component: PatientKiosk,
 });
+const futureInnovationRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/future-innovation",
+  component: FutureInnovation,
+});
 
 // Training Materials routes
 const claimBibleRoute = createRoute({
@@ -165,6 +171,7 @@ const routeTree = rootRoute.addChildren([
   abdmComplianceRoute,
   investorPitchRoute,
   patientKioskRoute,
+  futureInnovationRoute,
   claimBibleRoute,
   cleanClaimChecklistRoute,
   claimAuditTemplatesRoute,
