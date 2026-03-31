@@ -81,6 +81,84 @@ const plans = [
   },
 ];
 
+const compareFeatures = [
+  {
+    feature: "Claim Automation",
+    starter: "Basic",
+    pro: "Full",
+    enterprise: "Full + Custom",
+  },
+  {
+    feature: "ABDM Integration",
+    starter: "M1",
+    pro: "M1 + M2",
+    enterprise: "M1 + M2 + M3",
+  },
+  { feature: "NHCX Integration", starter: false, pro: true, enterprise: true },
+  {
+    feature: "Clean Claim Dashboard",
+    starter: true,
+    pro: true,
+    enterprise: true,
+  },
+  {
+    feature: "AI Revenue Intelligence",
+    starter: false,
+    pro: true,
+    enterprise: true,
+  },
+  {
+    feature: "Claim Command Centre",
+    starter: false,
+    pro: true,
+    enterprise: true,
+  },
+  {
+    feature: "NABH Compliance Module",
+    starter: false,
+    pro: true,
+    enterprise: true,
+  },
+  {
+    feature: "Training Module Access",
+    starter: false,
+    pro: true,
+    enterprise: true,
+  },
+  { feature: "Custom AI Models", starter: false, pro: false, enterprise: true },
+  {
+    feature: "Dedicated Account Manager",
+    starter: false,
+    pro: false,
+    enterprise: true,
+  },
+  {
+    feature: "On-site Onboarding",
+    starter: false,
+    pro: false,
+    enterprise: true,
+  },
+  { feature: "SLA Guarantee", starter: false, pro: false, enterprise: true },
+  {
+    feature: "Government Scheme Integration",
+    starter: false,
+    pro: "PMJAY, RGHS, MAA",
+    enterprise: "All Schemes",
+  },
+  {
+    feature: "Support",
+    starter: "Email",
+    pro: "Priority",
+    enterprise: "24x7 Dedicated",
+  },
+  {
+    feature: "Hospital Size",
+    starter: "Up to 50 Beds",
+    pro: "Up to 200 Beds",
+    enterprise: "200+ Beds",
+  },
+];
+
 const addons = [
   {
     num: "01",
@@ -155,10 +233,21 @@ function FAQItem({ q, a }: { q: string; a: string }) {
   );
 }
 
+function CellValue({ value }: { value: string | boolean }) {
+  if (value === true) {
+    return <span className="text-teal-600 text-lg font-bold">✓</span>;
+  }
+  if (value === false) {
+    return <span className="text-gray-300 text-lg">—</span>;
+  }
+  return <span className="text-sm text-slate-700 font-medium">{value}</span>;
+}
+
 export function Pricing() {
   const heroReveal = useScrollReveal();
   const statsReveal = useScrollReveal();
   const plansReveal = useScrollReveal();
+  const compareReveal = useScrollReveal();
   const addonsReveal = useScrollReveal();
   const roiReveal = useScrollReveal();
   const faqReveal = useScrollReveal();
@@ -322,6 +411,127 @@ export function Pricing() {
                 </a>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Compare All Features */}
+      <section className="py-20 px-6 bg-white" data-ocid="pricing.compare">
+        <div
+          ref={compareReveal.ref}
+          className={`max-w-6xl mx-auto transition-all duration-700 ${
+            compareReveal.visible
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-8"
+          }`}
+        >
+          <div className="text-center mb-14">
+            <div className="text-teal-600 text-sm font-semibold tracking-widest uppercase mb-3">
+              Feature Comparison
+            </div>
+            <h2 className="font-['Playfair_Display'] text-4xl font-bold text-slate-900">
+              Compare All Features
+            </h2>
+            <p className="mt-3 text-gray-500 max-w-xl mx-auto">
+              See exactly what's included in each plan so you can make the right
+              choice for your hospital.
+            </p>
+          </div>
+
+          <div className="overflow-x-auto rounded-2xl border border-gray-200 shadow-sm">
+            <table className="w-full min-w-[640px] border-collapse">
+              <thead>
+                <tr>
+                  <th className="sticky left-0 z-10 bg-slate-900 text-white text-left px-6 py-5 font-['Playfair_Display'] text-lg font-bold w-56 min-w-[14rem]">
+                    Feature
+                  </th>
+                  <th className="bg-slate-800 text-white text-center px-6 py-5 font-semibold text-sm tracking-wide uppercase">
+                    Starter
+                    <div className="text-slate-400 text-xs font-normal normal-case mt-0.5 tracking-normal">
+                      ₹15,000/mo
+                    </div>
+                  </th>
+                  <th className="bg-teal-700 text-white text-center px-6 py-5 font-semibold text-sm tracking-wide uppercase relative">
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-400 text-slate-900 text-xs font-bold px-3 py-0.5 rounded-full whitespace-nowrap">
+                      Most Popular
+                    </span>
+                    Professional
+                    <div className="text-teal-200 text-xs font-normal normal-case mt-0.5 tracking-normal">
+                      ₹35,000/mo
+                    </div>
+                  </th>
+                  <th className="bg-slate-800 text-white text-center px-6 py-5 font-semibold text-sm tracking-wide uppercase">
+                    Enterprise
+                    <div className="text-slate-400 text-xs font-normal normal-case mt-0.5 tracking-normal">
+                      Custom Pricing
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {compareFeatures.map((row, i) => (
+                  <tr
+                    key={row.feature}
+                    className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}
+                  >
+                    <td
+                      className={`sticky left-0 z-10 px-6 py-4 font-medium text-slate-800 text-sm border-r border-gray-200 ${
+                        i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                      }`}
+                    >
+                      {row.feature}
+                    </td>
+                    <td className="text-center px-6 py-4 border-r border-gray-100">
+                      <CellValue value={row.starter} />
+                    </td>
+                    <td className="text-center px-6 py-4 border-r border-teal-100 bg-teal-50/40">
+                      <CellValue value={row.pro} />
+                    </td>
+                    <td className="text-center px-6 py-4">
+                      <CellValue value={row.enterprise} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr className="bg-gray-50 border-t-2 border-gray-200">
+                  <td className="sticky left-0 z-10 bg-gray-50 px-6 py-5" />
+                  <td className="text-center px-6 py-5">
+                    <a
+                      href={`${whatsappBase}${encodeURIComponent("Hi, I'm interested in the Starter Plan (₹15,000/month) for AI Health Zon. Please share more details.")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      data-ocid="pricing.compare.starter.button"
+                      className="inline-block bg-slate-800 text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-slate-900 transition-colors"
+                    >
+                      Get Started
+                    </a>
+                  </td>
+                  <td className="text-center px-6 py-5 bg-teal-50/40">
+                    <a
+                      href={`${whatsappBase}${encodeURIComponent("Hi, I'm interested in the Professional Plan (₹35,000/month) for AI Health Zon. Please share more details.")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      data-ocid="pricing.compare.pro.button"
+                      className="inline-block bg-teal-700 text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-teal-800 transition-colors"
+                    >
+                      Start Professional
+                    </a>
+                  </td>
+                  <td className="text-center px-6 py-5">
+                    <a
+                      href={`${whatsappBase}${encodeURIComponent("Hi, I'd like to request a quote for the Enterprise Plan for AI Health Zon. Please get in touch.")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      data-ocid="pricing.compare.enterprise.button"
+                      className="inline-block bg-slate-800 text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-slate-900 transition-colors"
+                    >
+                      Request a Quote
+                    </a>
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
           </div>
         </div>
       </section>
