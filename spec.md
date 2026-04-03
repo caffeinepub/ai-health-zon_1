@@ -1,26 +1,30 @@
 # AI Health Zon
 
 ## Current State
-The homepage (`CurrentAffairs.tsx`) is a McKinsey-style editorial layout covering Indian healthcare revolution, transformation pillars, news, stats, governance, and CTA. There is an existing `MissionVision.tsx` component and `AboutSection.tsx` but they are not integrated into the homepage in a prominent, detailed way.
+The app has 20+ pages covering hospital revenue intelligence, ABDM compliance, NHCX, investor pitch, training modules, patient kiosk, pricing, vendors network, and future innovation. All pages use the McKinsey editorial layout with the Layout wrapper component. App.tsx uses TanStack Router.
 
 ## Requested Changes (Diff)
 
 ### Add
-- **Mission & Vision section** on the homepage: Clear, bold Mission statement ("Transforming hospital revenue integrity for every Indian patient") and Vision statement ("A fully digital, financially sustainable Indian healthcare system by 2030"), with supporting sub-points and a visual divider.
-- **Future Prospective for Hospitals section**: Forward-looking 3–4 card layout covering 2025–2030 trends — AI-driven claim automation, value-based care, ABDM/NHCX ecosystem, and revenue intelligence.
-- **AI Health Zon Impact section**: Stats + narrative on the real-world impact (claims processed, clean claim rate, hospitals onboarded, revenue recovered), with a brief "How AI Health Zon is creating impact" editorial block.
-- **Visionary Impact of Amit Mansingh section**: A dedicated founder spotlight card with name, title (Founder & CEO, Triple Top Pattern Health Pvt. Ltd.), a short bio drawn from his LinkedIn background (healthcare revenue management expert, 15+ years, NABH/NHCX/ABDM specialist, ex-hospital administrator, thought leader), key contributions/vision points, LinkedIn link, and a professional avatar/generated image.
+- New page `/maa-yojana-packages` — MAA Yojana Package Code Search
+  - Hero section with McKinsey editorial style
+  - Search bar: search by Package Code, Package Name, or Speciality (live filter)
+  - Filters: Category (Tertiary/Secondary), Speciality dropdown (36 unique), Rate range
+  - Results table/cards showing: SR No, Package Code, Package Name, Speciality, Category, Rate (₹), Pre-Auth Documents, Claim Documents, Special Conditions
+  - Expandable row/card to show full package description, pre-auth docs, claim docs, special conditions
+  - Stats banner: 3,453 packages, 36 specialities, 2 categories
+  - Data sourced from `src/data/maaYojanaPackages.json` (already generated from Excel)
+  - Pagination (50 per page) for performance
+  - Route registered in App.tsx as `/maa-yojana-packages`
+- Link to the new page added in navigation
 
 ### Modify
-- `CurrentAffairs.tsx`: Insert the four new sections between the governance section and the existing future outlook/CTA sections.
+- `App.tsx`: import and register new route
 
 ### Remove
-- Nothing removed.
+- Nothing removed
 
 ## Implementation Plan
-1. Generate a professional portrait-style image for Amit Mansingh founder spotlight.
-2. Add Mission & Vision section to `CurrentAffairs.tsx`.
-3. Add Future Prospective cards section.
-4. Add AI Health Zon Impact section with animated stats.
-5. Add Amit Mansingh Visionary Impact section with LinkedIn link.
-6. Validate and build.
+1. Create `src/pages/MaaYojanaPackages.tsx` with search, filter, paginated results table, and expandable detail cards
+2. Update `App.tsx` to import and register the `/maa-yojana-packages` route
+3. Add nav link to the page (check Layout/Nav component)

@@ -18,6 +18,7 @@ import { Insights } from "./pages/Insights";
 import { InvestorPitch } from "./pages/InvestorPitch";
 import { JoinNetwork } from "./pages/JoinNetwork";
 import { JourneyFilm } from "./pages/JourneyFilm";
+import { MaaYojanaPackages } from "./pages/MaaYojanaPackages";
 import { NHCX } from "./pages/NHCX";
 import { PatientKiosk } from "./pages/PatientKiosk";
 import { PatientSupport } from "./pages/PatientSupport";
@@ -120,6 +121,11 @@ const futureInnovationRoute = createRoute({
   path: "/future-innovation",
   component: FutureInnovation,
 });
+const maaYojanaRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/maa-yojana-packages",
+  component: MaaYojanaPackages,
+});
 
 // Training Materials routes
 const claimBibleRoute = createRoute({
@@ -172,6 +178,7 @@ const routeTree = rootRoute.addChildren([
   investorPitchRoute,
   patientKioskRoute,
   futureInnovationRoute,
+  maaYojanaRoute,
   claimBibleRoute,
   cleanClaimChecklistRoute,
   claimAuditTemplatesRoute,

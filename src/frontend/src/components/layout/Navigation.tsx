@@ -22,6 +22,7 @@ const navLinks = [
   { href: "/investor-pitch", label: "📊 Investor Pitch" },
   { href: "/pricing", label: "💰 Pricing" },
   { href: "/future-innovation", label: "🚀 Future Innovation" },
+  { href: "/maa-yojana-packages", label: "🏥 MAA Yojana Packages" },
 ];
 
 export function Navigation() {
@@ -166,6 +167,17 @@ export function Navigation() {
                 }`}
               >
                 🚀 Future
+              </Link>
+              <Link
+                data-ocid="nav.maa_yojana.link"
+                to="/maa-yojana-packages"
+                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
+                  currentPath === "/maa-yojana-packages"
+                    ? "bg-health-blue-light text-health-blue"
+                    : "text-foreground hover:bg-muted hover:text-health-blue"
+                }`}
+              >
+                📋 MAA Yojana
               </Link>
             </div>
 
